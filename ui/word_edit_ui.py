@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\YandexDisk\Vocabular\ui\word_edit.ui'
+# Form implementation generated from reading ui file 'E:/slipstak2/vocabular\ui\word_edit.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #

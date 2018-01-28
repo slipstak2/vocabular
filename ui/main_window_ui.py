@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\YandexDisk\Vocabular\ui\main_window.ui'
+# Form implementation generated from reading ui file 'E:/slipstak2/vocabular\ui\main_window.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -167,7 +167,7 @@ class Ui_VocabularMainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(VocabularMainWindow)
 
     def retranslateUi(self, VocabularMainWindow):
-        VocabularMainWindow.setWindowTitle(_translate("VocabularMainWindow", "Vocabular v.0.0.8", None))
+        VocabularMainWindow.setWindowTitle(_translate("VocabularMainWindow", "Vocabular v.0.0.9", None))
         self.gbDictionary.setTitle(_translate("VocabularMainWindow", "Словарь", None))
         self.btnAddDict.setToolTip(_translate("VocabularMainWindow", "Добавить словарь", None))
         self.btnEditDict.setToolTip(_translate("VocabularMainWindow", "Редактировать словарь", None))

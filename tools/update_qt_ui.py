@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 
 _DEPRECATED_IMPORT = 'from PyQt4 import QtCore, QtGui'
@@ -12,7 +13,9 @@ except ImportError:
 
 PYTHON_SITE_PACKAGE_CWD = r'C:\Python27\Lib\site-packages\PyQt4'
 
-_TARGET_UI_PATH = r'E:\YandexDisk\Vocabular\ui'
+_TARGET_UI_PATH = os.path.join(
+    os.path.dirname(sys.argv[0]),
+    'ui')
 
 _UI_ITEMS = [os.path.splitext(f)[0] for f in os.listdir('./ui') if os.path.isfile(os.path.join('./ui', f)) and f.endswith('.ui')]
 
