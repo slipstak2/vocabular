@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="res">
+    <file>images/down_translate.png</file>
+    <file>images/up_translate.png</file>
+    <file>images/add_translate.png</file>
+    <file>images/unknown.png</file>
+    <file>images/edit_dict.png</file>
+    <file>images/media_play.png</file>
+    <file>images/delete_word.png</file>
+    <file>images/edit_word.png</file>
+    <file>images/delete_dict.png</file>
+    <file>images/add_word.png</file>
+    <file>images/add_dict.png</file>
+    <file>images/dictionary.png</file>
+    <file>images/exit.png</file>
+    <file>images/info.png</file>
+    <file>images/refresh.png</file>
+    <file>images/warning.png</file>
+  </qresource>
+</RCC>
