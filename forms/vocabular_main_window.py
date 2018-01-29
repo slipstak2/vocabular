@@ -12,6 +12,7 @@ from utils import qtRus
 from models.dict_model import DictionaryModel
 from models.word_eng_dict_model import WordEngDictModel, PlayButtonWordEngDictDelegate, EditButtonWordEngDictDelegate
 from utils import onBtnEnter, onBtnLeave
+from version import version
 
 
 #TODO: количество слов в словаре. отображать в имени group box: Слова(42)
@@ -22,6 +23,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
         super(VocabularMainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_VocabularMainWindow()
         self.ui.setupUi(self)
+
+        self.setWindowTitle("Vocabular v.{}".format(version))
 
         self.dictModel = DictionaryModel()
         self.wordEngDictModel = WordEngDictModel(self.dictModel)
