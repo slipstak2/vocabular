@@ -1,0 +1,5 @@
+db:
+  host: localhost
+  user: root
+  passwd: passwd
+  db: voc-app-db-test

@@ -8,6 +8,7 @@ from PySide import QtGui
 app = QtGui.QApplication(sys.argv)
 
 from forms.vocabular_main_window import VocabularMainWindow
+from app_settings import AppSettings, AppMode
 
 
 def run():
@@ -17,4 +18,5 @@ def run():
 
 
 if __name__ == '__main__':
+    AppSettings(AppMode.DEVELOP)
     run()
