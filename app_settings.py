@@ -27,7 +27,7 @@ class AppSettings:
         assert mode != AppMode.UNKNOWN, 'Singleton error'
 
         self._mode = mode
-        self._startPath = os.path.dirname(sys.argv[0])
+        self._startPath = os.path.dirname(__file__)
         self._configPath = os.path.join(self._startPath, _CONFIG_PATH, configMap[mode])
 
         with open(self._configPath, "r") as configStream:
