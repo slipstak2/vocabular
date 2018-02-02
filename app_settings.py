@@ -1,5 +1,4 @@
 import os
-import sys
 import yaml
 from enum import Enum
 from utils import Singleton
@@ -35,3 +34,15 @@ class AppSettings:
 
     def dbParams(self):
         return self._config['db']
+
+    @property
+    def createSQLTablePath(self):
+        return os.path.join(self._startPath, 'db_structure', 'create_tables.sql')
+
+    @property
+    def dropSQLTablePath(self):
+        return os.path.join(self._startPath, 'db_structure', 'drop_tables.sql')
+
+    @property
+    def fillSQLTablesPath(self):
+        return os.path.join(self._startPath, 'db_structure', 'fill_tables.sql')

@@ -1,17 +1,18 @@
 import sys
 import unittest
 from models.base.db import getDb
+from app_settings import AppSettings
+from unit_tests.unit_tests_utils import applySQLcommands
 from PySide import QtGui
 
 
 class TestBaseClass(unittest.TestCase):
-    isQtInit = False
+    app = None
 
     def __init__(self, *args, **kwargs):
         super(TestBaseClass, self).__init__(*args, **kwargs)
-        if not TestBaseClass.isQtInit:
-            QtGui.QApplication(sys.argv)
-            TestBaseClass.isQtInit = True
+        if not TestBaseClass.app:
+            TestBaseClass.app = QtGui.QApplication(sys.argv)
 
 
 class TestDBBaseClass(TestBaseClass):
@@ -22,30 +23,29 @@ class TestDBBaseClass(TestBaseClass):
         self.db = getDb()
 
     @staticmethod
-    def _dbRemoveTables():
-        pass
+    def _dbDropTables():
+        applySQLcommands(AppSettings().dropSQLTablePath)
 
     @staticmethod
-    def _dbStructureInit():
-        pass
+    def _dbCreateTables():
+        applySQLcommands(AppSettings().createSQLTablePath)
 
     @staticmethod
-    def _dbFillContent():
-        pass
+    def _dbFillTables():
+        applySQLcommands(AppSettings().fillSQLTablesPath)
 
     @staticmethod
     def dbInit():
-        TestDBBaseClass._dbRemoveTables()
-        TestDBBaseClass._dbStructureInit()
-        TestDBBaseClass._dbFillContent()
+        TestDBBaseClass._dbDropTables()
+        TestDBBaseClass._dbCreateTables()
+        TestDBBaseClass._dbFillTables()
 
     @classmethod
     def setUpClass(cls):
         if not TestDBBaseClass.isDbInit:
             TestDBBaseClass.dbInit()
             TestDBBaseClass.isDbInit = True
-        print 'setUpClass: TestDBBaseClass'
 
     @classmethod
     def tearDownClass(cls):
-        print 'tearDownClass'
+        pass

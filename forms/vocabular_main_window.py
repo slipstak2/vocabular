@@ -38,7 +38,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         dictDialog = DictEditWindow(self.dictModel, EditMode.AddNew)
         dictDialog.exec_()
         if dictDialog.result() == 1:
-            self.ui.cbDicts.setCurrentIndex(self.ui.cbDicts.count() - 1)
+            self.ui.cbDicts.setCurrentIndex(self.dictModel.rowCount() - 1)
 
     def _onEditDict(self, *args, **kwargs):
         dictDialog = DictEditWindow(

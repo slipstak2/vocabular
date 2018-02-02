@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import functools
-
 from PySide import QtSql
 
 from base.base_sql_query_model import BaseSqlQueryModel

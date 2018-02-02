@@ -10,7 +10,7 @@ app = QtGui.QApplication(sys.argv)
 from forms.vocabular_main_window import VocabularMainWindow
 from app_settings import AppSettings, AppMode
 
-
+# TODO: сделать логгер(отдельное окошко)
 def run():
     wnd = VocabularMainWindow()
     wnd.show()

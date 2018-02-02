@@ -15,3 +15,4 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
 
     def refresh(self):
         raise NotImplementedError("pure virtual method 'refresh' must be implemented")
+
