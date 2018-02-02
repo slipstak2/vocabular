@@ -12,58 +12,77 @@ from models import utils as models_utils
 
 
 class WordDictModel(BaseSqlQueryModel):
-    headerFields = ['',          '',      'eng',      u'рус',     '',     '']
-    fields =       ['d_id', 'we_id', 'we_value',  'we_value', 'play', 'edit']
-    playFieldNum = fields.index('play')
-    editFieldNum = fields.index('edit')
-    tableName = 'dictionary'
 
     @need_refresh
-    def __init__(self, dictModel, *args, **kwargs):
+    def __init__(self, dictModel, langMode, *args, **kwargs):
         super(WordDictModel, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
+        self.langMode = langMode
+        if langMode == Lang.Eng:
+            self.SRC_LANG_FULL  = 'eng'
+            self.SRC_LANG_SHORT = 'e'
+            self.DST_LANG_FULL  = 'rus'
+            self.DST_LANG_SHORT = 'r'
+            self.headerFields = ['',          '',      'eng',      u'рус',     '',     '']
+            self.fields =       ['d_id', 'we_id', 'we_value',  'we_value', 'play', 'edit']
+        else:
+            self.SRC_LANG_FULL  = 'rus'
+            self.SRC_LANG_SHORT = 'r'
+            self.DST_LANG_FULL  = 'eng'
+            self.DST_LANG_SHORT = 'e'
 
-    def wordEngValue(self, recordIndex):
-        return self.record(recordIndex).value('we_value')
+        self.playFieldNum = self.fields.index('play')
+        self.editFieldNum = self.fields.index('edit')
+
+
+    def wordValue(self, recordIndex):
+        return self.record(recordIndex).value('w{e}_value'.format(e=self.SRC_LANG_SHORT))
 
     def dictId(self, recordIndex):
         return self.record(recordIndex).value('d_id')
 
-    def wordEngId(self, recordIndex):
-        return self.record(recordIndex).value('we_id')
+    def wordId(self, recordIndex):
+        return self.record(recordIndex).value('w{e}_id'.format(e=self.SRC_LANG_SHORT))
 
     def refresh(self):
-        self.setQuery('''
-        SELECT d_id, we_id, we_value, wr_value  FROM (
+        query = '''
+        SELECT d_id, w{e}_id, w{e}_value, w{r}_value  FROM (
             SELECT
-                DISTINCT we.id as we_id, d.id as d_id, we.value as we_value, wr.value as wr_value
+                DISTINCT word_{eng}.id as w{e}_id, dictionary.id as d_id, word_{eng}.value as w{e}_value, word_{rus}.value as w{r}_value
             from
-                dictionary as d
-            JOIN word_eng_dict as wed ON wed.dict_id = d.id
-            JOIN word_eng as we ON we.id = wed.word_eng_id
-            JOIN rus_eng as re ON re.word_eng_id = we.id
-            JOIN word_rus as wr ON wr.id = re.word_rus_id
-            WHERE d.id = {dictId}
-            ORDER BY re.rus_order
+                dictionary
+            JOIN word_{eng}_dict ON word_{eng}_dict.dict_id = dictionary.id
+            JOIN word_{eng} ON word_{eng}.id = word_{eng}_dict.word_{eng}_id
+            JOIN rus_eng ON rus_eng.word_{eng}_id = word_{eng}.id
+            JOIN word_{rus} ON word_{rus}.id = rus_eng.word_{rus}_id
+            WHERE dictionary.id = {dict_id}
+            ORDER BY rus_eng.{rus}_order
         ) as x
-        GROUP BY d_id, we_id
-        '''.format(dictId=self.dictModel.currentDictId)) #TODO: bindValue
+        GROUP BY d_id, w{e}_id
+        '''.format(
+            eng=self.SRC_LANG_FULL,
+            e=self.SRC_LANG_SHORT,
+            rus=self.DST_LANG_FULL,
+            r=self.DST_LANG_SHORT,
+            dict_id=self.dictModel.currentDictId
+        )
+        self.setQuery(query)
 
-        for idx, field in enumerate(WordEngDictModel.headerFields):
+        for idx, field in enumerate(self.headerFields):
             self.setHeaderData(idx, QtCore.Qt.Horizontal, field)
-
         self.onRefresh()
 
     def data(self, index, role):
-        value = super(WordEngDictModel, self).data(index, role)
+        value = super(WordDictModel, self).data(index, role)
         if role == QtCore.Qt.TextColorRole and index.column() == 2:
             return QtGui.QColor(QtCore.Qt.blue)
 
         if role == QtCore.Qt.DisplayRole:
-            if index.column() in [WordEngDictModel.playFieldNum, WordEngDictModel.editFieldNum]:
+            if index.column() in [self.playFieldNum, self.editFieldNum]:
                 return ''
 
         return value
 
     def columnCount(self, *args, **kwargs):
-        return len(WordEngDictModel.fields)
+        return len(self.fields)
+

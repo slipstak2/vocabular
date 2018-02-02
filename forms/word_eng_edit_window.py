@@ -27,13 +27,13 @@ iconTitleMap = {
 #TODO: иконки на окне: откуда был совершен переход: Добавление слова, Редактирование слова, Добавление перевода
 
 class WordEngEditWindow(QtGui.QDialog):
-    def __init__(self, dictId, wordEngId, wordEngValue, lang, mode, *args, **kwargs):
+    def __init__(self, dictId, wordId, wordValue, lang, mode, *args, **kwargs):
         super(WordEngEditWindow, self).__init__(*args, **kwargs)
 
         self.dictId = dictId
         self.mode = mode
 
-        self.wordEngModel = WordEngModel(wordEngId, wordEngValue)
+        self.wordEngModel = WordEngModel(wordId, wordValue)
         self.lang = lang
 
         self.ui = Ui_WordAddEdit()
@@ -80,7 +80,7 @@ class WordEngEditWindow(QtGui.QDialog):
         self.setWindowTitle(qtRus(translateTitleMap[self.mode]))
         self.ui.cbLang.setCurrentIndex(self.lang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
-        self.ui.leWord.setText(self.wordEngModel.wordEngValue)
+        self.ui.leWord.setText(self.wordEngModel.wordValue)
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.actDownOrder.triggered.connect(self._onDownOrder)
         self.ui.actUpOrder.triggered.connect(self._onUpOrder)

@@ -15,10 +15,10 @@ class WordEngModel(BaseSqlQueryModel):
     removeFieldNum = fields.index('remove')
 
     @need_refresh
-    def __init__(self, wordEngId, wordEngValue, *args, **kwargs):
+    def __init__(self, wordId, wordValue, *args, **kwargs):
         super(WordEngModel, self).__init__(*args, **kwargs)
-        self.wordEngId = wordEngId
-        self.wordEngValue = wordEngValue
+        self.wordId = wordId
+        self.wordValue = wordValue
 
     def wordEngTranslate(self, recordIndex):
         return self.record(recordIndex).value('wr_value')
@@ -37,7 +37,7 @@ class WordEngModel(BaseSqlQueryModel):
 
         WHERE we.id = {weId}
         ORDER BY re.rus_order ASC
-        '''.format(weId=self.wordEngId))  # TODO: bindValue
+        '''.format(weId=self.wordId))  # TODO: bindValue
 
         for idx, field in enumerate(WordEngModel.headerFields):
             self.setHeaderData(idx, QtCore.Qt.Horizontal, field)
@@ -70,8 +70,8 @@ class WordEngModel(BaseSqlQueryModel):
         query.bindValue(u":wr_id2", self.record(row2).value('wr_id'))
         query.bindValue(u":ro1", self.record(row2).value('re_rus_order'))
         query.bindValue(u":ro2", self.record(row1).value('re_rus_order'))
-        query.bindValue(u":we_id1", self.wordEngId)
-        query.bindValue(u":we_id2", self.wordEngId)
+        query.bindValue(u":we_id1", self.wordId)
+        query.bindValue(u":we_id2", self.wordId)
 
         try:
             query.exec_()
@@ -111,7 +111,7 @@ class WordEngModel(BaseSqlQueryModel):
                 (:wr_id, :we_id, :ro, :eo)
             ''')
             query.bindValue(':wr_id', id)
-            query.bindValue(':we_id', self.wordEngId)
+            query.bindValue(':we_id', self.wordId)
             query.bindValue(':ro', self.rowCount() + 1)
             query.bindValue(':eo', 1)
 

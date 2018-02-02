@@ -64,8 +64,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordEngDictModel.rowCount()):
-            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, WordEngDictModel.playFieldNum))
-            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, WordEngDictModel.editFieldNum))
+            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, self.wordEngDictModel.playFieldNum))
+            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, self.wordEngDictModel.editFieldNum))
         self.ui.tvEngWords.resizeColumnsToContents()
 
 
@@ -99,8 +99,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.ui.tvEngWords.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ui.tvEngWords.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 
-        self.ui.tvEngWords.setItemDelegateForColumn(WordEngDictModel.playFieldNum, PlayButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
-        self.ui.tvEngWords.setItemDelegateForColumn(WordEngDictModel.editFieldNum, EditButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.playFieldNum, PlayButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.editFieldNum, EditButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
 
         self.wordEngDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
         self.wordEngDictModel.onRefresh()
