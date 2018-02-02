@@ -5,12 +5,11 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-from PySide import QtGui, QtCore
+from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, EditMode
-from utils import qtRus
 from models.dict_model import DictionaryModel
-from models.word_eng_dict_model import WordEngDictModel, PlayButtonWordEngDictDelegate, EditButtonWordEngDictDelegate
+from models.word_dict_model.word_eng_dict_model import WordEngDictModel, PlayButtonWordEngDictDelegate, EditButtonWordEngDictDelegate
 from utils import onBtnEnter, onBtnLeave
 from version import version
 

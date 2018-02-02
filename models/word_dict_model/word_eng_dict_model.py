@@ -7,7 +7,7 @@ from forms.word_eng_edit_window import WordEngEditWindow
 from forms.utils import EditMode, Lang
 from models.base.base_sql_query_model import BaseSqlQueryModel
 from models.base.utils import need_refresh
-from delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
+from models.delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
 from models import utils as models_utils
 
 
