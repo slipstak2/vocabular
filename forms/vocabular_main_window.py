@@ -9,8 +9,8 @@ from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, EditMode
 from models.dict_model import DictionaryModel
-from models.word_dict_model.word_dict_model import WordDictModel
-from models.word_dict_model.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
+from models.word_dict_model import WordDictModel
+from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
 from forms_utils import onBtnEnter, onBtnLeave
 from utils import Lang
 from version import version

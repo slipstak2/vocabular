@@ -3,12 +3,11 @@
 from PySide import QtSql, QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
-from forms.word_eng_edit_window import WordEngEditWindow
 from forms.forms_utils import EditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel
 from models.base.utils import need_refresh
 from models.delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
-from models import utils as models_utils
+from models import models_utils as models_utils
 from utils import Lang
 
 
@@ -48,7 +47,7 @@ class WordDictModel(BaseSqlQueryModel):
         return self.record(recordIndex).value('w{e}_id'.format(e=self.SRC_LANG_SHORT))
 
     def refresh(self):
-        query = '''
+        query = u'''
         SELECT d_id, w{e}_id, w{e}_value, w{r}_value  FROM (
             SELECT
                 DISTINCT word_{eng}.id as w{e}_id, dictionary.id as d_id, word_{eng}.value as w{e}_value, word_{rus}.value as w{r}_value
@@ -106,6 +105,7 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
+        from forms.word_eng_edit_window import WordEngEditWindow
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 

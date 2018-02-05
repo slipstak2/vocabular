@@ -10,7 +10,7 @@ from models.word_eng_model import EditButtonWordEngTranslateDelegate, \
     RemoveButtonWordEngTranslateDelegate
 
 from forms.word_rus_edit_window import WordRusEditWindow
-from models import utils as models_utils
+from models import models_utils as models_utils
 from utils import Lang
 
 translateTitleMap = {

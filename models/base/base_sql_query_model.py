@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from PySide import QtSql
 
 from db import getDb

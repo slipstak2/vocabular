@@ -7,8 +7,8 @@ from forms_utils import qtRus, EditMode
 
 
 translateTitleMap = {
-    EditMode.AddNew: "Добавление словаря",
-    EditMode.Edit: "Редактирование словаря"
+    EditMode.AddNew: u"Добавление словаря",
+    EditMode.Edit: u"Редактирование словаря"
 }
 
 iconTitleMap = {
@@ -47,7 +47,7 @@ class DictEditWindow(QtGui.QDialog):
                 QtGui.QMessageBox.critical(None, u"Ошибка", u"Во время редактирования словаря {} произошла ошибка".format(dictName))
 
     def initUI(self):
-        self.setWindowTitle(qtRus(translateTitleMap[self.mode]))
+        self.setWindowTitle(translateTitleMap[self.mode])
         if self.mode == EditMode.Edit:
             self.ui.leDictName.setText(self.dictModel.currentDictName)
 

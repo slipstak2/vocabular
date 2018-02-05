@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import functools
 from PySide import QtGui, QtSql
