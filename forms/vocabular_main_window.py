@@ -9,8 +9,10 @@ from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, EditMode
 from models.dict_model import DictionaryModel
-from models.word_dict_model.word_eng_dict_model import WordEngDictModel, PlayButtonWordEngDictDelegate, EditButtonWordEngDictDelegate
-from utils import onBtnEnter, onBtnLeave
+from models.word_dict_model.word_dict_model import WordDictModel
+from models.word_dict_model.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
+from forms_utils import onBtnEnter, onBtnLeave
+from utils import Lang
 from version import version
 
 
@@ -26,7 +28,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Vocabular v.{}".format(version))
 
         self.dictModel = DictionaryModel()
-        self.wordEngDictModel = WordEngDictModel(self.dictModel)
+        self.wordEngDictModel = WordDictModel(self.dictModel, Lang.Eng, Lang.Rus)
         self.dictModel.childModels.append(self.wordEngDictModel)
         self.initUI()
 
@@ -99,8 +101,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.ui.tvEngWords.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ui.tvEngWords.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 
-        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.playFieldNum, PlayButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
-        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.editFieldNum, EditButtonWordEngDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.playFieldNum, PlayButtonWordDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.editFieldNum, EditButtonWordDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
 
         self.wordEngDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
         self.wordEngDictModel.onRefresh()

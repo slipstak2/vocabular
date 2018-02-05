@@ -4,21 +4,23 @@ from PySide import QtSql, QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
 from forms.word_eng_edit_window import WordEngEditWindow
-from forms.utils import EditMode, Lang
+from forms.forms_utils import EditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel
 from models.base.utils import need_refresh
 from models.delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
 from models import utils as models_utils
+from utils import Lang
 
 
 class WordDictModel(BaseSqlQueryModel):
-
     @need_refresh
-    def __init__(self, dictModel, langMode, *args, **kwargs):
+    def __init__(self, dictModel, srcLang, dstLang, *args, **kwargs):
         super(WordDictModel, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
-        self.langMode = langMode
-        if langMode == Lang.Eng:
+        self.srcLang = srcLang
+        self.dstLang = dstLang
+        if srcLang == Lang.Eng:
+            assert dstLang == Lang.Rus, "Currently supported only eng-rus translation"
             self.SRC_LANG_FULL  = 'eng'
             self.SRC_LANG_SHORT = 'e'
             self.DST_LANG_FULL  = 'rus'
@@ -26,6 +28,7 @@ class WordDictModel(BaseSqlQueryModel):
             self.headerFields = ['',          '',      'eng',      u'рус',     '',     '']
             self.fields =       ['d_id', 'we_id', 'we_value',  'we_value', 'play', 'edit']
         else:
+            assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
             self.SRC_LANG_FULL  = 'rus'
             self.SRC_LANG_SHORT = 'r'
             self.DST_LANG_FULL  = 'eng'
@@ -86,3 +89,35 @@ class WordDictModel(BaseSqlQueryModel):
     def columnCount(self, *args, **kwargs):
         return len(self.fields)
 
+
+class PlayButtonWordDictDelegate(PlayButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        PlayButtonDelegate.__init__(self, parentWindow, parent, model)
+
+    @pyqtSlot()
+    def onBtnClicked(self, recordIndex):
+        print u"play '{}'".format(self.model.wordValue(recordIndex))
+        self.commitData.emit(self.sender())
+
+
+class EditButtonWordDictDelegate(EditButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        EditButtonDelegate.__init__(self, parentWindow, parent, model)
+
+    @pyqtSlot()
+    def onBtnClicked(self, recordIndex):
+        print u"edit '{}'".format(self.model.wordValue(recordIndex))
+        self.commitData.emit(self.sender())
+
+        #TODO: появление окошек лесенкой, чтобы можно проследить историю глубины
+        wordDialog = WordEngEditWindow(
+            self.model.dictId(recordIndex),
+            self.model.wordId(recordIndex),
+            self.model.wordValue(recordIndex),
+            Lang.Eng,
+            EditMode.Edit
+        )
+        models_utils.setStartGeometry(self.parentWindow, wordDialog)
+
+        wordDialog.exec_()
+        self.model.refresh()

@@ -1,6 +1,6 @@
 from PySide import QtSql, QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from forms.utils import onBtnLeave, onBtnEnter
+from forms.forms_utils import onBtnLeave, onBtnEnter
 
 import sip
 sip.setapi('QString', 2)

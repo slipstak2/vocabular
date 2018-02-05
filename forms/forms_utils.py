@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from enum import Enum, IntEnum
+from enum import Enum
 
 from PySide import QtGui
 try:
@@ -21,12 +21,6 @@ class EditMode(Enum):
     Edit = 2
     AddTranslate = 3
 
-
-
-class Lang(IntEnum):
-    Rus = 0
-    Eng = 1
-    Unknown = 2
 
 
 def onBtnEnter(btn, event, **kwargs):

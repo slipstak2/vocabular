@@ -4,13 +4,14 @@ from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
 from models.word_eng_model import WordEngModel
-from utils import qtRus, EditMode, Lang
+from forms_utils import qtRus, EditMode
 from models.word_eng_model import EditButtonWordEngTranslateDelegate, \
     PlayButtonWordEngTranslateDelegate, \
     RemoveButtonWordEngTranslateDelegate
 
 from forms.word_rus_edit_window import WordRusEditWindow
 from models import utils as models_utils
+from utils import Lang
 
 translateTitleMap = {
     EditMode.AddNew: "Добавление слова",
