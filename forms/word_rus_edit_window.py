@@ -81,9 +81,9 @@ class WordRusEditWindow(QtGui.QDialog):
 
     def _onTvTranslateDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordRusModel.rowCount()):
-            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, WordRusModel.playFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, WordRusModel.editFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, WordRusModel.removeFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, self.wordRusModel.playFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, self.wordRusModel.editFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordRusModel.index(row, self.wordRusModel.removeFieldNum))
 
         self.ui.tvTranslate.resizeColumnsToContents()
 
@@ -98,9 +98,9 @@ class WordRusEditWindow(QtGui.QDialog):
         selectionModel = self.ui.tvTranslate.selectionModel()
         selectionModel.selectionChanged.connect(self._onTranslateChanged)
 
-        self.ui.tvTranslate.setItemDelegateForColumn(WordRusModel.playFieldNum, PlayButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(WordRusModel.editFieldNum, EditButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(WordRusModel.removeFieldNum, RemoveButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordRusModel.playFieldNum, PlayButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordRusModel.editFieldNum, EditButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordRusModel.removeFieldNum, RemoveButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordRusModel))
 
         self.wordRusModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
         self.wordRusModel.onRefresh()
