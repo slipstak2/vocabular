@@ -5,21 +5,20 @@ from PySide.QtCore import Slot as pyqtSlot
 from models.base.utils import need_refresh
 from models.base.base_sql_query_model import BaseSqlQueryModel
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
+from models.word_model import WordModel
+from utils import Lang
 
 
 #TODO: объединить word_eng_model and word_rus_model
-class WordRusModel(BaseSqlQueryModel):
+class WordRusModel(WordModel):
     headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
     fields =       ['we_id', 'we_value', 're_eng_order',  'we_meaning', 'play', 'edit', 'remove']
     playFieldNum = fields.index('play')
     editFieldNum = fields.index('edit')
     removeFieldNum = fields.index('remove')
 
-    @need_refresh
-    def __init__(self, wordRusId, wordRusValue, *args, **kwargs):
-        super(WordRusModel, self).__init__(*args, **kwargs)
-        self.wordRusId = wordRusId
-        self.wordRusValue = wordRusValue
+    def __init__(self, wordId, wordValue):
+        super(WordRusModel, self).__init__(wordId, wordValue, Lang.Rus, Lang.Eng)
 
     def wordEngTranslate(self, recordIndex):
         return self.record(recordIndex).value('wr_value')
@@ -35,7 +34,7 @@ class WordRusModel(BaseSqlQueryModel):
 
         WHERE wr.id = {wrId}
         ORDER BY re.eng_order ASC
-        '''.format(wrId=self.wordRusId)) #TODO: bindValue
+        '''.format(wrId=self.wordId)) #TODO: bindValue
 
         for idx, field in enumerate(WordRusModel.headerFields):
             self.setHeaderData(idx, QtCore.Qt.Horizontal, field)
@@ -68,8 +67,8 @@ class WordRusModel(BaseSqlQueryModel):
         query.bindValue(u":we_id2", self.record(row2).value('we_id'))
         query.bindValue(u":eo1", self.record(row2).value('re_eng_order'))
         query.bindValue(u":eo2", self.record(row1).value('re_eng_order'))
-        query.bindValue(u":wr_id1", self.wordRusId)
-        query.bindValue(u":wr_id2", self.wordRusId)
+        query.bindValue(u":wr_id1", self.wordId)
+        query.bindValue(u":wr_id2", self.wordId)
 
         try:
             query.exec_()

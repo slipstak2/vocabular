@@ -61,7 +61,7 @@ class WordEngEditWindow(QtGui.QDialog):
     def _onAddTranslate(self, *args, **kwargs):
         rusWordId = self.wordEngModel.addEmptyTranslate()
         if rusWordId: # TODO:нужны ли такие проверки? или падать сразу внутри метода?
-            addTranslateDialog = WordRusEditWindow(dictId=-1, wordRusId=rusWordId, wordRusValue='', lang=Lang.Rus, mode=EditMode.AddTranslate)
+            addTranslateDialog = WordRusEditWindow(dictId=-1, wordId=rusWordId, wordValue='', lang=Lang.Rus, mode=EditMode.AddTranslate)
             models_utils.setStartGeometry(self, addTranslateDialog)
             addTranslateDialog.exec_()
             if addTranslateDialog.result() != 1:

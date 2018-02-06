@@ -24,13 +24,13 @@ iconTitleMap = {
 
 #TODO: Объединить word_eng_edit_window and word_rus_edit_window
 class WordRusEditWindow(QtGui.QDialog):
-    def __init__(self, dictId, wordRusId, wordRusValue, lang, mode, *args, **kwargs):
+    def __init__(self, dictId, wordId, wordValue, lang, mode, *args, **kwargs):
         super(WordRusEditWindow, self).__init__(*args, **kwargs)
 
         self.dictId = dictId
         self.mode = mode
 
-        self.wordRusModel = WordRusModel(wordRusId, wordRusValue)
+        self.wordRusModel = WordRusModel(wordId, wordValue)
         self.lang = lang
 
         self.ui = Ui_WordAddEdit()
@@ -71,7 +71,7 @@ class WordRusEditWindow(QtGui.QDialog):
         self.setWindowTitle(translateTitleMap[self.mode])
         self.ui.cbLang.setCurrentIndex(self.lang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
-        self.ui.leWord.setText(self.wordRusModel.wordRusValue)
+        self.ui.leWord.setText(self.wordRusModel.wordValue)
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.btnSave.clicked.connect(self._onOK)
         self.ui.actDownOrder.triggered.connect(self._onDownOrder)

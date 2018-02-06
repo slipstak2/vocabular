@@ -5,20 +5,20 @@ from PySide.QtCore import Slot as pyqtSlot
 from models.base.utils import need_refresh
 from models.base.base_sql_query_model import BaseSqlQueryModel
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
+from models.word_model import WordModel
+from utils import Lang
 
 
-class WordEngModel(BaseSqlQueryModel):
+class WordEngModel(WordModel):
     headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
     fields =       ['wr_id', 'wr_value', 're_rus_order',  'wr_meaning', 'play', 'edit', 'remove']
     playFieldNum = fields.index('play')
     editFieldNum = fields.index('edit')
     removeFieldNum = fields.index('remove')
 
-    @need_refresh
-    def __init__(self, wordId, wordValue, *args, **kwargs):
-        super(WordEngModel, self).__init__(*args, **kwargs)
-        self.wordId = wordId
-        self.wordValue = wordValue
+    def __init__(self, wordId, wordValue):
+        super(WordEngModel, self).__init__(wordId, wordValue, Lang.Eng, Lang.Rus)
+
 
     def wordEngTranslate(self, recordIndex):
         return self.record(recordIndex).value('wr_value')

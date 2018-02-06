@@ -112,7 +112,6 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        #TODO: появление окошек лесенкой, чтобы можно проследить историю глубины
         wordDialog = WordEngEditWindow(
             self.model.dictId(recordIndex),
             self.model.wordId(recordIndex),
