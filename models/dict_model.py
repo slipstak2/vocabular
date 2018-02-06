@@ -51,23 +51,13 @@ class DictionaryModel(BaseSqlQueryModel):
     @need_refresh
     def addDict(self, dictName):
         query = QtSql.QSqlQuery()
-
         query.prepare(
             u'INSERT INTO {tableName} (name) VALUES (:name)'.format(
                 tableName=DictionaryModel.tableName
             ))
         query.bindValue(u":name", dictName)
 
-        try:
-            query.exec_()
-            self.db.commit()
-            import sys
-            print u'Добавлен новый словарь: {}'.format(dictName)
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
 
     @need_refresh
     def editDict(self, dictId, dictName):
@@ -79,35 +69,14 @@ class DictionaryModel(BaseSqlQueryModel):
         )
         query.bindValue(u":id", dictId)
         query.bindValue(u":name", dictName)
-        try:
-            query.exec_()
-            self.db.commit()
-            print u'Отредактирован словарь: {}'.format(dictName)
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
 
     @need_refresh
     def removeDict(self):
-        print u"TODO: Удаление только пустого словаря!"
-
         query = QtSql.QSqlQuery()
         query.prepare(u'DELETE from {tableName} WHERE id=:id'.format(
             tableName=DictionaryModel.tableName
         ))
         query.bindValue(u':id', self.currentDictId)
 
-        try:
-            query.exec_()
-            self.db.commit()
-            print u'Удаление словаря: name={}; id={}'.format(
-                self.currentDictName,
-                self.currentDictId
-            )
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
