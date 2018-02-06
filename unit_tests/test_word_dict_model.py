@@ -20,6 +20,9 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(2, wordEngModel.rowCount())
 
         self.assertEqual('exicting', wordEngModel.wordValue(0))
-        self.assertEqual('retrieval system', wordEngModel.wordValue(1))
+        self.assertEqual(u'захватывающий', wordEngModel.translateValue(0))
 
-        #self.assertEqual('захватывающий', wordEngModel.record(0).value('wr_value'))
+        self.assertEqual('retrieval system', wordEngModel.wordValue(1))
+        self.assertEqual(u'поисковая система', wordEngModel.translateValue(1))
+
+

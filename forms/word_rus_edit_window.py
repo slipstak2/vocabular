@@ -4,16 +4,16 @@ from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
 from models.word_rus_model import WordRusModel
-from forms_utils import qtRus, EditMode
+from forms_utils import EditMode
 from models.word_eng_model import EditButtonWordEngTranslateDelegate, \
     PlayButtonWordEngTranslateDelegate, \
     RemoveButtonWordEngTranslateDelegate
 #from utils import Lang
 
 translateTitleMap = {
-    EditMode.AddNew: "Добавление слова",
-    EditMode.Edit: "Редактирование слова",
-    EditMode.AddTranslate: "Добавление перевода",
+    EditMode.AddNew: u'Добавление слова',
+    EditMode.Edit: u'Редактирование слова',
+    EditMode.AddTranslate: u'Добавление перевода',
 }
 
 iconTitleMap = {
@@ -68,7 +68,7 @@ class WordRusEditWindow(QtGui.QDialog):
         self.ui.tvTranslate.selectRow(currentRow - 1)
 
     def initHandlers(self):
-        self.setWindowTitle(qtRus(translateTitleMap[self.mode]))
+        self.setWindowTitle(translateTitleMap[self.mode])
         self.ui.cbLang.setCurrentIndex(self.lang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
         self.ui.leWord.setText(self.wordRusModel.wordRusValue)

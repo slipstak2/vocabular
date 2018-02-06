@@ -3,7 +3,7 @@
 from PySide import QtGui
 
 from ui.dict_edit_ui import Ui_DictAddEdit
-from forms_utils import qtRus, EditMode
+from forms_utils import EditMode
 
 
 translateTitleMap = {

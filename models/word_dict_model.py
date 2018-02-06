@@ -40,6 +40,9 @@ class WordDictModel(BaseSqlQueryModel):
     def wordValue(self, recordIndex):
         return self.record(recordIndex).value('w{e}_value'.format(e=self.SRC_LANG_SHORT))
 
+    def translateValue(self, recordIndex):
+        return self.record(recordIndex).value('w{r}_value'.format(r=self.DST_LANG_SHORT))
+
     def dictId(self, recordIndex):
         return self.record(recordIndex).value('d_id')
 

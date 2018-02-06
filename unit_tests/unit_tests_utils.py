@@ -17,5 +17,6 @@ def iterSqlQuery(filePath):
 def applySQLcommands(filePath):
     query = QtSql.QSqlQuery()
     for command in iterSqlQuery(filePath):
+        command = command.decode('utf-8')
         assert query.exec_(command), query.lastError()
     getDb().commit()
