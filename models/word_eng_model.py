@@ -33,33 +33,14 @@ class WordEngModel(WordModel):
         query.bindValue(u":we_id1", self.wordId)
         query.bindValue(u":we_id2", self.wordId)
 
-        try:
-            query.exec_()
-            self.db.commit()
-            r = query.result()
-            print u'change order: OK'
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
 
     @need_refresh
     def addEmptyTranslate(self):
-        #TODO: оформить все запросы - с меньшим количество кода через враппер
         def addEmptyWord():
             query = QtSql.QSqlQuery()
             query.prepare('INSERT INTO word_rus (id) VALUES (NULL)')
-            try:
-                query.exec_()
-                self.db.commit()
-                id = query.lastInsertId()
-                print u'insert empty word: id = {id}'.format(id=id)
-                return id
-            except BaseException as ex:
-                print ex
-                self.db.rollback()
-                return False
+            return self.executeQuery(query, True)
 
         def addTranslateLink(id):
             query = QtSql.QSqlQuery()
@@ -75,15 +56,7 @@ class WordEngModel(WordModel):
             query.bindValue(':ro', self.rowCount() + 1)
             query.bindValue(':eo', 1)
 
-            try:
-                res = query.exec_() #TODO: check return value
-                self.db.commit()
-                print u'insert translate link'
-                return True
-            except BaseException as ex:
-                print ex
-                self.db.rollback()
-                return False
+            return self.executeQuery(query)
 
         id = addEmptyWord()
         if id:
@@ -110,16 +83,7 @@ class WordEngModel(WordModel):
         query.prepare('DELETE FROM word_rus WHERE id = :id')
 
         query.bindValue(u":id", rusWordId)
-        try:
-            query.exec_()
-            self.db.commit()
-            r = query.result()
-            print u'remove translate: OK'
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
 
 
     @need_refresh

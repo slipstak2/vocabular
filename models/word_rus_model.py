@@ -34,16 +34,7 @@ class WordRusModel(WordModel):
         query.bindValue(u":wr_id1", self.wordId)
         query.bindValue(u":wr_id2", self.wordId)
 
-        try:
-            query.exec_()
-            self.db.commit()
-            r = query.result()
-            print u'change order: OK'
-            return True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False
+        return self.executeQuery(query)
 
     @need_refresh
     def downOrder(self, row):

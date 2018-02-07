@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide import QtSql
+from pika.adapters.blocking_connection import _ReturnedMessageEvt
 
 from db import getDb
 
@@ -18,11 +19,11 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
     def refresh(self):
         raise NotImplementedError("pure virtual method 'refresh' must be implemented")
 
-    def executeQuery(self, query):
+    def executeQuery(self, query, returnLastInsertId=False):
         try:
             assert query.exec_(), query.lastError()
             self.db.commit()
-            return True
+            return query.lastInsertId() if returnLastInsertId else True
         except BaseException as ex:
             print ex
             self.db.rollback()

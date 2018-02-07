@@ -10,8 +10,6 @@ class DictionaryModel(BaseSqlQueryModel):
     fields = ['name', 'date_create', 'id']
     viewField = 'name'
 
-    tableName = 'dictionary'
-
     @need_refresh
     def __init__(self, currentDictIndex=0, *args, **kwargs):
         super(DictionaryModel, self).__init__(*args, **kwargs)
@@ -43,18 +41,14 @@ class DictionaryModel(BaseSqlQueryModel):
         return DictionaryModel.fields.index(fieldName)
 
     def refresh(self):
-        self.setQuery("SELECT {fields} FROM {tableName} ORDER BY date_create".format(
-            fields=', '.join(DictionaryModel.fields),
-            tableName=DictionaryModel.tableName
+        self.setQuery("SELECT {fields} FROM dictionary ORDER BY date_create".format(
+            fields=', '.join(DictionaryModel.fields)
         ))
 
     @need_refresh
     def addDict(self, dictName):
         query = QtSql.QSqlQuery()
-        query.prepare(
-            u'INSERT INTO {tableName} (name) VALUES (:name)'.format(
-                tableName=DictionaryModel.tableName
-            ))
+        query.prepare(u'INSERT INTO dictionary (name) VALUES (:name)')
         query.bindValue(u":name", dictName)
 
         return self.executeQuery(query)
@@ -62,11 +56,7 @@ class DictionaryModel(BaseSqlQueryModel):
     @need_refresh
     def editDict(self, dictId, dictName):
         query = QtSql.QSqlQuery()
-        query.prepare(
-            u'UPDATE {tableName} SET name=:name WHERE id=:id'.format(
-                tableName=DictionaryModel.tableName
-            )
-        )
+        query.prepare(u'UPDATE dictionary SET name=:name WHERE id=:id')
         query.bindValue(u":id", dictId)
         query.bindValue(u":name", dictName)
         return self.executeQuery(query)
@@ -74,9 +64,7 @@ class DictionaryModel(BaseSqlQueryModel):
     @need_refresh
     def removeDict(self):
         query = QtSql.QSqlQuery()
-        query.prepare(u'DELETE from {tableName} WHERE id=:id'.format(
-            tableName=DictionaryModel.tableName
-        ))
+        query.prepare(u'DELETE from dictionary WHERE id=:id')
         query.bindValue(u':id', self.currentDictId)
 
         return self.executeQuery(query)
