@@ -13,28 +13,6 @@ class WordEngModel(WordModel):
     def __init__(self, wordId, wordValue):
         super(WordEngModel, self).__init__(wordId, wordValue, Lang.Eng, Lang.Rus)
 
-    def changeOrder(self, row1, row2):
-        query = QtSql.QSqlQuery()
-        query.prepare(
-            '''
-            INSERT INTO
-              rus_eng
-              (word_rus_id, word_eng_id, rus_order)
-            VALUES
-              (:wr_id1, :we_id1, :ro1),(:wr_id2, :we_id2, :ro2)
-            ON DUPLICATE KEY UPDATE rus_order=VALUES(rus_order)
-            '''
-        )
-
-        query.bindValue(u":wr_id1", self.record(row1).value('wr_id'))
-        query.bindValue(u":wr_id2", self.record(row2).value('wr_id'))
-        query.bindValue(u":ro1", self.record(row2).value('re_rus_order'))
-        query.bindValue(u":ro2", self.record(row1).value('re_rus_order'))
-        query.bindValue(u":we_id1", self.wordId)
-        query.bindValue(u":we_id2", self.wordId)
-
-        return self.executeQuery(query)
-
     @need_refresh
     def addEmptyTranslate(self):
         def addEmptyWord():
@@ -84,18 +62,6 @@ class WordEngModel(WordModel):
 
         query.bindValue(u":id", rusWordId)
         return self.executeQuery(query)
-
-
-    @need_refresh
-    def downOrder(self, row):
-        self.changeOrder(row, row + 1)
-
-    @need_refresh
-    def upOrder(self, row):
-        self.changeOrder(row, row - 1)
-
-    def columnCount(self, *args, **kwargs):
-        return len(self.fields)
 
 
 class PlayButtonWordEngTranslateDelegate(PlayButtonDelegate):

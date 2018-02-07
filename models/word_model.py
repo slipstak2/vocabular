@@ -44,6 +44,9 @@ class WordModel(BaseSqlQueryModel):
     def wordTranslateId(self, recordIndex):
         return self.record(recordIndex).value('w{r}_id'.format(r=self.DST_LANG_SHORT))
 
+    def wordTranslateOrder(self, recordIndex):
+        return self.record(recordIndex).value('re_{rus}_order'.format(rus=self.DST_LANG_FULL))
+
     def refresh(self):
         query = '''
         SELECT
@@ -71,9 +74,48 @@ class WordModel(BaseSqlQueryModel):
 
         self.onRefresh()
 
+    def changeOrder(self, row1, row2):
+        query = QtSql.QSqlQuery()
+        query.prepare(
+            '''
+            INSERT INTO
+              rus_eng
+              (word_{rus}_id, word_{eng}_id, {rus}_order)
+            VALUES
+              (:w{r}_id1, :w{e}_id1, :{r}o1),(:w{r}_id2, :w{e}_id2, :{r}o2)
+            ON DUPLICATE KEY UPDATE {rus}_order=VALUES({rus}_order)
+            '''.format(
+                r=self.DST_LANG_SHORT,
+                rus=self.DST_LANG_FULL,
+                e=self.SRC_LANG_SHORT,
+                eng=self.SRC_LANG_FULL
+            )
+        )
+
+        query.bindValue(":w{r}_id1".format(r=self.DST_LANG_SHORT), self.wordTranslateId(row1))
+        query.bindValue(":w{r}_id2".format(r=self.DST_LANG_SHORT), self.wordTranslateId(row2))
+        query.bindValue(":{r}o1".format(r=self.DST_LANG_SHORT), self.wordTranslateOrder(row2))
+        query.bindValue(":{r}o2".format(r=self.DST_LANG_SHORT), self.wordTranslateOrder(row1))
+        query.bindValue(":w{e}_id1".format(e=self.SRC_LANG_SHORT), self.wordId)
+        query.bindValue(":w{e}_id2".format(e=self.SRC_LANG_SHORT), self.wordId)
+
+        return self.executeQuery(query)
+
+
     def data(self, index, role):
         value = super(WordModel, self).data(index, role)
         if role == QtCore.Qt.DisplayRole:
             if index.column() in [self.playFieldNum, self.editFieldNum, self.removeFieldNum]:
                 return ''
         return value
+
+    @need_refresh
+    def downOrder(self, row):
+        self.changeOrder(row, row + 1)
+
+    @need_refresh
+    def upOrder(self, row):
+        self.changeOrder(row, row - 1)
+
+    def columnCount(self, *args, **kwargs):
+        return len(self.fields)

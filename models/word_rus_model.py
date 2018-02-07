@@ -36,17 +36,6 @@ class WordRusModel(WordModel):
 
         return self.executeQuery(query)
 
-    @need_refresh
-    def downOrder(self, row):
-        self.changeOrder(row, row + 1)
-
-    @need_refresh
-    def upOrder(self, row):
-        self.changeOrder(row, row - 1)
-
-    def columnCount(self, *args, **kwargs):
-        return len(self.fields)
-
 
 class PlayButtonWordRusTranslateDelegate(PlayButtonDelegate):
     def __init__(self, parent, model):
