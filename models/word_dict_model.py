@@ -119,7 +119,8 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
             self.model.dictId(recordIndex),
             self.model.wordId(recordIndex),
             self.model.wordValue(recordIndex),
-            Lang.Eng,
+            self.model.srcLang,
+            self.model.dstLang,
             EditMode.Edit
         )
         models_utils.setStartGeometry(self.parentWindow, wordDialog)

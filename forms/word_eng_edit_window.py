@@ -11,6 +11,7 @@ from models.word_model import PlayButtonWordTranslateDelegate, EditButtonWordTra
 from forms.word_rus_edit_window import WordRusEditWindow
 from models import models_utils as models_utils
 from utils import Lang
+from forms.word_edit_window import WordEditWindow
 
 translateTitleMap = {
     EditMode.AddNew: u'Добавление слова',
@@ -26,28 +27,14 @@ iconTitleMap = {
 
 #TODO: иконки на окне: откуда был совершен переход: Добавление слова, Редактирование слова, Добавление перевода
 
-class WordEngEditWindow(QtGui.QDialog):
-    def __init__(self, dictId, wordId, wordValue, lang, mode, *args, **kwargs):
-        super(WordEngEditWindow, self).__init__(*args, **kwargs)
-
-        self.dictId = dictId
-        self.mode = mode
-
-        self.wordEngModel = WordModel(wordId, wordValue, Lang.Eng, Lang.Rus)
-        self.lang = lang
-
-        self.ui = Ui_WordAddEdit()
-        self.ui.setupUi(self)
-        self.initUI()
-        self.setWindowIcon(iconTitleMap[mode])
-
+class WordEngEditWindow(WordEditWindow):
     def _onWordChanged(self, word, *args, **kwargs):
         #  TODO: валидация введенных символов
         pass
 
     def _onTranslateChanged(self, selected, deselected):
         row = self.ui.tvTranslate.currentIndex().row()
-        self.ui.actDownOrder.setEnabled(row != self.wordEngModel.rowCount() - 1)
+        self.ui.actDownOrder.setEnabled(row != self.wordModel.rowCount() - 1)
         self.ui.actUpOrder.setEnabled(row != 0)
 
     def initUI(self):
@@ -58,29 +45,29 @@ class WordEngEditWindow(QtGui.QDialog):
         self.close()
 
     def _onAddTranslate(self, *args, **kwargs):
-        rusWordId = self.wordEngModel.addEmptyTranslate()
+        rusWordId = self.wordModel.addEmptyTranslate()
         if rusWordId: # TODO:нужны ли такие проверки? или падать сразу внутри метода?
-            addTranslateDialog = WordRusEditWindow(dictId=-1, wordId=rusWordId, wordValue='', lang=Lang.Rus, mode=EditMode.AddTranslate)
+            addTranslateDialog = WordRusEditWindow(dictId=-1, wordId=rusWordId, wordValue='', srcLang=Lang.Rus, dstLang=Lang.Eng, mode=EditMode.AddTranslate)
             models_utils.setStartGeometry(self, addTranslateDialog)
             addTranslateDialog.exec_()
             if addTranslateDialog.result() != 1:
-                self.wordEngModel.removeTranslate(rusWordId, silent=True)
+                self.wordModel.removeTranslate(rusWordId, silent=True)
 
     def _onDownOrder(self, *args, **kwargs):
         currentRow = self.ui.tvTranslate.currentIndex().row()
-        self.wordEngModel.downOrder(currentRow)
+        self.wordModel.downOrder(currentRow)
         self.ui.tvTranslate.selectRow(currentRow + 1)
 
     def _onUpOrder(self, *args, **kwargs):
         currentRow = self.ui.tvTranslate.currentIndex().row()
-        self.wordEngModel.upOrder(currentRow)
+        self.wordModel.upOrder(currentRow)
         self.ui.tvTranslate.selectRow(currentRow - 1)
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
-        self.ui.cbLang.setCurrentIndex(self.lang.value)
+        self.ui.cbLang.setCurrentIndex(self.srcLang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
-        self.ui.leWord.setText(self.wordEngModel.wordValue)
+        self.ui.leWord.setText(self.wordModel.wordValue)
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.actDownOrder.triggered.connect(self._onDownOrder)
         self.ui.actUpOrder.triggered.connect(self._onUpOrder)
@@ -88,16 +75,16 @@ class WordEngEditWindow(QtGui.QDialog):
         self.ui.actAddTranslate.triggered.connect(self._onAddTranslate)
 
     def _onTvTranslateDataChanged(self, *args, **kwargs):
-        for row in range(0, self.wordEngModel.rowCount()):
-            self.ui.tvTranslate.openPersistentEditor(self.wordEngModel.index(row, self.wordEngModel.playFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordEngModel.index(row, self.wordEngModel.editFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordEngModel.index(row, self.wordEngModel.removeFieldNum))
+        for row in range(0, self.wordModel.rowCount()):
+            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.playFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.editFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.removeFieldNum))
 
         self.ui.tvTranslate.resizeColumnsToContents()
 
 
     def initModels(self):
-        self.ui.tvTranslate.setModel(self.wordEngModel)
+        self.ui.tvTranslate.setModel(self.wordModel)
         self.ui.tvTranslate.hideColumn(0)  # TODO: именной индекс
         self.ui.tvTranslate.hideColumn(2)  # TODO: именной индекс
         self.ui.tvTranslate.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
@@ -106,9 +93,9 @@ class WordEngEditWindow(QtGui.QDialog):
         selectionModel = self.ui.tvTranslate.selectionModel()
         selectionModel.selectionChanged.connect(self._onTranslateChanged)
 
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.playFieldNum, PlayButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.editFieldNum, EditButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.removeFieldNum, RemoveButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.playFieldNum, PlayButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.editFieldNum, EditButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.removeFieldNum, RemoveButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
 
-        self.wordEngModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
-        self.wordEngModel.onRefresh()
+        self.wordModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
+        self.wordModel.onRefresh()
