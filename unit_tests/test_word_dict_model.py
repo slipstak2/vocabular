@@ -14,15 +14,25 @@ class TestDict(TestDBBaseClass):
     def tearDown(self):
         pass
 
-    def testDefaultWords(self):
+    def testEngWords(self):
         dictModel = DictionaryModel(currentDictIndex=0)
-        wordEngModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
-        self.assertEqual(2, wordEngModel.rowCount())
+        wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
+        self.assertEqual(2, wordEngDictModel.rowCount())
 
-        self.assertEqual('exicting', wordEngModel.wordValue(0))
-        self.assertEqual(u'захватывающий', wordEngModel.translateValue(0))
+        self.assertEqual('exicting', wordEngDictModel.wordValue(0))
+        self.assertEqual(u'захватывающий', wordEngDictModel.translateValue(0))
 
-        self.assertEqual('retrieval system', wordEngModel.wordValue(1))
-        self.assertEqual(u'поисковая система', wordEngModel.translateValue(1))
+        self.assertEqual('retrieval system', wordEngDictModel.wordValue(1))
+        self.assertEqual(u'поисковая система', wordEngDictModel.translateValue(1))
+
+        #TODO: добавить новое слово
+        #TODO: удалить новое слово
+
+    def testRusWords(self):
+        dictModel = DictionaryModel()
+        wordRusDictModel = WordDictModel(dictModel, Lang.Rus, Lang.Eng)
+        self.assertEqual(0, wordRusDictModel.rowCount())
+        #TODO: добавить новое слово
+        #TODO: удалить это слово
 
 

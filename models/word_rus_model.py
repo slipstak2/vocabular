@@ -14,28 +14,6 @@ class WordRusModel(WordModel):
     def __init__(self, wordId, wordValue):
         super(WordRusModel, self).__init__(wordId, wordValue, Lang.Rus, Lang.Eng)
 
-    def changeOrder(self, row1, row2):
-        query = QtSql.QSqlQuery()
-        query.prepare(
-            '''
-            INSERT INTO
-              rus_eng
-              (word_eng_id, word_rus_id, eng_order)
-            VALUES
-              (:we_id1, :wr_id1, :eo1),(:we_id2, :wr_id2, :eo2)
-            ON DUPLICATE KEY UPDATE rus_order=VALUES(rus_order)
-            '''
-        )
-
-        query.bindValue(u":we_id1", self.record(row1).value('we_id'))
-        query.bindValue(u":we_id2", self.record(row2).value('we_id'))
-        query.bindValue(u":eo1", self.record(row2).value('re_eng_order'))
-        query.bindValue(u":eo2", self.record(row1).value('re_eng_order'))
-        query.bindValue(u":wr_id1", self.wordId)
-        query.bindValue(u":wr_id2", self.wordId)
-
-        return self.executeQuery(query)
-
 
 class PlayButtonWordRusTranslateDelegate(PlayButtonDelegate):
     def __init__(self, parent, model):

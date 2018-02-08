@@ -101,6 +101,34 @@ class WordModel(BaseSqlQueryModel):
 
         return self.executeQuery(query)
 
+    @need_refresh
+    def addEmptyTranslate(self):
+        def addEmptyWord():
+            query = QtSql.QSqlQuery()
+            query.prepare('INSERT INTO word_rus (id) VALUES (NULL)')
+            return self.executeQuery(query, True)
+
+        def addTranslateLink(id):
+            query = QtSql.QSqlQuery()
+            query.prepare('''
+              INSERT INTO
+                rus_eng
+              (word_rus_id, word_eng_id, rus_order, eng_order)
+              VALUES
+                (:wr_id, :we_id, :ro, :eo)
+            ''')
+            query.bindValue(':wr_id', id)
+            query.bindValue(':we_id', self.wordId)
+            query.bindValue(':ro', self.rowCount() + 1)
+            query.bindValue(':eo', 1)
+
+            return self.executeQuery(query)
+
+        id = addEmptyWord()
+        if id:
+            if addTranslateLink(id):
+                return id
+        return False
 
     def data(self, index, role):
         value = super(WordModel, self).data(index, role)

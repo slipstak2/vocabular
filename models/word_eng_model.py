@@ -13,36 +13,9 @@ class WordEngModel(WordModel):
     def __init__(self, wordId, wordValue):
         super(WordEngModel, self).__init__(wordId, wordValue, Lang.Eng, Lang.Rus)
 
-    @need_refresh
-    def addEmptyTranslate(self):
-        def addEmptyWord():
-            query = QtSql.QSqlQuery()
-            query.prepare('INSERT INTO word_rus (id) VALUES (NULL)')
-            return self.executeQuery(query, True)
-
-        def addTranslateLink(id):
-            query = QtSql.QSqlQuery()
-            query.prepare('''
-              INSERT INTO
-                rus_eng
-              (word_rus_id, word_eng_id, rus_order, eng_order)
-              VALUES
-                (:wr_id, :we_id, :ro, :eo)
-            ''')
-            query.bindValue(':wr_id', id)
-            query.bindValue(':we_id', self.wordId)
-            query.bindValue(':ro', self.rowCount() + 1)
-            query.bindValue(':eo', 1)
-
-            return self.executeQuery(query)
-
-        id = addEmptyWord()
-        if id:
-            if addTranslateLink(id):
-                return id
 
     @need_refresh
-    def removeTranslate(self, rusWordId, silent=False):
+    def removeTranslate(self, translateWordId, silent=False):
         if silent == False:
             msgBox = QtGui.QMessageBox()
             msgBox.setIcon(QtGui.QMessageBox.Question)
@@ -51,7 +24,7 @@ class WordEngModel(WordModel):
             #   TODO:       1) str value
             #   TODO:       2) количество переводов, в которых он задействован
             #   TODO:       3) количество словарей, в которых он задействован
-            msgBox.setText(u"Вы действительно хотите удалить перевод: id = {id}".format(id=rusWordId))
+            msgBox.setText(u"Вы действительно хотите удалить перевод: id = {id}".format(id=translateWordId))
             msgBox.setWindowTitle(u"Удаление перевода")
             msgBox.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
             if msgBox.exec_() != QtGui.QMessageBox.Ok:
@@ -60,7 +33,7 @@ class WordEngModel(WordModel):
         query = QtSql.QSqlQuery()
         query.prepare('DELETE FROM word_rus WHERE id = :id')
 
-        query.bindValue(u":id", rusWordId)
+        query.bindValue(u":id", translateWordId)
         return self.executeQuery(query)
 
 

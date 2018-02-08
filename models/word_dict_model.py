@@ -25,13 +25,16 @@ class WordDictModel(BaseSqlQueryModel):
             self.DST_LANG_FULL  = 'rus'
             self.DST_LANG_SHORT = 'r'
             self.headerFields = ['',          '',      'eng',      u'рус',     '',     '']
-            self.fields =       ['d_id', 'we_id', 'we_value',  'we_value', 'play', 'edit']
+            self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit']
         else:
             assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
             self.SRC_LANG_FULL  = 'rus'
             self.SRC_LANG_SHORT = 'r'
             self.DST_LANG_FULL  = 'eng'
             self.DST_LANG_SHORT = 'e'
+            self.headerFields = ['',          '',      u'рус',      'eng',     '',     '']
+            self.fields =       ['d_id', 'wr_id', 'wr_value',  'we_value', 'play', 'edit']
+
 
         self.playFieldNum = self.fields.index('play')
         self.editFieldNum = self.fields.index('edit')

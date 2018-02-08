@@ -29,7 +29,6 @@ class TestWord(TestDBBaseClass):
         self.assertEqual(self.translates[0], self.wordEngModel.wordTranslate(0))
         self.assertEqual(self.translates[1], self.wordEngModel.wordTranslate(1))
 
-
     def testDownOrder(self):
         self.wordEngModel.downOrder(0)
         self.assertEqual(self.translates[0], self.wordEngModel.wordTranslate(1))
@@ -37,3 +36,12 @@ class TestWord(TestDBBaseClass):
         self.wordEngModel.downOrder(0)
         self.assertEqual(self.translates[0], self.wordEngModel.wordTranslate(0))
         self.assertEqual(self.translates[1], self.wordEngModel.wordTranslate(1))
+
+    def testAddEmptyTranslateAndRemoveIt(self):
+        rowCount = self.wordEngModel.rowCount()
+        translateId = self.wordEngModel.addEmptyTranslate()
+        self.assertNotEqual(False, translateId)
+        self.assertEqual(rowCount + 1, self.wordEngModel.rowCount())
+        self.assertTrue(self.wordEngModel.removeTranslate(translateId, silent=True))
+        self.assertEqual(rowCount, self.wordEngModel.rowCount())
+
