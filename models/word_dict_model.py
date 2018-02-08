@@ -111,11 +111,11 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        from forms.word_eng_edit_window import WordEngEditWindow
+        from forms.word_edit_window import WordEditWindow
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        wordDialog = WordEngEditWindow(
+        wordEditDialog = WordEditWindow(
             self.model.dictId(recordIndex),
             self.model.wordId(recordIndex),
             self.model.wordValue(recordIndex),
@@ -123,7 +123,7 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
             self.model.dstLang,
             EditMode.Edit
         )
-        models_utils.setStartGeometry(self.parentWindow, wordDialog)
+        models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
-        wordDialog.exec_()
+        wordEditDialog.exec_()
         self.model.refresh()
