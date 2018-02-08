@@ -5,12 +5,12 @@ from utils import Lang
 from models.dict_model import DictionaryModel
 from models.word_dict_model import WordDictModel
 from PySide import QtCore
-from models.word_eng_model import WordEngModel
+from models.word_model import WordModel
 
 
 class TestWord(TestDBBaseClass):
     def setUp(self):
-        self.wordEngModel = WordEngModel(1, 'exciting')
+        self.wordEngModel = WordModel(1, 'exciting', Lang.Eng, Lang.Rus)
         self.translates = [u'захватывающий', u'восхитительный', u'еще одно слово']
 
     def tearDown(self):

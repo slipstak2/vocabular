@@ -3,11 +3,10 @@
 from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
-from models.word_eng_model import WordEngModel
+from models.word_model import WordModel
 from forms_utils import EditMode
-from models.word_eng_model import EditButtonWordEngTranslateDelegate, \
-    PlayButtonWordEngTranslateDelegate, \
-    RemoveButtonWordEngTranslateDelegate
+
+from models.word_model import PlayButtonWordTranslateDelegate, EditButtonWordTranslateDelegate, RemoveButtonWordTranslateDelegate
 
 from forms.word_rus_edit_window import WordRusEditWindow
 from models import models_utils as models_utils
@@ -34,7 +33,7 @@ class WordEngEditWindow(QtGui.QDialog):
         self.dictId = dictId
         self.mode = mode
 
-        self.wordEngModel = WordEngModel(wordId, wordValue)
+        self.wordEngModel = WordModel(wordId, wordValue, Lang.Eng, Lang.Rus)
         self.lang = lang
 
         self.ui = Ui_WordAddEdit()
@@ -107,9 +106,9 @@ class WordEngEditWindow(QtGui.QDialog):
         selectionModel = self.ui.tvTranslate.selectionModel()
         selectionModel.selectionChanged.connect(self._onTranslateChanged)
 
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.playFieldNum, PlayButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.editFieldNum, EditButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.removeFieldNum, RemoveButtonWordEngTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.playFieldNum, PlayButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.editFieldNum, EditButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordEngModel.removeFieldNum, RemoveButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordEngModel))
 
         self.wordEngModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
         self.wordEngModel.onRefresh()

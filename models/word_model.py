@@ -105,7 +105,9 @@ class WordModel(BaseSqlQueryModel):
     def addEmptyTranslate(self):
         def addEmptyWord():
             query = QtSql.QSqlQuery()
-            query.prepare('INSERT INTO word_rus (id) VALUES (NULL)')
+            query.prepare('INSERT INTO word_{rus} (id) VALUES (NULL)'.format(
+                rus=self.DST_LANG_FULL
+            ))
             return self.executeQuery(query, True)
 
         def addTranslateLink(id):
@@ -113,14 +115,19 @@ class WordModel(BaseSqlQueryModel):
             query.prepare('''
               INSERT INTO
                 rus_eng
-              (word_rus_id, word_eng_id, rus_order, eng_order)
+              (word_{rus}_id, word_{eng}_id, {rus}_order, {eng}_order)
               VALUES
-                (:wr_id, :we_id, :ro, :eo)
-            ''')
-            query.bindValue(':wr_id', id)
-            query.bindValue(':we_id', self.wordId)
-            query.bindValue(':ro', self.rowCount() + 1)
-            query.bindValue(':eo', 1)
+                (:w{r}_id, :w{e}_id, :{r}o, :{e}o)
+            '''.format(
+                r=self.DST_LANG_SHORT,
+                rus=self.DST_LANG_FULL,
+                e=self.SRC_LANG_SHORT,
+                eng=self.SRC_LANG_FULL
+            ))
+            query.bindValue(':w{r}_id'.format(r=self.DST_LANG_SHORT), id)
+            query.bindValue(':w{e}_id'.format(e=self.SRC_LANG_SHORT), self.wordId)
+            query.bindValue(':{r}o'.format(r=self.DST_LANG_SHORT), self.rowCount() + 1)
+            query.bindValue(':{e}o'.format(e=self.SRC_LANG_SHORT), 1)
 
             return self.executeQuery(query)
 
@@ -129,6 +136,30 @@ class WordModel(BaseSqlQueryModel):
             if addTranslateLink(id):
                 return id
         return False
+
+    @need_refresh
+    def removeTranslate(self, translateWordId, silent=False):
+        if silent == False:
+            msgBox = QtGui.QMessageBox()
+            msgBox.setIcon(QtGui.QMessageBox.Question)
+            msgBox.setWindowIcon(QtGui.QIcon(":/res/images/dictionary.png"))
+            #   TODO: собрать больше информации о переводе. id явно не достаточно. Добавить:
+            #   TODO:       1) str value
+            #   TODO:       2) количество переводов, в которых он задействован
+            #   TODO:       3) количество словарей, в которых он задействован
+            msgBox.setText(u"Вы действительно хотите удалить перевод: id = {id}".format(id=translateWordId))
+            msgBox.setWindowTitle(u"Удаление перевода")
+            msgBox.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+            if msgBox.exec_() != QtGui.QMessageBox.Ok:
+                return False
+
+        query = QtSql.QSqlQuery()
+        query.prepare('DELETE FROM word_{rus} WHERE id = :id'.format(
+            rus=self.DST_LANG_FULL
+        ))
+
+        query.bindValue(u":id", translateWordId)
+        return self.executeQuery(query)
 
     def data(self, index, role):
         value = super(WordModel, self).data(index, role)
@@ -147,3 +178,34 @@ class WordModel(BaseSqlQueryModel):
 
     def columnCount(self, *args, **kwargs):
         return len(self.fields)
+
+
+class PlayButtonWordTranslateDelegate(PlayButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        PlayButtonDelegate.__init__(self, parentWindow, parent, model)
+
+    @pyqtSlot()
+    def onBtnClicked(self, recordIndex):
+        print u"play '{}'".format(self.model.wordTranslate(recordIndex))
+        self.commitData.emit(self.sender())
+
+
+class EditButtonWordTranslateDelegate(EditButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        EditButtonDelegate.__init__(self, parentWindow, parent, model)
+
+    @pyqtSlot()
+    def onBtnClicked(self, recordIndex):
+        print u"edit '{}'".format(self.model.wordTranslate(recordIndex))
+        self.commitData.emit(self.sender())
+
+
+class RemoveButtonWordTranslateDelegate(RemoveButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        RemoveButtonDelegate.__init__(self, parentWindow, parent, model)
+
+    @pyqtSlot()
+    def onBtnClicked(self, recordIndex):
+        print u"remove '{}'".format(self.model.wordTranslate(recordIndex))
+        self.model.removeTranslate(self.model.wordTranslateId(recordIndex))
+        self.commitData.emit(self.sender())
