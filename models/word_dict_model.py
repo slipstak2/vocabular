@@ -3,7 +3,7 @@
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
-from forms.forms_utils import EditMode
+from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
 from models.base.utils import need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate
@@ -118,7 +118,7 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
             self.model.wordValue(recordIndex),
             self.model.srcLang,
             self.model.dstLang,
-            EditMode.Edit
+            WordEditMode.Edit
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 

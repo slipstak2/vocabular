@@ -4,23 +4,22 @@ from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
 from models.word_model import WordModel
-from forms_utils import EditMode
+from forms_utils import WordEditMode
 
 from models.word_model import PlayButtonWordTranslateDelegate, EditButtonWordTranslateDelegate, RemoveButtonWordTranslateDelegate
 
 from models import models_utils as models_utils
-from utils import Lang
 
 translateTitleMap = {
-    EditMode.AddNew: u'Добавление слова',
-    EditMode.Edit: u'Редактирование слова',
-    EditMode.AddTranslate: u'Добавление перевода',
+    WordEditMode.AddNew: u'Добавление слова',
+    WordEditMode.Edit: u'Редактирование слова',
+    WordEditMode.AddTranslate: u'Добавление перевода',
 }
 
 iconTitleMap = {
-    EditMode.AddNew:         QtGui.QIcon(":/res/images/add_word.png"),
-    EditMode.Edit:           QtGui.QIcon(":/res/images/edit_word.png"),
-    EditMode.AddTranslate:   QtGui.QIcon(":/res/images/add_translate.png")
+    WordEditMode.AddNew:         QtGui.QIcon(":/res/images/add_word.png"),
+    WordEditMode.Edit:           QtGui.QIcon(":/res/images/edit_word.png"),
+    WordEditMode.AddTranslate:   QtGui.QIcon(":/res/images/add_translate.png")
 }
 
 
@@ -71,12 +70,13 @@ class WordEditWindow(QtGui.QDialog):
 
     def _onAddTranslate(self, *args, **kwargs):
         translateWordId = self.wordModel.addEmptyTranslate()
-        if translateWordId: # TODO:нужны ли такие проверки? или падать сразу внутри метода?
-            addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, wordValue='', srcLang=self.dstLang, dstLang=self.srcLang, mode=EditMode.AddTranslate)
-            models_utils.setStartGeometry(self, addTranslateDialog)
-            addTranslateDialog.exec_()
-            if addTranslateDialog.result() != 1:
-                self.wordModel.removeTranslate(translateWordId, silent=True)
+        assert isinstance(translateWordId, long)
+
+        addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, wordValue='', srcLang=self.dstLang, dstLang=self.srcLang, mode=WordEditMode.AddTranslate)
+        models_utils.setStartGeometry(self, addTranslateDialog)
+        addTranslateDialog.exec_()
+        if addTranslateDialog.result() != 1:
+            self.wordModel.removeTranslate(translateWordId, silent=True)
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
@@ -87,7 +87,7 @@ class WordEditWindow(QtGui.QDialog):
         self.ui.btnSave.clicked.connect(self._onOK)
         self.ui.actDownOrder.triggered.connect(self._onDownOrder)
         self.ui.actUpOrder.triggered.connect(self._onUpOrder)
-        self.ui.actAddTranslate.triggered.connect(self._onAddTranslate) # TODO: вернуть
+        self.ui.actAddTranslate.triggered.connect(self._onAddTranslate)
 
     def _onTvTranslateDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordModel.rowCount()):
@@ -99,8 +99,8 @@ class WordEditWindow(QtGui.QDialog):
 
     def initModels(self):
         self.ui.tvTranslate.setModel(self.wordModel)
-        self.ui.tvTranslate.hideColumn(0)  # TODO: именной индекс
-        self.ui.tvTranslate.hideColumn(2)  # TODO: именной индекс
+        self.ui.tvTranslate.hideColumn(0)
+        self.ui.tvTranslate.hideColumn(2)
         self.ui.tvTranslate.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ui.tvTranslate.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 

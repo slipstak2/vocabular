@@ -7,7 +7,7 @@ sip.setapi('QVariant', 2)
 
 from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
-from dict_edit_window import DictEditWindow, EditMode
+from dict_edit_window import DictEditWindow, DictEditMode
 from models.dict_model import DictionaryModel
 from models.word_dict_model import WordDictModel
 from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
@@ -15,9 +15,6 @@ from forms_utils import onBtnEnter, onBtnLeave
 from utils import Lang
 from version import version
 
-
-#TODO: количество слов в словаре. отображать в имени group box: Слова(42)
-#TODO: скрипт для поднятия версии
 
 class VocabularMainWindow(QtGui.QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -36,7 +33,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.close()
 
     def _onAddDict(self, *args, **kwargs):
-        dictDialog = DictEditWindow(self.dictModel, EditMode.AddNew)
+        dictDialog = DictEditWindow(self.dictModel, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
             self.ui.cbDicts.setCurrentIndex(self.dictModel.rowCount() - 1)
@@ -44,7 +41,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
     def _onEditDict(self, *args, **kwargs):
         dictDialog = DictEditWindow(
             self.dictModel,
-            EditMode.Edit,
+            DictEditMode.Edit,
         )
         currentIndex = self.ui.cbDicts.currentIndex()
         dictDialog.exec_()
@@ -63,6 +60,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onCbDictCurrentIndexChanged(self, index):
         self.dictModel.currentDictIndex = index
+        self.ui.gbWords.setTitle(u'Слова ({})'.format(self.wordEngDictModel.rowCount()))
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordEngDictModel.rowCount()):
@@ -93,8 +91,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.ui.cbDicts.setModelColumn(self.dictModel.viewFieldIndex())
 
         self.ui.tvEngWords.setModel(self.wordEngDictModel)
-        self.ui.tvEngWords.hideColumn(0)  # TODO: именной индекс
-        self.ui.tvEngWords.hideColumn(1)  # TODO: именной индекс
+        self.ui.tvEngWords.hideColumn(0)
+        self.ui.tvEngWords.hideColumn(1)
         self.ui.tvEngWords.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ui.tvEngWords.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 

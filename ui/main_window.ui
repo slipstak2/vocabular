@@ -200,7 +200,7 @@
     <item>
      <widget class="QGroupBox" name="gbWords">
       <property name="title">
-       <string>Слова</string>
+       <string>Слова()</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">

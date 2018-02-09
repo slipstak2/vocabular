@@ -4,7 +4,6 @@ from PySide import QtSql
 from db import getDb
 
 
-#TODO: insert query
 class SqlQuery(object):
     def __init__(self, model, strQuery, params={}):
         self._model = model

@@ -32,6 +32,7 @@ class TestDict(TestDBBaseClass):
         dictModel = DictionaryModel()
         wordRusDictModel = WordDictModel(dictModel, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusDictModel.rowCount())
+
         #TODO: добавить новое слово
         #TODO: удалить это слово
 

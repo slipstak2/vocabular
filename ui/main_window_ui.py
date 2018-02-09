@@ -172,7 +172,7 @@ class Ui_VocabularMainWindow(object):
         self.btnAddDict.setToolTip(_translate("VocabularMainWindow", "Добавить словарь", None))
         self.btnEditDict.setToolTip(_translate("VocabularMainWindow", "Редактировать словарь", None))
         self.btnRemoveDict.setToolTip(_translate("VocabularMainWindow", "Удалить словарь", None))
-        self.gbWords.setTitle(_translate("VocabularMainWindow", "Слова", None))
+        self.gbWords.setTitle(_translate("VocabularMainWindow", "Слова()", None))
         self.toolBar.setWindowTitle(_translate("VocabularMainWindow", "toolBar", None))
         self.menuHelp.setTitle(_translate("VocabularMainWindow", "Помощь", None))
         self.menuFile.setTitle(_translate("VocabularMainWindow", "Файл", None))

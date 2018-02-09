@@ -131,9 +131,9 @@ class WordModel(BaseSqlQueryModel):
             msgBox.setIcon(QtGui.QMessageBox.Question)
             msgBox.setWindowIcon(QtGui.QIcon(":/res/images/dictionary.png"))
             #   TODO: собрать больше информации о переводе. id явно не достаточно. Добавить:
-            #   TODO:       1) str value
-            #   TODO:       2) количество переводов, в которых он задействован
-            #   TODO:       3) количество словарей, в которых он задействован
+            #       :       1) str value
+            #       :       2) количество переводов, в которых он задействован
+            #       :       3) количество словарей, в которых он задействован
             msgBox.setText(u"Вы действительно хотите удалить перевод: id = {id}".format(id=translateWordId))
             msgBox.setWindowTitle(u"Удаление перевода")
             msgBox.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)

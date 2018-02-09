@@ -3,12 +3,15 @@
 from enum import Enum
 
 
-#TODO: EditMode -> WordEditMode, DictEditMode
-class EditMode(Enum):
+class DictEditMode(Enum):
+    Add = 1
+    Edit = 2
+
+
+class WordEditMode(Enum):
     AddNew = 1
     Edit = 2
     AddTranslate = 3
-
 
 
 def onBtnEnter(btn, event, **kwargs):
@@ -17,4 +20,3 @@ def onBtnEnter(btn, event, **kwargs):
 
 def onBtnLeave(btn, event, **kwargs):
     btn.setFlat(True)
-
