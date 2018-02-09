@@ -142,9 +142,15 @@ class WordModel(BaseSqlQueryModel):
 
         return SqlQuery(
             self,
-            'DELETE FROM word_[rus] WHERE id = :id',
+            '''
+            DELETE FROM
+              rus_eng
+            WHERE
+              word_[eng]_id = :word_id AND word_[rus]_id = :translate_id
+            ''',
             {
-                ':id': translateWordId
+                ':word_id': self.wordId,
+                ':translate_id': translateWordId
             }
         ).execute()
 

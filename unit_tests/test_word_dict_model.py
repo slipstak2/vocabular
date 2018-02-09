@@ -25,15 +25,27 @@ class TestDict(TestDBBaseClass):
         self.assertEqual('retrieval system', wordEngDictModel.wordValue(1))
         self.assertEqual(u'поисковая система', wordEngDictModel.translateValue(1))
 
-        #TODO: добавить новое слово
-        #TODO: удалить новое слово
+        id = wordEngDictModel.addEmptyWord()
+        print id
+
+    def testAddAndRemoveEngWords(self):
+        dictModel = DictionaryModel(currentDictIndex=0)
+        wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
+        rowCount = wordEngDictModel.rowCount()
+
+        id = wordEngDictModel.addEmptyWord()
+        self.assertNotEqual(False, id)
+        self.assertEqual(rowCount + 1, wordEngDictModel.rowCount())
+        wordEngDictModel.removeWord(id, True)
+        self.assertEqual(rowCount, wordEngDictModel.rowCount())
 
     def testRusWords(self):
         dictModel = DictionaryModel()
         wordRusDictModel = WordDictModel(dictModel, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusDictModel.rowCount())
 
-        #TODO: добавить новое слово
-        #TODO: удалить это слово
-
-
+        id = wordRusDictModel.addEmptyWord()
+        self.assertNotEqual(False, id)
+        self.assertEqual(1, wordRusDictModel.rowCount())
+        wordRusDictModel.removeWord(id, True)
+        self.assertEqual(0, wordRusDictModel.rowCount())

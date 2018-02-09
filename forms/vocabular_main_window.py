@@ -11,11 +11,14 @@ from dict_edit_window import DictEditWindow, DictEditMode
 from models.dict_model import DictionaryModel
 from models.word_dict_model import WordDictModel
 from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
-from forms_utils import onBtnEnter, onBtnLeave
+from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
 from version import version
+from forms.word_edit_window import WordEditWindow
+from models import models_utils
 
 
+#TODO: добавить удаление слова из словаря
 class VocabularMainWindow(QtGui.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(VocabularMainWindow, self).__init__(*args, **kwargs)
@@ -24,10 +27,21 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle("Vocabular v.{}".format(version))
 
+        self.srcLang = Lang.Eng
+        self.dstLang = Lang.Rus
         self.dictModel = DictionaryModel()
-        self.wordEngDictModel = WordDictModel(self.dictModel, Lang.Eng, Lang.Rus)
+        self.wordEngDictModel = WordDictModel(self.dictModel, self.srcLang, self.dstLang)
         self.dictModel.childModels.append(self.wordEngDictModel)
         self.initUI()
+
+    def _onAddWord(self):
+        wordId = self.wordEngDictModel.addEmptyWord()
+        assert isinstance(wordId, long)
+        addWordDialog = WordEditWindow(dictId=-1, wordId=wordId, wordValue='', srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew)
+        models_utils.setStartGeometry(self, addWordDialog)
+        addWordDialog.exec_()
+        if addWordDialog.result() != 1:
+            self.wordEngDictModel.removeWord(wordId, silent=True)
 
     def _onExit(self, *args, **kwargs):
         self.close()
@@ -77,7 +91,9 @@ class VocabularMainWindow(QtGui.QMainWindow):
             btn.enterEvent = lambda event: onBtnEnter(btn, event)
             btn.leaveEvent = lambda event: onBtnLeave(btn, event)
 
+        self.ui.actAddWord.triggered.connect(self._onAddWord)
         self.ui.actExit.triggered.connect(self._onExit)
+
         self.ui.btnAddDict.clicked.connect(self._onAddDict)
         self.ui.btnEditDict.clicked.connect(self._onEditDict)
         self.ui.btnRemoveDict.clicked.connect(self._onRemoveDict)

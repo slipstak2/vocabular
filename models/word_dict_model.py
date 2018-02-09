@@ -63,8 +63,8 @@ class WordDictModel(BaseSqlQueryModel):
                     dictionary
                 JOIN word_[eng]_dict ON word_[eng]_dict.dict_id = dictionary.id
                 JOIN word_[eng] ON word_[eng].id = word_[eng]_dict.word_[eng]_id
-                JOIN rus_eng ON rus_eng.word_[eng]_id = word_[eng].id
-                JOIN word_[rus] ON word_[rus].id = rus_eng.word_[rus]_id
+                LEFT JOIN rus_eng ON rus_eng.word_[eng]_id = word_[eng].id
+                LEFT JOIN word_[rus] ON word_[rus].id = rus_eng.word_[rus]_id
                 WHERE dictionary.id = {dict_id}
                 ORDER BY rus_eng.[rus]_order
             ) as x
@@ -76,6 +76,64 @@ class WordDictModel(BaseSqlQueryModel):
         for idx, field in enumerate(self.headerFields):
             self.setHeaderData(idx, QtCore.Qt.Horizontal, field)
         self.onRefresh()
+
+    @need_refresh
+    def addEmptyWord(self):
+        def _addEmptyWord():
+            return SqlQuery(
+                self,
+                'INSERT INTO word_[eng] (id) VALUES (NULL)'
+            ).execute(True)
+
+        def addWordDictLink(id):
+            return SqlQuery(
+                self,
+                '''
+                INSERT INTO
+                  word_[eng]_dict
+                (dict_id, word_[eng]_id)
+                VALUES
+                  (:dict_id, :w[e]_id)
+                ''',
+                {
+                    ':dict_id': self.dictModel.currentDictId,
+                    ':w[e]_id': id,
+                }
+            ).execute()
+
+        id = _addEmptyWord()
+        if id:
+            if addWordDictLink(id):
+                return id
+        return False
+
+    @need_refresh
+    def removeWord(self, wordId, silent=False):
+        if silent == False:
+            msgBox = QtGui.QMessageBox()
+            msgBox.setIcon(QtGui.QMessageBox.Question)
+            msgBox.setWindowIcon(QtGui.QIcon(":/res/images/dictionary.png"))
+            msgBox.setText(u"Вы действительно хотите удалить слово: id = {id}".format(id=wordId))
+            msgBox.setWindowTitle(u"Удаление слова")
+            msgBox.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+            if msgBox.exec_() != QtGui.QMessageBox.Ok:
+                return False
+
+        # delete by wordId and dictId from word_eng_dict
+        # TODO: проблема висячих ссылок на слова
+        return SqlQuery(
+            self,
+            '''
+            DELETE FROM
+                word_[eng]_dict
+            WHERE
+                dict_id = :dict_id AND word_[eng]_id = :word_id
+            ''',
+            {
+                ':dict_id': self.dictModel.currentDictId,
+                ':word_id': wordId
+            }
+        ).execute()
 
     def data(self, index, role):
         value = super(WordDictModel, self).data(index, role)
