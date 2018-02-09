@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtGui, QtCore
+from PySide import QtCore
 
 def setStartGeometry(parentWindow, dialog):
     parentGeom = parentWindow.geometry()

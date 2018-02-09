@@ -1,17 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide import QtSql
-from pika.adapters.blocking_connection import _ReturnedMessageEvt
-
 from db import getDb
-'''
-query = QtSql.QSqlQuery()
-        query.prepare(u'INSERT INTO dictionary (name) VALUES (:name)')
-        query.bindValue(u":name", dictName)
-
-        return self.executeQuery(query)
-'''
-
 
 
 #TODO: insert query
@@ -75,13 +65,3 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
 
     def refresh(self):
         raise NotImplementedError("pure virtual method 'refresh' must be implemented")
-
-    def executeQuery(self, query, returnLastInsertId=False):
-        try:
-            assert query.exec_(), query.lastError()
-            self.db.commit()
-            return query.lastInsertId() if returnLastInsertId else True
-        except BaseException as ex:
-            print ex
-            self.db.rollback()
-            return False

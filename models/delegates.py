@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtSql, QtCore, QtGui
+from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 from forms.forms_utils import onBtnLeave, onBtnEnter
 

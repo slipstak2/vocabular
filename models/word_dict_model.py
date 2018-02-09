@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtSql, QtCore, QtGui
+from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
 from forms.forms_utils import EditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
 from models.base.utils import need_refresh
-from models.delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
+from models.delegates import EditButtonDelegate, PlayButtonDelegate
 from models import models_utils as models_utils
 from utils import Lang
 

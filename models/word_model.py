@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtSql, QtCore, QtGui
+from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 from models.base.utils import need_refresh
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery

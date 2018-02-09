@@ -70,7 +70,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
             self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, self.wordEngDictModel.editFieldNum))
         self.ui.tvEngWords.resizeColumnsToContents()
 
-
     def initUI(self):
         self.initHandlers()
         self.initModels()
@@ -80,7 +79,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
             btn.enterEvent = lambda event: onBtnEnter(btn, event)
             btn.leaveEvent = lambda event: onBtnLeave(btn, event)
 
-
         self.ui.actExit.triggered.connect(self._onExit)
         self.ui.btnAddDict.clicked.connect(self._onAddDict)
         self.ui.btnEditDict.clicked.connect(self._onEditDict)
@@ -89,7 +87,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         for btn in [self.ui.btnAddDict, self.ui.btnEditDict, self.ui.btnRemoveDict]:
             initButtonsMouseHandlers(btn)
-
 
     def initModels(self):
         self.ui.cbDicts.setModel(self.dictModel)

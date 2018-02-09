@@ -23,7 +23,6 @@ class DictEditWindow(QtGui.QDialog):
         self.dictModel = dictModel
         self.mode = mode
 
-
         self.ui = Ui_DictAddEdit()
         self.ui.setupUi(self)
         self.initUI()
