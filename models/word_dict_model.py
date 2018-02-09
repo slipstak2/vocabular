@@ -4,7 +4,7 @@ from PySide import QtSql, QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
 from forms.forms_utils import EditMode
-from models.base.base_sql_query_model import BaseSqlQueryModel
+from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
 from models.base.utils import need_refresh
 from models.delegates import ButtonDelegate, EditButtonDelegate, PlayButtonDelegate
 from models import models_utils as models_utils
@@ -41,39 +41,36 @@ class WordDictModel(BaseSqlQueryModel):
 
 
     def wordValue(self, recordIndex):
-        return self.record(recordIndex).value('w{e}_value'.format(e=self.SRC_LANG_SHORT))
+        return self.record(recordIndex).value(SqlQuery(self, 'w[e]_value').str())
 
     def translateValue(self, recordIndex):
-        return self.record(recordIndex).value('w{r}_value'.format(r=self.DST_LANG_SHORT))
+        return self.record(recordIndex).value(SqlQuery(self, 'w[r]_value').str())
 
     def dictId(self, recordIndex):
         return self.record(recordIndex).value('d_id')
 
     def wordId(self, recordIndex):
-        return self.record(recordIndex).value('w{e}_id'.format(e=self.SRC_LANG_SHORT))
+        return self.record(recordIndex).value(SqlQuery(self, 'w[e]_id').str())
 
     def refresh(self):
-        query = u'''
-        SELECT d_id, w{e}_id, w{e}_value, w{r}_value  FROM (
-            SELECT
-                DISTINCT word_{eng}.id as w{e}_id, dictionary.id as d_id, word_{eng}.value as w{e}_value, word_{rus}.value as w{r}_value
-            from
-                dictionary
-            JOIN word_{eng}_dict ON word_{eng}_dict.dict_id = dictionary.id
-            JOIN word_{eng} ON word_{eng}.id = word_{eng}_dict.word_{eng}_id
-            JOIN rus_eng ON rus_eng.word_{eng}_id = word_{eng}.id
-            JOIN word_{rus} ON word_{rus}.id = rus_eng.word_{rus}_id
-            WHERE dictionary.id = {dict_id}
-            ORDER BY rus_eng.{rus}_order
-        ) as x
-        GROUP BY d_id, w{e}_id
-        '''.format(
-            eng=self.SRC_LANG_FULL,
-            e=self.SRC_LANG_SHORT,
-            rus=self.DST_LANG_FULL,
-            r=self.DST_LANG_SHORT,
-            dict_id=self.dictModel.currentDictId
-        )
+        query = SqlQuery(
+            self,
+            u'''
+            SELECT d_id, w[e]_id, w[e]_value, w[r]_value  FROM (
+                SELECT
+                    DISTINCT word_[eng].id as w[e]_id, dictionary.id as d_id, word_[eng].value as w[e]_value, word_[rus].value as w[r]_value
+                from
+                    dictionary
+                JOIN word_[eng]_dict ON word_[eng]_dict.dict_id = dictionary.id
+                JOIN word_[eng] ON word_[eng].id = word_[eng]_dict.word_[eng]_id
+                JOIN rus_eng ON rus_eng.word_[eng]_id = word_[eng].id
+                JOIN word_[rus] ON word_[rus].id = rus_eng.word_[rus]_id
+                WHERE dictionary.id = {dict_id}
+                ORDER BY rus_eng.[rus]_order
+            ) as x
+            GROUP BY d_id, w[e]_id
+            '''.format(dict_id=self.dictModel.currentDictId),
+        ).str()
         self.setQuery(query)
 
         for idx, field in enumerate(self.headerFields):

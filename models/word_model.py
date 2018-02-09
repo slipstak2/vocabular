@@ -3,7 +3,7 @@
 from PySide import QtSql, QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 from models.base.utils import need_refresh
-from models.base.base_sql_query_model import BaseSqlQueryModel
+from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 
@@ -39,33 +39,30 @@ class WordModel(BaseSqlQueryModel):
         self.removeFieldNum = self.fields.index('remove')
 
     def wordTranslate(self, recordIndex):
-        return self.record(recordIndex).value('w{r}_value'.format(r=self.DST_LANG_SHORT))
+        return self.record(recordIndex).value(SqlQuery(self, 'w[r]_value').str())
 
     def wordTranslateId(self, recordIndex):
-        return self.record(recordIndex).value('w{r}_id'.format(r=self.DST_LANG_SHORT))
+        return self.record(recordIndex).value(SqlQuery(self, 'w[r]_id').str())
 
     def wordTranslateOrder(self, recordIndex):
-        return self.record(recordIndex).value('re_{rus}_order'.format(rus=self.DST_LANG_FULL))
+        return self.record(recordIndex).value(SqlQuery(self, 're_[rus]_order').str())
 
     def refresh(self):
-        query = '''
-        SELECT
-            word_{rus}.id as w{r}_id, word_{rus}.value as w{r}_value, rus_eng.{rus}_order as r{e}_{rus}_order, word_{rus}.meaning as w{r}_meaning
-        FROM
-            word_{eng}
-        JOIN rus_eng ON rus_eng.word_{eng}_id = word_{eng}.id
-        JOIN word_{rus} ON word_{rus}.id = rus_eng.word_{rus}_id
-        WHERE
-            word_{eng}.id = {word_id}
-        ORDER BY
-            rus_eng.{rus}_order ASC
-        '''.format(
-            word_id=self.wordId,
-            r=self.DST_LANG_SHORT,
-            rus=self.DST_LANG_FULL,
-            e=self.SRC_LANG_SHORT,
-            eng=self.SRC_LANG_FULL
-        )
+        query = SqlQuery(
+            self,
+            '''
+            SELECT
+                word_[rus].id as w[r]_id, word_[rus].value as w[r]_value, rus_eng.[rus]_order as r[e]_[rus]_order, word_[rus].meaning as w[r]_meaning
+            FROM
+                word_[eng]
+            JOIN rus_eng ON rus_eng.word_[eng]_id = word_[eng].id
+            JOIN word_[rus] ON word_[rus].id = rus_eng.word_[rus]_id
+            WHERE
+                word_[eng].id = {word_id}
+            ORDER BY
+                rus_eng.[rus]_order ASC
+            '''.format(word_id=self.wordId)
+        ).str()
 
         self.setQuery(query)
 
@@ -75,61 +72,51 @@ class WordModel(BaseSqlQueryModel):
         self.onRefresh()
 
     def changeOrder(self, row1, row2):
-        query = QtSql.QSqlQuery()
-        query.prepare(
+        return SqlQuery(
+            self,
             '''
             INSERT INTO
               rus_eng
-              (word_{rus}_id, word_{eng}_id, {rus}_order)
+              (word_[rus]_id, word_[eng]_id, [rus]_order)
             VALUES
-              (:w{r}_id1, :w{e}_id1, :{r}o1),(:w{r}_id2, :w{e}_id2, :{r}o2)
-            ON DUPLICATE KEY UPDATE {rus}_order=VALUES({rus}_order)
-            '''.format(
-                r=self.DST_LANG_SHORT,
-                rus=self.DST_LANG_FULL,
-                e=self.SRC_LANG_SHORT,
-                eng=self.SRC_LANG_FULL
-            )
-        )
-
-        query.bindValue(":w{r}_id1".format(r=self.DST_LANG_SHORT), self.wordTranslateId(row1))
-        query.bindValue(":w{r}_id2".format(r=self.DST_LANG_SHORT), self.wordTranslateId(row2))
-        query.bindValue(":{r}o1".format(r=self.DST_LANG_SHORT), self.wordTranslateOrder(row2))
-        query.bindValue(":{r}o2".format(r=self.DST_LANG_SHORT), self.wordTranslateOrder(row1))
-        query.bindValue(":w{e}_id1".format(e=self.SRC_LANG_SHORT), self.wordId)
-        query.bindValue(":w{e}_id2".format(e=self.SRC_LANG_SHORT), self.wordId)
-
-        return self.executeQuery(query)
+              (:w[r]_id1, :w[e]_id1, :[r]o1),(:w[r]_id2, :w[e]_id2, :[r]o2)
+            ON DUPLICATE KEY UPDATE [rus]_order=VALUES([rus]_order)
+            ''',
+            {
+                ":w[r]_id1": self.wordTranslateId(row1),
+                ":w[r]_id2": self.wordTranslateId(row2),
+                ":[r]o1": self.wordTranslateOrder(row2),
+                ":[r]o2": self.wordTranslateOrder(row1),
+                ":w[e]_id1": self.wordId,
+                ":w[e]_id2": self.wordId
+            }
+        ).execute()
 
     @need_refresh
     def addEmptyTranslate(self):
         def addEmptyWord():
-            query = QtSql.QSqlQuery()
-            query.prepare('INSERT INTO word_{rus} (id) VALUES (NULL)'.format(
-                rus=self.DST_LANG_FULL
-            ))
-            return self.executeQuery(query, True)
+            return SqlQuery(
+                self,
+                'INSERT INTO word_[rus] (id) VALUES (NULL)'
+            ).execute(True)
 
         def addTranslateLink(id):
-            query = QtSql.QSqlQuery()
-            query.prepare('''
-              INSERT INTO
-                rus_eng
-              (word_{rus}_id, word_{eng}_id, {rus}_order, {eng}_order)
-              VALUES
-                (:w{r}_id, :w{e}_id, :{r}o, :{e}o)
-            '''.format(
-                r=self.DST_LANG_SHORT,
-                rus=self.DST_LANG_FULL,
-                e=self.SRC_LANG_SHORT,
-                eng=self.SRC_LANG_FULL
-            ))
-            query.bindValue(':w{r}_id'.format(r=self.DST_LANG_SHORT), id)
-            query.bindValue(':w{e}_id'.format(e=self.SRC_LANG_SHORT), self.wordId)
-            query.bindValue(':{r}o'.format(r=self.DST_LANG_SHORT), self.rowCount() + 1)
-            query.bindValue(':{e}o'.format(e=self.SRC_LANG_SHORT), 1)
-
-            return self.executeQuery(query)
+            return SqlQuery(
+                self,
+                '''
+                INSERT INTO
+                  rus_eng
+                (word_[rus]_id, word_[eng]_id, [rus]_order, [eng]_order)
+                VALUES
+                  (:w[r]_id, :w[e]_id, :[r]o, :[e]o)
+                ''',
+                {
+                    ':w[r]_id': id,
+                    ':w[e]_id': self.wordId,
+                    ':[r]o': self.rowCount() + 1,
+                    ':[e]o': 1
+                }
+            ).execute()
 
         id = addEmptyWord()
         if id:
@@ -153,13 +140,13 @@ class WordModel(BaseSqlQueryModel):
             if msgBox.exec_() != QtGui.QMessageBox.Ok:
                 return False
 
-        query = QtSql.QSqlQuery()
-        query.prepare('DELETE FROM word_{rus} WHERE id = :id'.format(
-            rus=self.DST_LANG_FULL
-        ))
-
-        query.bindValue(u":id", translateWordId)
-        return self.executeQuery(query)
+        return SqlQuery(
+            self,
+            'DELETE FROM word_[rus] WHERE id = :id',
+            {
+                ':id': translateWordId
+            }
+        ).execute()
 
     def data(self, index, role):
         value = super(WordModel, self).data(index, role)

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtSql
-
-from base.base_sql_query_model import BaseSqlQueryModel
+from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
 from base.utils import need_refresh
 
 
@@ -47,24 +45,31 @@ class DictionaryModel(BaseSqlQueryModel):
 
     @need_refresh
     def addDict(self, dictName):
-        query = QtSql.QSqlQuery()
-        query.prepare(u'INSERT INTO dictionary (name) VALUES (:name)')
-        query.bindValue(u":name", dictName)
-
-        return self.executeQuery(query)
+        return SqlQuery(
+            self,
+            u'INSERT INTO dictionary (name) VALUES (:name)',
+            {
+                ':name': dictName
+            }
+        ).execute(True)
 
     @need_refresh
     def editDict(self, dictId, dictName):
-        query = QtSql.QSqlQuery()
-        query.prepare(u'UPDATE dictionary SET name=:name WHERE id=:id')
-        query.bindValue(u":id", dictId)
-        query.bindValue(u":name", dictName)
-        return self.executeQuery(query)
+        return SqlQuery(
+            self,
+            u'UPDATE dictionary SET name=:name WHERE id=:id',
+            {
+                u":id": dictId,
+                u":name": dictName
+            }
+        ).execute()
 
     @need_refresh
     def removeDict(self):
-        query = QtSql.QSqlQuery()
-        query.prepare(u'DELETE from dictionary WHERE id=:id')
-        query.bindValue(u':id', self.currentDictId)
-
-        return self.executeQuery(query)
+        return SqlQuery(
+            self,
+            u'DELETE from dictionary WHERE id=:id',
+            {
+                u':id': self.currentDictId
+            }
+        ).execute()
