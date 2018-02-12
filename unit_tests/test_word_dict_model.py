@@ -30,10 +30,11 @@ class TestDict(TestDBBaseClass):
         wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
         rowCount = wordEngDictModel.rowCount()
 
+        #TODO: fix tests
         id = wordEngDictModel.addWord('new word')
         self.assertNotEqual(False, id)
         self.assertEqual(rowCount + 1, wordEngDictModel.rowCount())
-        wordEngDictModel.removeWord(id, True)
+        wordEngDictModel.removeLinkWord(id, True)
         self.assertEqual(rowCount, wordEngDictModel.rowCount())
 
     def testRusWords(self):
@@ -44,5 +45,5 @@ class TestDict(TestDBBaseClass):
         id = wordRusDictModel.addWord(u'новое слово')
         self.assertNotEqual(False, id)
         self.assertEqual(1, wordRusDictModel.rowCount())
-        wordRusDictModel.removeWord(id, True)
+        wordRusDictModel.removeLinkWord(id, True)
         self.assertEqual(0, wordRusDictModel.rowCount())

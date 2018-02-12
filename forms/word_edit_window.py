@@ -31,8 +31,11 @@ class WordEditWindow(QtGui.QDialog):
         self.srcLang = srcLang
         self.dstLang = dstLang
 
+
+        #TODO: зачем dictId? Вроде не нужен
         self.dictId = dictId
         self.mode = mode
+        self.wordId = wordId
 
         self.wordDictModel = wordDictModel
         self.wordModel = WordModel(wordId, srcLang, dstLang)
@@ -68,12 +71,13 @@ class WordEditWindow(QtGui.QDialog):
         self.close()
 
     def _onOK(self, *args, **kwargs):
-        word = self.ui.leWord.text()
-        meaning = self.ui.teMeaning.toPlainText()
-        if self.mode == WordEditMode.AddNew:
-            self.wordDictModel.addWord(word, meaning)
-        if self.mode == WordEditMode.Edit:
+        if self.mode in [WordEditMode.AddNew, WordEditMode.Edit]:
+            word = self.ui.leWord.text()
+            meaning = self.ui.teMeaning.toPlainText()
             self.wordModel.update(word, meaning)
+
+        if self.mode == WordEditMode.AddNew:
+            self.wordDictModel.addWord(self.wordId)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 
