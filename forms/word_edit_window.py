@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide import QtGui
+from PySide.QtGui import QDataWidgetMapper
 
 from ui.word_edit_ui import Ui_WordAddEdit
 from models.word_model import WordModel
@@ -27,20 +28,28 @@ iconTitleMap = {
 class WordEditWindow(QtGui.QDialog):
     def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
+        self.srcLang = srcLang
+        self.dstLang = dstLang
 
         self.dictId = dictId
         self.mode = mode
-        self.wordDictModel = wordDictModel
 
+        self.wordDictModel = wordDictModel
         self.wordModel = WordModel(wordId, srcLang, dstLang)
         self.wordTranslateModel = WordTranslateModel(wordId, srcLang, dstLang)
-        self.srcLang = srcLang
-        self.dstLang = dstLang
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
         self.initUI()
         self.setWindowIcon(iconTitleMap[mode])
+        self.mapWordModelFields()
+
+    def mapWordModelFields(self):
+        mapper = QDataWidgetMapper()
+        mapper.setModel(self.wordModel)
+        mapper.addMapping(self.ui.leWord, self.wordModel.valueFieldNum)
+        mapper.addMapping(self.ui.teMeaning, self.wordModel.meaningFieldNum)
+        mapper.toFirst()
 
     def _onWordChanged(self, word, *args, **kwargs):
         #  TODO: валидация введенных символов

@@ -8,6 +8,10 @@ from utils import Lang
 
 
 class WordModel(BaseSqlQueryModel):
+    fields = ['value', 'meaning']
+    valueFieldNum = fields.index('value')
+    meaningFieldNum = fields.index('meaning')
+
     @need_refresh
     def __init__(self, wordId, srcLang, dstLang, *args, **kwargs):
         super(WordModel, self).__init__(*args, **kwargs)
@@ -67,4 +71,10 @@ class WordModel(BaseSqlQueryModel):
 
     @need_refresh
     def remove(self, id=None):
-        print 'remove {id}'.format(id=id if id else self.wordId)
+        return SqlQuery(
+            self,
+            'DELETE FROM word_[eng] WHERE id=:id',
+            {
+                ':id': id if id else self.wordId
+            }
+        ).execute()

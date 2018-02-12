@@ -5,7 +5,7 @@ from utils import Lang
 from models.word_translate_model import WordTranslateModel
 
 
-class TestWord(TestDBBaseClass):
+class TestWordTranslate(TestDBBaseClass):
     def setUp(self):
         self.wordEngTranlsateModel = WordTranslateModel(1, Lang.Eng, Lang.Rus) # 'exciting'
         self.translates = [u'захватывающий', u'восхитительный', u'еще одно слово']
