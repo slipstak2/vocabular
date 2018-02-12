@@ -35,13 +35,12 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.initUI()
 
     def _onAddWord(self):
-        wordId = self.wordEngDictModel.addEmptyWord()
-        assert isinstance(wordId, long)
-        addWordDialog = WordEditWindow(dictId=-1, wordId=wordId, wordValue='', srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew)
+        addWordDialog = WordEditWindow(dictId=-1, wordId=None, wordValue='', srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew, wordDictModel=self.wordEngDictModel)
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()
         if addWordDialog.result() != 1:
-            self.wordEngDictModel.removeWord(wordId, silent=True)
+            pass
+            #self.wordEngDictModel.removeWord(wordId, silent=True)
 
     def _onExit(self, *args, **kwargs):
         self.close()

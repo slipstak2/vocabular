@@ -78,11 +78,15 @@ class WordDictModel(BaseSqlQueryModel):
         self.onRefresh()
 
     @need_refresh
-    def addEmptyWord(self):
-        def _addEmptyWord():
+    def addWord(self, value, meaning=''):
+        def _addWord(value, meaning):
             return SqlQuery(
                 self,
-                'INSERT INTO word_[eng] (id) VALUES (NULL)'
+                'INSERT INTO word_[eng] (id, value, meaning) VALUES (NULL, :value, :meaning)',
+                {
+                    ':value': value,
+                    ':meaning': meaning
+                }
             ).execute(True)
 
         def addWordDictLink(id):
@@ -101,12 +105,13 @@ class WordDictModel(BaseSqlQueryModel):
                 }
             ).execute()
 
-        id = _addEmptyWord()
+        id = _addWord(value, meaning)
         if id:
             if addWordDictLink(id):
                 return id
         return False
 
+    #TODO: удаление ссылки + зависимости в случае с пустым словом. Аналогично и для перевода
     @need_refresh
     def removeWord(self, wordId, silent=False):
         if silent == False:

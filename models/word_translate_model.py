@@ -8,10 +8,10 @@ from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButto
 from utils import Lang
 
 
-class WordModel(BaseSqlQueryModel):
+class WordTranslateModel(BaseSqlQueryModel):
     @need_refresh
     def __init__(self, wordId, wordValue, srcLang, dstLang, *args, **kwargs):
-        super(WordModel, self).__init__(*args, **kwargs)
+        super(WordTranslateModel, self).__init__(*args, **kwargs)
         self.wordId = wordId
         self.wordValue = wordValue
         self.srcLang = srcLang
@@ -155,7 +155,7 @@ class WordModel(BaseSqlQueryModel):
         ).execute()
 
     def data(self, index, role):
-        value = super(WordModel, self).data(index, role)
+        value = super(WordTranslateModel, self).data(index, role)
         if role == QtCore.Qt.DisplayRole:
             if index.column() in [self.playFieldNum, self.editFieldNum, self.removeFieldNum]:
                 return ''

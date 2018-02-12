@@ -3,10 +3,10 @@
 from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
-from models.word_model import WordModel
+from models.word_translate_model import WordTranslateModel
 from forms_utils import WordEditMode
 
-from models.word_model import PlayButtonWordTranslateDelegate, EditButtonWordTranslateDelegate, RemoveButtonWordTranslateDelegate
+from models.word_translate_model import PlayButtonWordTranslateDelegate, EditButtonWordTranslateDelegate, RemoveButtonWordTranslateDelegate
 
 from models import models_utils as models_utils
 
@@ -24,13 +24,14 @@ iconTitleMap = {
 
 
 class WordEditWindow(QtGui.QDialog):
-    def __init__(self, dictId, wordId, wordValue, srcLang, dstLang, mode, *args, **kwargs):
+    def __init__(self, dictId, wordId, wordValue, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
         self.dictId = dictId
         self.mode = mode
+        self.wordDictModel = wordDictModel
 
-        self.wordModel = WordModel(wordId, wordValue, srcLang, dstLang)
+        self.wordTranslateModel = WordTranslateModel(wordId, wordValue, srcLang, dstLang)
         self.srcLang = srcLang
         self.dstLang = dstLang
 
@@ -45,7 +46,7 @@ class WordEditWindow(QtGui.QDialog):
 
     def _onTranslateChanged(self, selected, deselected):
         row = self.ui.tvTranslate.currentIndex().row()
-        self.ui.actDownOrder.setEnabled(row != self.wordModel.rowCount() - 1)
+        self.ui.actDownOrder.setEnabled(row != self.wordTranslateModel.rowCount() - 1)
         self.ui.actUpOrder.setEnabled(row != 0)
 
     def initUI(self):
@@ -56,33 +57,46 @@ class WordEditWindow(QtGui.QDialog):
         self.close()
 
     def _onOK(self, *args, **kwargs):
+        if self.mode == WordEditMode.AddNew:
+            word = self.ui.leWord.text()
+            meaning = self.ui.teMeaning.toPlainText()
+            self.wordDictModel.addWord(word, meaning)
+            print 'add new word'
+        if self.mode == WordEditMode.Edit:
+            print 'edit word'
+        if self.mode == WordEditMode.AddTranslate:
+            print 'add translate'
+
         self.accept()
 
     def _onDownOrder(self, *args, **kwargs):
         currentRow = self.ui.tvTranslate.currentIndex().row()
-        self.wordModel.downOrder(currentRow)
+        self.wordTranslateModel.downOrder(currentRow)
         self.ui.tvTranslate.selectRow(currentRow + 1)
 
     def _onUpOrder(self, *args, **kwargs):
         currentRow = self.ui.tvTranslate.currentIndex().row()
-        self.wordModel.upOrder(currentRow)
+        self.wordTranslateModel.upOrder(currentRow)
         self.ui.tvTranslate.selectRow(currentRow - 1)
 
     def _onAddTranslate(self, *args, **kwargs):
-        translateWordId = self.wordModel.addEmptyTranslate()
+        translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
         addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, wordValue='', srcLang=self.dstLang, dstLang=self.srcLang, mode=WordEditMode.AddTranslate)
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()
         if addTranslateDialog.result() != 1:
-            self.wordModel.removeTranslate(translateWordId, silent=True)
+            self.wordTranslateModel.removeTranslate(translateWordId, silent=True)
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
         self.ui.cbLang.setCurrentIndex(self.srcLang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
-        self.ui.leWord.setText(self.wordModel.wordValue)
+        self.ui.leWord.setText(self.wordTranslateModel.wordValue)
+
+        #self.ui.teMeaning.setText(self.wordModel.wordMeaning)
+
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.btnSave.clicked.connect(self._onOK)
         self.ui.actDownOrder.triggered.connect(self._onDownOrder)
@@ -90,15 +104,15 @@ class WordEditWindow(QtGui.QDialog):
         self.ui.actAddTranslate.triggered.connect(self._onAddTranslate)
 
     def _onTvTranslateDataChanged(self, *args, **kwargs):
-        for row in range(0, self.wordModel.rowCount()):
-            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.playFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.editFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordModel.index(row, self.wordModel.removeFieldNum))
+        for row in range(0, self.wordTranslateModel.rowCount()):
+            self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.playFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.editFieldNum))
+            self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.removeFieldNum))
 
         self.ui.tvTranslate.resizeColumnsToContents()
 
     def initModels(self):
-        self.ui.tvTranslate.setModel(self.wordModel)
+        self.ui.tvTranslate.setModel(self.wordTranslateModel)
         self.ui.tvTranslate.hideColumn(0)
         self.ui.tvTranslate.hideColumn(2)
         self.ui.tvTranslate.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
@@ -107,9 +121,9 @@ class WordEditWindow(QtGui.QDialog):
         selectionModel = self.ui.tvTranslate.selectionModel()
         selectionModel.selectionChanged.connect(self._onTranslateChanged)
 
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.playFieldNum, PlayButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.editFieldNum, EditButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
-        self.ui.tvTranslate.setItemDelegateForColumn(self.wordModel.removeFieldNum, RemoveButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordTranslateModel.playFieldNum, PlayButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordTranslateModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordTranslateModel.editFieldNum, EditButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordTranslateModel))
+        self.ui.tvTranslate.setItemDelegateForColumn(self.wordTranslateModel.removeFieldNum, RemoveButtonWordTranslateDelegate(self, self.ui.tvTranslate, self.wordTranslateModel))
 
-        self.wordModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
-        self.wordModel.onRefresh()
+        self.wordTranslateModel.onRefreshCallbacks.append(self._onTvTranslateDataChanged)
+        self.wordTranslateModel.onRefresh()
