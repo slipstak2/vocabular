@@ -8,7 +8,6 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class Lang(IntEnum):
     Rus = 0
     Eng = 1

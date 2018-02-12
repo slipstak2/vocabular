@@ -3,6 +3,7 @@
 from PySide import QtGui
 
 from ui.word_edit_ui import Ui_WordAddEdit
+from models.word_model import WordModel
 from models.word_translate_model import WordTranslateModel
 from forms_utils import WordEditMode
 
@@ -24,14 +25,15 @@ iconTitleMap = {
 
 
 class WordEditWindow(QtGui.QDialog):
-    def __init__(self, dictId, wordId, wordValue, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
+    def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
         self.dictId = dictId
         self.mode = mode
         self.wordDictModel = wordDictModel
 
-        self.wordTranslateModel = WordTranslateModel(wordId, wordValue, srcLang, dstLang)
+        self.wordModel = WordModel(wordId, srcLang, dstLang)
+        self.wordTranslateModel = WordTranslateModel(wordId, srcLang, dstLang)
         self.srcLang = srcLang
         self.dstLang = dstLang
 
@@ -57,13 +59,12 @@ class WordEditWindow(QtGui.QDialog):
         self.close()
 
     def _onOK(self, *args, **kwargs):
+        word = self.ui.leWord.text()
+        meaning = self.ui.teMeaning.toPlainText()
         if self.mode == WordEditMode.AddNew:
-            word = self.ui.leWord.text()
-            meaning = self.ui.teMeaning.toPlainText()
             self.wordDictModel.addWord(word, meaning)
-            print 'add new word'
         if self.mode == WordEditMode.Edit:
-            print 'edit word'
+            self.wordModel.update(word, meaning)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 
@@ -83,7 +84,7 @@ class WordEditWindow(QtGui.QDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, wordValue='', srcLang=self.dstLang, dstLang=self.srcLang, mode=WordEditMode.AddTranslate)
+        addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, srcLang=self.dstLang, dstLang=self.srcLang, mode=WordEditMode.AddTranslate)
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()
         if addTranslateDialog.result() != 1:
@@ -93,9 +94,9 @@ class WordEditWindow(QtGui.QDialog):
         self.setWindowTitle(translateTitleMap[self.mode])
         self.ui.cbLang.setCurrentIndex(self.srcLang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
-        self.ui.leWord.setText(self.wordTranslateModel.wordValue)
 
-        #self.ui.teMeaning.setText(self.wordModel.wordMeaning)
+        self.ui.leWord.setText(self.wordModel.wordValue)
+        self.ui.teMeaning.setText(self.wordModel.wordMeaning)
 
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.btnSave.clicked.connect(self._onOK)

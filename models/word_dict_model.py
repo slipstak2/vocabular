@@ -4,10 +4,10 @@ from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
 from forms.forms_utils import WordEditMode
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
-from models.base.utils import need_refresh
+from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate
-from models import models_utils as models_utils
+from models import models_utils
+from models.word_model import WordModel
 from utils import Lang
 
 
@@ -16,29 +16,18 @@ class WordDictModel(BaseSqlQueryModel):
     def __init__(self, dictModel, srcLang, dstLang, *args, **kwargs):
         super(WordDictModel, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
-        self.srcLang = srcLang
-        self.dstLang = dstLang
+        self.wordModel = WordModel(None, srcLang, dstLang)
+        self.initLang(srcLang, dstLang)
+
         if srcLang == Lang.Eng:
-            assert dstLang == Lang.Rus, "Currently supported only eng-rus translation"
-            self.SRC_LANG_FULL  = 'eng'
-            self.SRC_LANG_SHORT = 'e'
-            self.DST_LANG_FULL  = 'rus'
-            self.DST_LANG_SHORT = 'r'
             self.headerFields = ['',          '',      'eng',      u'рус',     '',     '']
             self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit']
         else:
-            assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
-            self.SRC_LANG_FULL  = 'rus'
-            self.SRC_LANG_SHORT = 'r'
-            self.DST_LANG_FULL  = 'eng'
-            self.DST_LANG_SHORT = 'e'
             self.headerFields = ['',          '',      u'рус',      'eng',     '',     '']
             self.fields =       ['d_id', 'wr_id', 'wr_value',  'we_value', 'play', 'edit']
 
-
         self.playFieldNum = self.fields.index('play')
         self.editFieldNum = self.fields.index('edit')
-
 
     def wordValue(self, recordIndex):
         return self.record(recordIndex).value(SqlQuery(self, 'w[e]_value').str())
@@ -79,16 +68,6 @@ class WordDictModel(BaseSqlQueryModel):
 
     @need_refresh
     def addWord(self, value, meaning=''):
-        def _addWord(value, meaning):
-            return SqlQuery(
-                self,
-                'INSERT INTO word_[eng] (id, value, meaning) VALUES (NULL, :value, :meaning)',
-                {
-                    ':value': value,
-                    ':meaning': meaning
-                }
-            ).execute(True)
-
         def addWordDictLink(id):
             return SqlQuery(
                 self,
@@ -105,7 +84,7 @@ class WordDictModel(BaseSqlQueryModel):
                 }
             ).execute()
 
-        id = _addWord(value, meaning)
+        id = self.wordModel.addWord(value, meaning)
         if id:
             if addWordDictLink(id):
                 return id
@@ -178,7 +157,6 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
         wordEditDialog = WordEditWindow(
             self.model.dictId(recordIndex),
             self.model.wordId(recordIndex),
-            self.model.wordValue(recordIndex),
             self.model.srcLang,
             self.model.dstLang,
             WordEditMode.Edit

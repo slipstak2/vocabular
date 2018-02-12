@@ -2,6 +2,19 @@
 
 from PySide import QtSql
 from db import getDb
+from utils import Lang
+
+
+import functools
+
+
+def need_refresh(func):
+    @functools.wraps(func)
+    def inner(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        self.refresh()
+        return result
+    return inner
 
 
 class SqlQuery(object):
@@ -58,9 +71,28 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
         self.db = getDb()
         self.onRefreshCallbacks = []
 
+    def initLang(self, srcLang, dstLang):
+        self.srcLang = srcLang
+        self.dstLang = dstLang
+        if srcLang == Lang.Eng:
+            assert dstLang == Lang.Rus, "Currently supported only eng-rus translation"
+            self.SRC_LANG_FULL  = 'eng'
+            self.SRC_LANG_SHORT = 'e'
+            self.DST_LANG_FULL  = 'rus'
+            self.DST_LANG_SHORT = 'r'
+        else:
+            assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
+            self.SRC_LANG_FULL  = 'rus'
+            self.SRC_LANG_SHORT = 'r'
+            self.DST_LANG_FULL  = 'eng'
+            self.DST_LANG_SHORT = 'e'
+
+
     def onRefresh(self):
         for callback in self.onRefreshCallbacks:
             callback()
 
     def refresh(self):
         raise NotImplementedError("pure virtual method 'refresh' must be implemented")
+
+

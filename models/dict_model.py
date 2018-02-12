@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
-from base.utils import need_refresh
+from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+
 
 
 class DictionaryModel(BaseSqlQueryModel):

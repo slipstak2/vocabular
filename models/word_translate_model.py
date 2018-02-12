@@ -2,35 +2,22 @@
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from models.base.utils import need_refresh
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery
+from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 
 
 class WordTranslateModel(BaseSqlQueryModel):
     @need_refresh
-    def __init__(self, wordId, wordValue, srcLang, dstLang, *args, **kwargs):
+    def __init__(self, wordId, srcLang, dstLang, *args, **kwargs):
         super(WordTranslateModel, self).__init__(*args, **kwargs)
         self.wordId = wordId
-        self.wordValue = wordValue
-        self.srcLang = srcLang
-        self.dstLang = dstLang
+        self.initLang(srcLang, dstLang)
 
         if srcLang == Lang.Eng:
-            assert dstLang == Lang.Rus, "Currently supported only eng-rus translation"
-            self.SRC_LANG_FULL  = 'eng'
-            self.SRC_LANG_SHORT = 'e'
-            self.DST_LANG_FULL  = 'rus'
-            self.DST_LANG_SHORT = 'r'
             self.headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
             self.fields =       ['wr_id', 'wr_value', 're_rus_order',  'wr_meaning', 'play', 'edit', 'remove']
         else:
-            assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
-            self.SRC_LANG_FULL  = 'rus'
-            self.SRC_LANG_SHORT = 'r'
-            self.DST_LANG_FULL  = 'eng'
-            self.DST_LANG_SHORT = 'e'
             self.headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
             self.fields =       ['we_id', 'we_value', 're_eng_order',  'we_meaning', 'play', 'edit', 'remove']
 

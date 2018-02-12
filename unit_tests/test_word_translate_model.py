@@ -7,7 +7,7 @@ from models.word_translate_model import WordTranslateModel
 
 class TestWord(TestDBBaseClass):
     def setUp(self):
-        self.wordEngTranlsateModel = WordTranslateModel(1, 'exciting', Lang.Eng, Lang.Rus)
+        self.wordEngTranlsateModel = WordTranslateModel(1, Lang.Eng, Lang.Rus) # 'exciting'
         self.translates = [u'захватывающий', u'восхитительный', u'еще одно слово']
 
     def tearDown(self):
