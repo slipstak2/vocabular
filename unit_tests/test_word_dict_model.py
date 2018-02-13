@@ -2,7 +2,7 @@
 
 from unit_tests.base.test_base import TestDBBaseClass
 from utils import Lang
-from models.dict_model import DictionaryModel
+from models.dict_model import DictionaryListModel
 from models.word_dict_model import WordDictModel
 from models.word_model import WordModel
 from PySide import QtCore
@@ -10,14 +10,14 @@ from PySide import QtCore
 
 class TestDict(TestDBBaseClass):
     def setUp(self):
-        self.dictModel = DictionaryModel()
+        self.dictListModel = DictionaryListModel()
 
     def tearDown(self):
         pass
 
     def testEngWords(self):
-        dictModel = DictionaryModel(currentDictIndex=0)
-        wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
+        dictListModel = DictionaryListModel(currentDictIndex=0)
+        wordEngDictModel = WordDictModel(dictListModel, Lang.Eng, Lang.Rus)
         self.assertEqual(2, wordEngDictModel.rowCount())
 
         self.assertEqual('exicting', wordEngDictModel.wordValue(0))
@@ -27,8 +27,8 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(u'поисковая система', wordEngDictModel.translateValue(1))
 
     def testAddAndRemoveEngWords(self):
-        dictModel = DictionaryModel(currentDictIndex=0)
-        wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
+        dictListModel = DictionaryListModel(currentDictIndex=0)
+        wordEngDictModel = WordDictModel(dictListModel, Lang.Eng, Lang.Rus)
         rowCount = wordEngDictModel.rowCount()
 
         wordModel = WordModel(None, Lang.Eng, Lang.Rus)
@@ -41,8 +41,8 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(rowCount, wordEngDictModel.rowCount())
 
     def testRusWords(self):
-        dictModel = DictionaryModel()
-        wordRusDictModel = WordDictModel(dictModel, Lang.Rus, Lang.Eng)
+        dictListModel = DictionaryListModel()
+        wordRusDictModel = WordDictModel(dictListModel, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusDictModel.rowCount())
 
         wordRusModel = WordModel(None, Lang.Rus, Lang.Eng)

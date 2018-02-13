@@ -4,13 +4,13 @@ from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 
 
 
-class DictionaryModel(BaseSqlQueryModel):
+class DictionaryListModel(BaseSqlQueryModel):
     fields = ['name', 'date_create', 'id']
     viewField = 'name'
 
     @need_refresh
     def __init__(self, currentDictIndex=0, *args, **kwargs):
-        super(DictionaryModel, self).__init__(*args, **kwargs)
+        super(DictionaryListModel, self).__init__(*args, **kwargs)
         self._currentDictIndex = currentDictIndex
         self.childModels = []
 
@@ -33,14 +33,14 @@ class DictionaryModel(BaseSqlQueryModel):
         return self.record(self.currentDictIndex).value('name')
 
     def viewFieldIndex(self):
-        return self.fieldIndex(DictionaryModel.viewField)
+        return self.fieldIndex(DictionaryListModel.viewField)
 
     def fieldIndex(self, fieldName):
-        return DictionaryModel.fields.index(fieldName)
+        return DictionaryListModel.fields.index(fieldName)
 
     def refresh(self):
         self.setQuery("SELECT {fields} FROM dictionary ORDER BY date_create".format(
-            fields=', '.join(DictionaryModel.fields)
+            fields=', '.join(DictionaryListModel.fields)
         ))
 
     @need_refresh

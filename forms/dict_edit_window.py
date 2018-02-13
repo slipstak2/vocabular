@@ -18,9 +18,9 @@ iconTitleMap = {
 
 
 class DictEditWindow(QtGui.QDialog):
-    def __init__(self, dictModel, mode, *args, **kwargs):
+    def __init__(self, dictListModel, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
-        self.dictModel = dictModel
+        self.dictListModel = dictListModel
         self.mode = mode
 
         self.ui = Ui_DictAddEdit()
@@ -35,12 +35,12 @@ class DictEditWindow(QtGui.QDialog):
     def _onSave(self, *args, **kwargs):
         dictName = self.ui.leDictName.text()
         if self.mode == DictEditMode.Add:
-            if self.dictModel.addDict(dictName):
+            if self.dictListModel.addDict(dictName):
                 self.accept()
             else:
                 QtGui.QMessageBox.critical(None, u"Ошибка", u"Во время создания словаря {} произошла ошибка".format(dictName))
         elif self.mode == DictEditMode.Edit:
-            if self.dictModel.editDict(self.dictModel.currentDictId, dictName):
+            if self.dictListModel.editDict(self.dictListModel.currentDictId, dictName):
                 self.accept()
             else:
                 QtGui.QMessageBox.critical(None, u"Ошибка", u"Во время редактирования словаря {} произошла ошибка".format(dictName))
@@ -48,7 +48,7 @@ class DictEditWindow(QtGui.QDialog):
     def initUI(self):
         self.setWindowTitle(translateTitleMap[self.mode])
         if self.mode == DictEditMode.Edit:
-            self.ui.leDictName.setText(self.dictModel.currentDictName)
+            self.ui.leDictName.setText(self.dictListModel.currentDictName)
 
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.btnSave.clicked.connect(self._onSave)

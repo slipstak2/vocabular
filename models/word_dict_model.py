@@ -13,9 +13,9 @@ from utils import Lang
 
 class WordDictModel(BaseSqlQueryModel):
     @need_refresh
-    def __init__(self, dictModel, srcLang, dstLang, *args, **kwargs):
+    def __init__(self, dictListModel, srcLang, dstLang, *args, **kwargs):
         super(WordDictModel, self).__init__(*args, **kwargs)
-        self.dictModel = dictModel
+        self.dictListModel = dictListModel
         self.wordModel = WordModel(None, srcLang, dstLang)
         self.initLang(srcLang, dstLang)
 
@@ -58,7 +58,7 @@ class WordDictModel(BaseSqlQueryModel):
                 ORDER BY rus_eng.[rus]_order
             ) as x
             GROUP BY d_id, w[e]_id
-            '''.format(dict_id=self.dictModel.currentDictId),
+            '''.format(dict_id=self.dictListModel.currentDictId),
         ).str()
         self.setQuery(query)
 
@@ -78,7 +78,7 @@ class WordDictModel(BaseSqlQueryModel):
               (:dict_id, :w[e]_id)
             ''',
             {
-                ':dict_id': self.dictModel.currentDictId,
+                ':dict_id': self.dictListModel.currentDictId,
                 ':w[e]_id': wordId,
             }
         ).execute()
@@ -96,7 +96,7 @@ class WordDictModel(BaseSqlQueryModel):
                 dict_id = :dict_id AND word_[eng]_id = :word_id
             ''',
             {
-                ':dict_id': self.dictModel.currentDictId,
+                ':dict_id': self.dictListModel.currentDictId,
                 ':word_id': wordId
             }
         ).execute()

@@ -1,56 +1,56 @@
 # -*- coding: utf-8 -*-
 
 from unit_tests.base.test_base import TestDBBaseClass
-from models.dict_model import DictionaryModel
+from models.dict_model import DictionaryListModel
 
 
 class TestDict(TestDBBaseClass):
     def setUp(self):
-        self.dictModel = DictionaryModel()
+        self.dictListModel = DictionaryListModel()
 
     def tearDown(self):
         pass
 
     def testDefaultDict(self):
-        dictModel = DictionaryModel()
-        self.assertEqual(1, dictModel.currentDictId)
-        self.assertEqual(0, dictModel.currentDictIndex)
-        self.assertEqual(u'SFML Game Development by example', dictModel.currentDictName)
+        dictListModel = DictionaryListModel()
+        self.assertEqual(1, dictListModel.currentDictId)
+        self.assertEqual(0, dictListModel.currentDictIndex)
+        self.assertEqual(u'SFML Game Development by example', dictListModel.currentDictName)
 
     def testFirstDict(self):
-        dictModel = DictionaryModel(1)
-        self.assertEqual(2, dictModel.currentDictId)
-        self.assertEqual(1, dictModel.currentDictIndex)
-        self.assertEqual(u'Effective Modern C++, 2014', dictModel.currentDictName)
+        dictListModel = DictionaryListModel(1)
+        self.assertEqual(2, dictListModel.currentDictId)
+        self.assertEqual(1, dictListModel.currentDictIndex)
+        self.assertEqual(u'Effective Modern C++, 2014', dictListModel.currentDictName)
 
     def testSwitchDict(self):
-        dictModel = DictionaryModel(0)
-        self.assertEqual(1, dictModel.currentDictId)
-        dictModel.currentDictIndex = 1
-        self.assertEqual(2, dictModel.currentDictId)
+        dictListModel = DictionaryListModel(0)
+        self.assertEqual(1, dictListModel.currentDictId)
+        dictListModel.currentDictIndex = 1
+        self.assertEqual(2, dictListModel.currentDictId)
 
     def testViewField(self):
-        self.assertEqual(0, self.dictModel.viewFieldIndex())
+        self.assertEqual(0, self.dictListModel.viewFieldIndex())
 
     def testFieldIndex(self):
-        self.assertEqual(1, self.dictModel.fieldIndex('date_create'))
+        self.assertEqual(1, self.dictListModel.fieldIndex('date_create'))
 
     def testAddEditRemoveDict(self):
-        dictModel = DictionaryModel()
-        rowCount = dictModel.rowCount()
+        dictListModel = DictionaryListModel()
+        rowCount = dictListModel.rowCount()
 
         # add dict
         dictName = 'new dict'
-        self.assertTrue(dictModel.addDict(dictName))
-        self.assertEqual(rowCount + 1, dictModel.rowCount())
+        self.assertTrue(dictListModel.addDict(dictName))
+        self.assertEqual(rowCount + 1, dictListModel.rowCount())
 
         # edit dict
-        dictModel.currentDictIndex = dictModel.rowCount() - 1
-        dictId = dictModel.currentDictId
+        dictListModel.currentDictIndex = dictListModel.rowCount() - 1
+        dictId = dictListModel.currentDictId
         newDictName = dictName + ' update'
-        dictModel.editDict(dictId, newDictName)
-        self.assertEqual(newDictName, dictModel.currentDictName)
+        dictListModel.editDict(dictId, newDictName)
+        self.assertEqual(newDictName, dictListModel.currentDictName)
 
         # remove dict
-        dictModel.removeDict()
-        self.assertEqual(rowCount, dictModel.rowCount())
+        dictListModel.removeDict()
+        self.assertEqual(rowCount, dictListModel.rowCount())

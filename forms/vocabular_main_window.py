@@ -8,7 +8,7 @@ sip.setapi('QVariant', 2)
 from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, DictEditMode
-from models.dict_model import DictionaryModel
+from models.dict_model import DictionaryListModel
 from models.word_dict_model import WordDictModel
 from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
@@ -29,9 +29,9 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
-        self.dictModel = DictionaryModel()
-        self.wordEngDictModel = WordDictModel(self.dictModel, self.srcLang, self.dstLang)
-        self.dictModel.childModels.append(self.wordEngDictModel)
+        self.dictListModel = DictionaryListModel()
+        self.wordEngDictModel = WordDictModel(self.dictListModel, self.srcLang, self.dstLang)
+        self.dictListModel.childModels.append(self.wordEngDictModel)
         self.initUI()
 
     def _onAddWord(self):
@@ -46,14 +46,14 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.close()
 
     def _onAddDict(self, *args, **kwargs):
-        dictDialog = DictEditWindow(self.dictModel, DictEditMode.Add)
+        dictDialog = DictEditWindow(self.dictListModel, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
-            self.ui.cbDicts.setCurrentIndex(self.dictModel.rowCount() - 1)
+            self.ui.cbDicts.setCurrentIndex(self.dictListModel.rowCount() - 1)
 
     def _onEditDict(self, *args, **kwargs):
         dictDialog = DictEditWindow(
-            self.dictModel,
+            self.dictListModel,
             DictEditMode.Edit,
         )
         currentIndex = self.ui.cbDicts.currentIndex()
@@ -64,15 +64,15 @@ class VocabularMainWindow(QtGui.QMainWindow):
         result = QtGui.QMessageBox.question(
             self,
             u"Удаление словаря",
-            u'Вы действительно хотите удалить словарь: "{}"'.format(self.dictModel.currentDictName),
+            u'Вы действительно хотите удалить словарь: "{}"'.format(self.dictListModel.currentDictName),
             QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel,
             QtGui.QMessageBox.Cancel
         )
         if result == QtGui.QMessageBox.Ok:
-            self.dictModel.removeDict()
+            self.dictListModel.removeDict()
 
     def _onCbDictCurrentIndexChanged(self, index):
-        self.dictModel.currentDictIndex = index
+        self.dictListModel.currentDictIndex = index
         self.ui.gbWords.setTitle(u'Слова ({})'.format(self.wordEngDictModel.rowCount()))
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):
@@ -102,8 +102,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
             initButtonsMouseHandlers(btn)
 
     def initModels(self):
-        self.ui.cbDicts.setModel(self.dictModel)
-        self.ui.cbDicts.setModelColumn(self.dictModel.viewFieldIndex())
+        self.ui.cbDicts.setModel(self.dictListModel)
+        self.ui.cbDicts.setModelColumn(self.dictListModel.viewFieldIndex())
 
         self.ui.tvEngWords.setModel(self.wordEngDictModel)
         self.ui.tvEngWords.hideColumn(0)
