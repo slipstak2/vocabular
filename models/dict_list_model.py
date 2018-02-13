@@ -2,8 +2,6 @@
 
 from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 
-
-
 class DictionaryListModel(BaseSqlQueryModel):
     fields = ['name', 'date_create', 'id']
     viewField = 'name'

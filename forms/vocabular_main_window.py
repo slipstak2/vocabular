@@ -8,7 +8,7 @@ sip.setapi('QVariant', 2)
 from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, DictEditMode
-from models.dict_model import DictionaryListModel
+from models.dict_list_model import DictionaryListModel
 from models.word_dict_model import WordDictModel
 from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode

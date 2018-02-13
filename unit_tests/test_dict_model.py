@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unit_tests.base.test_base import TestDBBaseClass
-from models.dict_model import DictionaryListModel
+from models.dict_list_model import DictionaryListModel
 
 
 class TestDict(TestDBBaseClass):
