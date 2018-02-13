@@ -16,6 +16,15 @@ def need_refresh(func):
         return result
     return inner
 
+def need_parent_refresh(func):
+    @functools.wraps(func)
+    def inner(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        #TODO: обновление всех _parentModel по иерархии вверх
+        self.parentModel.refresh()
+        return result
+    return inner
+
 
 class SqlQuery(object):
     def __init__(self, model, strQuery, params={}):
@@ -86,7 +95,6 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
             self.SRC_LANG_SHORT = 'r'
             self.DST_LANG_FULL  = 'eng'
             self.DST_LANG_SHORT = 'e'
-
 
     def onRefresh(self):
         for callback in self.onRefreshCallbacks:

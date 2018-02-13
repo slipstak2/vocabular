@@ -8,7 +8,8 @@ sip.setapi('QVariant', 2)
 from PySide import QtGui
 from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, DictEditMode
-from models.dict_list_model import DictionaryListModel
+from models.dict_list_model import DictListModel
+from models.dict_model import DictModel
 from models.word_dict_model import WordDictModel
 from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
@@ -29,7 +30,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
-        self.dictListModel = DictionaryListModel()
+        self.dictListModel = DictListModel()
         self.wordEngDictModel = WordDictModel(self.dictListModel, self.srcLang, self.dstLang)
         self.dictListModel.childModels.append(self.wordEngDictModel)
         self.initUI()
@@ -46,14 +47,21 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.close()
 
     def _onAddDict(self, *args, **kwargs):
-        dictDialog = DictEditWindow(self.dictListModel, DictEditMode.Add)
+        dictId = self.dictListModel.addDict('')
+        dictModel = DictModel(self.dictListModel, dictId)
+        dictDialog = DictEditWindow(dictModel, self.dictListModel.dictModelUtils, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
             self.ui.cbDicts.setCurrentIndex(self.dictListModel.rowCount() - 1)
+        else:
+            self.dictListModel.removeDict(dictId)
+
 
     def _onEditDict(self, *args, **kwargs):
+        dictModel = DictModel(self.dictListModel, self.dictListModel.currentDictId)
         dictDialog = DictEditWindow(
-            self.dictListModel,
+            dictModel,
+            self.dictListModel.dictModelUtils,
             DictEditMode.Edit,
         )
         currentIndex = self.ui.cbDicts.currentIndex()

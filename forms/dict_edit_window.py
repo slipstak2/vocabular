@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide import QtGui
+from PySide.QtGui import QDataWidgetMapper
 
 from ui.dict_edit_ui import Ui_DictAddEdit
 from forms_utils import DictEditMode
@@ -18,9 +19,10 @@ iconTitleMap = {
 
 
 class DictEditWindow(QtGui.QDialog):
-    def __init__(self, dictListModel, mode, *args, **kwargs):
+    def __init__(self, dictModel, dictModelUtils, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
-        self.dictListModel = dictListModel
+        self.dictModel = dictModel
+        self.dictModelsUtils = dictModelUtils
         self.mode = mode
 
         self.ui = Ui_DictAddEdit()
@@ -28,27 +30,26 @@ class DictEditWindow(QtGui.QDialog):
         self.initUI()
 
         self.setWindowIcon(iconTitleMap[mode])
+        self.mapDictModelFields()
+
+    def mapDictModelFields(self):
+        mapper = QDataWidgetMapper()
+        mapper.setModel(self.dictModel)
+        mapper.addMapping(self.ui.leDictName, self.dictModel.nameFieldName)
+        mapper.toFirst()
 
     def _onCancel(self, *args, **kwargs):
         self.close()
 
     def _onSave(self, *args, **kwargs):
-        dictName = self.ui.leDictName.text()
-        if self.mode == DictEditMode.Add:
-            if self.dictListModel.addDict(dictName):
-                self.accept()
-            else:
-                QtGui.QMessageBox.critical(None, u"Ошибка", u"Во время создания словаря {} произошла ошибка".format(dictName))
-        elif self.mode == DictEditMode.Edit:
-            if self.dictListModel.editDict(self.dictListModel.currentDictId, dictName):
-                self.accept()
-            else:
-                QtGui.QMessageBox.critical(None, u"Ошибка", u"Во время редактирования словаря {} произошла ошибка".format(dictName))
+        self.dictModelsUtils.edit(
+            self.dictModel.id,
+            self.ui.leDictName.text()
+        )
+        self.accept()
 
     def initUI(self):
         self.setWindowTitle(translateTitleMap[self.mode])
-        if self.mode == DictEditMode.Edit:
-            self.ui.leDictName.setText(self.dictListModel.currentDictName)
 
         self.ui.btnCancel.clicked.connect(self._onCancel)
         self.ui.btnSave.clicked.connect(self._onSave)

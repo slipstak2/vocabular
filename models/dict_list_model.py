@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 
 from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+from models.dict_model import DictModelUtils
 
-class DictionaryListModel(BaseSqlQueryModel):
+class DictListModel(BaseSqlQueryModel):
     fields = ['name', 'date_create', 'id']
     viewField = 'name'
 
     @need_refresh
     def __init__(self, currentDictIndex=0, *args, **kwargs):
-        super(DictionaryListModel, self).__init__(*args, **kwargs)
+        super(DictListModel, self).__init__(*args, **kwargs)
         self._currentDictIndex = currentDictIndex
         self.childModels = []
+
+        self.dictModelUtils = DictModelUtils(self)
 
     @property
     def currentDictIndex(self):
@@ -31,43 +34,21 @@ class DictionaryListModel(BaseSqlQueryModel):
         return self.record(self.currentDictIndex).value('name')
 
     def viewFieldIndex(self):
-        return self.fieldIndex(DictionaryListModel.viewField)
+        return self.fieldIndex(DictListModel.viewField)
 
     def fieldIndex(self, fieldName):
-        return DictionaryListModel.fields.index(fieldName)
+        return DictListModel.fields.index(fieldName)
 
     def refresh(self):
         self.setQuery("SELECT {fields} FROM dictionary ORDER BY date_create".format(
-            fields=', '.join(DictionaryListModel.fields)
+            fields=', '.join(DictListModel.fields)
         ))
 
-    @need_refresh
     def addDict(self, dictName):
-        return SqlQuery(
-            self,
-            u'INSERT INTO dictionary (name) VALUES (:name)',
-            {
-                ':name': dictName
-            }
-        ).execute(True)
+        return self.dictModelUtils.add(dictName)
 
-    @need_refresh
-    def editDict(self, dictId, dictName):
-        return SqlQuery(
-            self,
-            u'UPDATE dictionary SET name=:name WHERE id=:id',
-            {
-                u":id": dictId,
-                u":name": dictName
-            }
-        ).execute()
+    def editDict(self, dictName, dictId=None):
+        return self.dictModelUtils.edit(dictId if dictId else self.currentDictId, dictName)
 
-    @need_refresh
-    def removeDict(self):
-        return SqlQuery(
-            self,
-            u'DELETE from dictionary WHERE id=:id',
-            {
-                u':id': self.currentDictId
-            }
-        ).execute()
+    def removeDict(self, dictId=None):
+        return self.dictModelUtils.remove(dictId if dictId else self.currentDictId)
