@@ -4,6 +4,7 @@ from unit_tests.base.test_base import TestDBBaseClass
 from utils import Lang
 from models.dict_model import DictionaryModel
 from models.word_dict_model import WordDictModel
+from models.word_model import WordModel
 from PySide import QtCore
 
 
@@ -30,9 +31,11 @@ class TestDict(TestDBBaseClass):
         wordEngDictModel = WordDictModel(dictModel, Lang.Eng, Lang.Rus)
         rowCount = wordEngDictModel.rowCount()
 
-        #TODO: fix tests
-        id = wordEngDictModel.addWord('new word')
+        wordModel = WordModel(None, Lang.Eng, Lang.Rus)
+        id = wordModel.addWord('new word', '')
         self.assertNotEqual(False, id)
+        #TODO: fix tests
+        wordEngDictModel.addWord(id)
         self.assertEqual(rowCount + 1, wordEngDictModel.rowCount())
         wordEngDictModel.removeLinkWord(id, True)
         self.assertEqual(rowCount, wordEngDictModel.rowCount())
@@ -42,8 +45,10 @@ class TestDict(TestDBBaseClass):
         wordRusDictModel = WordDictModel(dictModel, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusDictModel.rowCount())
 
-        id = wordRusDictModel.addWord(u'новое слово')
+        wordRusModel = WordModel(None, Lang.Rus, Lang.Eng)
+        id = wordRusModel.addWord(u'новое слово', '')
         self.assertNotEqual(False, id)
+        wordRusDictModel.addWord(id)
         self.assertEqual(1, wordRusDictModel.rowCount())
         wordRusDictModel.removeLinkWord(id, True)
         self.assertEqual(0, wordRusDictModel.rowCount())
