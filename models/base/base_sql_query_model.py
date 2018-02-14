@@ -20,8 +20,11 @@ def need_parent_refresh(func):
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
-        #TODO: обновление всех _parentModel по иерархии вверх
-        self.parentModel.refresh()
+        parentModel = self
+        while hasattr(parentModel, 'parentModel') and parentModel.parentModel:
+            parentModel.refresh()
+            parentModel = parentModel.parentModel
+        parentModel.refresh()
         return result
     return inner
 

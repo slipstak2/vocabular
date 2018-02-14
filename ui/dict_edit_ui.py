@@ -69,6 +69,7 @@ class Ui_DictAddEdit(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.btnSave.sizePolicy().hasHeightForWidth())
         self.btnSave.setSizePolicy(sizePolicy)
+        self.btnSave.setDefault(True)
         self.btnSave.setObjectName(_fromUtf8("btnSave"))
         self.gridLayout.addWidget(self.btnSave, 2, 2, 1, 1)
 

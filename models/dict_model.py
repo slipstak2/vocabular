@@ -75,3 +75,6 @@ class DictModelUtils(BaseSqlQueryModel):
                 u':id': dictId
             }
         ).execute()
+
+    def refresh(self):
+        pass
