@@ -31,21 +31,31 @@ class WordEditWindow(QtGui.QDialog):
         self.srcLang = srcLang
         self.dstLang = dstLang
 
-
         #TODO: зачем dictId? Вроде не нужен
         self.dictId = dictId
         self.mode = mode
         self.wordId = wordId
 
         self.wordDictModel = wordDictModel
-        self.wordModel = WordModel(wordId, srcLang, dstLang)
-        self.wordTranslateModel = WordTranslateModel(wordId, srcLang, dstLang)
+        self.wordModel = WordModel(wordDictModel, wordId, srcLang, dstLang)
+        self.wordTranslateModel = WordTranslateModel(wordDictModel, wordId, srcLang, dstLang)
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
         self.initUI()
         self.setWindowIcon(iconTitleMap[mode])
         self.mapWordModelFields()
+
+    def __del__(self):
+        print '__del__ WordEditWindow'
+
+    def reject(self, *args, **kwargs):
+        print 'reject'
+        super(WordEditWindow, self).reject(*args, **kwargs)
+
+    def accept(self, *args, **kwargs):
+        print 'accept'
+        super(WordEditWindow, self).accept(*args, **kwargs)
 
     def mapWordModelFields(self):
         mapper = QDataWidgetMapper()

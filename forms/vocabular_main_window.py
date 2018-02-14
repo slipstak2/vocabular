@@ -31,8 +31,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
         self.dictListModel = DictListModel()
-        self.wordEngDictModel = WordDictModel(self.dictListModel, self.srcLang, self.dstLang)
-        self.dictListModel.childModels.append(self.wordEngDictModel)
+        self.wordEngDictModel = WordDictModel(self.dictListModel.dictModelProxy, self.srcLang, self.dstLang)
         self.initUI()
 
     def _onAddWord(self):

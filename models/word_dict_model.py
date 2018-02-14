@@ -13,10 +13,10 @@ from utils import Lang
 
 class WordDictModel(BaseSqlQueryModel):
     @need_refresh
-    def __init__(self, dictListModel, srcLang, dstLang, *args, **kwargs):
-        super(WordDictModel, self).__init__(*args, **kwargs)
-        self.dictListModel = dictListModel
-        self.wordModel = WordModel(None, srcLang, dstLang)
+    def __init__(self, dictProxyModel, srcLang, dstLang, *args, **kwargs):
+        super(WordDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)
+        self.dictProxyModel = dictProxyModel
+        self.wordModel = WordModel(parentModel=self, wordId=None, srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
         if srcLang == Lang.Eng:
@@ -58,7 +58,7 @@ class WordDictModel(BaseSqlQueryModel):
                 ORDER BY rus_eng.[rus]_order
             ) as x
             GROUP BY d_id, w[e]_id
-            '''.format(dict_id=self.dictListModel.currentDictId),
+            '''.format(dict_id=self.dictProxyModel.dictId),
         ).str()
         self.setQuery(query)
 
@@ -78,7 +78,7 @@ class WordDictModel(BaseSqlQueryModel):
               (:dict_id, :w[e]_id)
             ''',
             {
-                ':dict_id': self.dictListModel.currentDictId,
+                ':dict_id': self.dictProxyModel.dictId,
                 ':w[e]_id': wordId,
             }
         ).execute()
@@ -96,7 +96,7 @@ class WordDictModel(BaseSqlQueryModel):
                 dict_id = :dict_id AND word_[eng]_id = :word_id
             ''',
             {
-                ':dict_id': self.dictListModel.currentDictId,
+                ':dict_id': self.dictProxyModel.dictId,
                 ':word_id': wordId
             }
         ).execute()
@@ -155,7 +155,8 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
             self.model.wordId(recordIndex),
             self.model.srcLang,
             self.model.dstLang,
-            WordEditMode.Edit
+            WordEditMode.Edit,
+            wordDictModel=self.model
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 

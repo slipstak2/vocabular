@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
-from models.dict_model import DictModelUtils
+from models.dict_model import DictModelUtils, DictModelProxy
 
 
 class DictListModel(BaseSqlQueryModel):
@@ -10,9 +10,9 @@ class DictListModel(BaseSqlQueryModel):
 
     @need_refresh
     def __init__(self, currentDictIndex=0, *args, **kwargs):
-        super(DictListModel, self).__init__(*args, **kwargs)
+        super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
         self._currentDictIndex = currentDictIndex
-        self.childModels = []
+        self.dictModelProxy = DictModelProxy(self)
 
         self.dictModelUtils = DictModelUtils(self)
 
@@ -23,8 +23,7 @@ class DictListModel(BaseSqlQueryModel):
     @currentDictIndex.setter
     def currentDictIndex(self, index):
         self._currentDictIndex = index
-        for childModel in self.childModels:
-            childModel.refresh()
+        self.childModelsRefresh()
 
     @property
     def currentDictId(self):

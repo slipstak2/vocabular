@@ -17,7 +17,7 @@ class TestDict(TestDBBaseClass):
 
     def testEngWords(self):
         dictListModel = DictListModel(currentDictIndex=0)
-        wordEngDictModel = WordDictModel(dictListModel, Lang.Eng, Lang.Rus)
+        wordEngDictModel = WordDictModel(dictListModel.dictModelProxy, Lang.Eng, Lang.Rus)
         self.assertEqual(2, wordEngDictModel.rowCount())
 
         self.assertEqual('exicting', wordEngDictModel.wordValue(0))
@@ -28,10 +28,10 @@ class TestDict(TestDBBaseClass):
 
     def testAddAndRemoveEngWords(self):
         dictListModel = DictListModel(currentDictIndex=0)
-        wordEngDictModel = WordDictModel(dictListModel, Lang.Eng, Lang.Rus)
+        wordEngDictModel = WordDictModel(dictListModel.dictModelProxy, Lang.Eng, Lang.Rus)
         rowCount = wordEngDictModel.rowCount()
 
-        wordModel = WordModel(None, Lang.Eng, Lang.Rus)
+        wordModel = WordModel(None, None, Lang.Eng, Lang.Rus)
         id = wordModel.addWord('new word', '')
         self.assertNotEqual(False, id)
         #TODO: fix tests
@@ -42,10 +42,10 @@ class TestDict(TestDBBaseClass):
 
     def testRusWords(self):
         dictListModel = DictListModel()
-        wordRusDictModel = WordDictModel(dictListModel, Lang.Rus, Lang.Eng)
+        wordRusDictModel = WordDictModel(dictListModel.dictModelProxy, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusDictModel.rowCount())
 
-        wordRusModel = WordModel(None, Lang.Rus, Lang.Eng)
+        wordRusModel = WordModel(None, None, Lang.Rus, Lang.Eng)
         id = wordRusModel.addWord(u'новое слово', '')
         self.assertNotEqual(False, id)
         wordRusDictModel.addWord(id)

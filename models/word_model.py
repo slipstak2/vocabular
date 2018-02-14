@@ -13,8 +13,8 @@ class WordModel(BaseSqlQueryModel):
     meaningFieldNum = fields.index('meaning')
 
     @need_refresh
-    def __init__(self, wordId, srcLang, dstLang, *args, **kwargs):
-        super(WordModel, self).__init__(*args, **kwargs)
+    def __init__(self, parentModel, wordId, srcLang, dstLang, *args, **kwargs):
+        super(WordModel, self).__init__(parentModel=parentModel, *args, **kwargs)
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
 
