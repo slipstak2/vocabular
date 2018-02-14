@@ -25,22 +25,19 @@ class TestDBBaseClass(TestBaseClass):
         self.db = getDb()
 
     @staticmethod
-    def _dbDropTables():
-        applySQLcommands(AppSettings().dropSQLTablePath)
-
-    @staticmethod
-    def _dbCreateTables():
-        applySQLcommands(AppSettings().createSQLTablePath)
-
-    @staticmethod
-    def _dbFillTables():
-        applySQLcommands(AppSettings().fillSQLTablesPath)
-
-    @staticmethod
     def dbInit():
-        TestDBBaseClass._dbDropTables()
-        TestDBBaseClass._dbCreateTables()
-        TestDBBaseClass._dbFillTables()
+        sqlPaths = [
+            AppSettings().dropSQLTablePath,
+            AppSettings().createSQLTablePath,
+            AppSettings().fillSQLTablesPath
+        ]
+        with open(AppSettings().allSqlCommandsPath, 'w') as total:
+            for sqlPath in sqlPaths:
+                with open(sqlPath, 'r') as f:
+                    content = f.read()
+                    total.write(content + '\n')
+
+        applySQLcommands(AppSettings().allSqlCommandsPath)
 
     @classmethod
     def setUpClass(cls):

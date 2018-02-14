@@ -34,7 +34,6 @@ CREATE TABLE `word_eng` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
-
 CREATE TABLE `rus_eng` (
 	`word_rus_id` int(11) NOT NULL,
 	`word_eng_id` int(11) NOT NULL,

@@ -15,7 +15,7 @@ class AppMode(Enum):
 _CONFIG_PATH = 'configs/db'
 
 configMap = {
-    AppMode.DEVELOP:    'config-local.yaml',
+    AppMode.DEVELOP:    'config-develop.yaml',
     AppMode.UNIT_TESTS: 'config-unit-tests.yaml',
     AppMode.PRODUCTION: 'config-production.yaml',
 }
@@ -48,3 +48,7 @@ class AppSettings:
     @property
     def fillSQLTablesPath(self):
         return os.path.join(self._startPath, 'db_structure', 'fill_tables.sql')
+
+    @property
+    def allSqlCommandsPath(self):
+        return os.path.join(self._startPath, 'db_structure', 'total.sql')
