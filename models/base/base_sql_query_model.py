@@ -89,6 +89,11 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
         self.db = getDb()
         self.onRefreshCallbacks = []
 
+    def release(self):
+        assert len(self.childModels) == 0, "childModels wasn't release"
+        assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
+        self.parentModel.childModels.pop()
+
     def childModelsRefresh(self):
         for childModel in self.childModels:
             childModel.refresh()

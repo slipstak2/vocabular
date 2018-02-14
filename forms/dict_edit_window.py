@@ -3,6 +3,7 @@
 from PySide import QtGui
 from PySide.QtGui import QDataWidgetMapper
 
+from forms.base_dialog import BaseDialog
 from ui.dict_edit_ui import Ui_DictAddEdit
 from forms_utils import DictEditMode
 
@@ -18,7 +19,7 @@ iconTitleMap = {
 }
 
 
-class DictEditWindow(QtGui.QDialog):
+class DictEditWindow(BaseDialog):
     def __init__(self, dictModel, dictModelUtils, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
         self.dictModel = dictModel

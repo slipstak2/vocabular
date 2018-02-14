@@ -3,6 +3,7 @@
 from PySide import QtGui
 from PySide.QtGui import QDataWidgetMapper
 
+from forms.base_dialog import BaseDialog
 from ui.word_edit_ui import Ui_WordAddEdit
 from models.word_model import WordModel
 from models.word_translate_model import WordTranslateModel
@@ -25,7 +26,7 @@ iconTitleMap = {
 }
 
 
-class WordEditWindow(QtGui.QDialog):
+class WordEditWindow(BaseDialog):
     def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
         self.srcLang = srcLang
@@ -37,25 +38,14 @@ class WordEditWindow(QtGui.QDialog):
         self.wordId = wordId
 
         self.wordDictModel = wordDictModel
-        self.wordModel = WordModel(wordDictModel, wordId, srcLang, dstLang)
-        self.wordTranslateModel = WordTranslateModel(wordDictModel, wordId, srcLang, dstLang)
+        self.wordModel = self.registerModel(WordModel(wordDictModel, wordId, srcLang, dstLang))
+        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordDictModel, wordId, srcLang, dstLang))
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
         self.initUI()
         self.setWindowIcon(iconTitleMap[mode])
         self.mapWordModelFields()
-
-    def __del__(self):
-        print '__del__ WordEditWindow'
-
-    def reject(self, *args, **kwargs):
-        print 'reject'
-        super(WordEditWindow, self).reject(*args, **kwargs)
-
-    def accept(self, *args, **kwargs):
-        print 'accept'
-        super(WordEditWindow, self).accept(*args, **kwargs)
 
     def mapWordModelFields(self):
         mapper = QDataWidgetMapper()
@@ -107,7 +97,14 @@ class WordEditWindow(QtGui.QDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        addTranslateDialog = WordEditWindow(dictId=-1, wordId=translateWordId, srcLang=self.dstLang, dstLang=self.srcLang, mode=WordEditMode.AddTranslate)
+        addTranslateDialog = WordEditWindow(
+            dictId=-1,
+            wordId=translateWordId,
+            srcLang=self.dstLang,
+            dstLang=self.srcLang,
+            mode=WordEditMode.AddTranslate,
+            wordDictModel=self.wordDictModel #TODO: раньше не было
+        )
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()
         if addTranslateDialog.result() != 1:
