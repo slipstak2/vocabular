@@ -151,7 +151,6 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         self.commitData.emit(self.sender())
 
         wordEditDialog = WordEditWindow(
-            self.model.dictId(recordIndex),
             self.model.wordId(recordIndex),
             self.model.srcLang,
             self.model.dstLang,

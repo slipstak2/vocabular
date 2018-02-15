@@ -27,13 +27,11 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordListDictModel=None, *args, **kwargs):
+    def __init__(self, wordId, srcLang, dstLang, mode, wordListDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
         self.srcLang = srcLang
         self.dstLang = dstLang
 
-        #TODO: зачем dictId? Вроде не нужен
-        self.dictId = dictId
         self.mode = mode
         self.wordId = wordId
 
@@ -98,7 +96,6 @@ class WordEditWindow(BaseDialog):
         assert isinstance(translateWordId, long)
 
         addTranslateDialog = WordEditWindow(
-            dictId=-1,
             wordId=translateWordId,
             srcLang=self.dstLang,
             dstLang=self.srcLang,

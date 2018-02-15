@@ -3,7 +3,7 @@
 from unit_tests.base.test_base import TestDBBaseClass
 from utils import Lang
 from models.dict_list_model import DictListModel
-from models.word_dict_model import WordListDictModel
+from models.word_list_dict_model import WordListDictModel
 from models.word_model import WordModel
 from PySide import QtCore
 
