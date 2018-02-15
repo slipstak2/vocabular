@@ -11,10 +11,10 @@ from models.word_model import WordModel
 from utils import Lang
 
 
-class WordDictModel(BaseSqlQueryModel):
+class WordListDictModel(BaseSqlQueryModel):
     @need_refresh
     def __init__(self, dictProxyModel, srcLang, dstLang, *args, **kwargs):
-        super(WordDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)
+        super(WordListDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)
         self.dictProxyModel = dictProxyModel
         self.wordModel = WordModel(parentModel=self, wordId=None, srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
@@ -116,7 +116,7 @@ class WordDictModel(BaseSqlQueryModel):
                 self.wordModel.remove(wordId)
 
     def data(self, index, role):
-        value = super(WordDictModel, self).data(index, role)
+        value = super(WordListDictModel, self).data(index, role)
         if role == QtCore.Qt.TextColorRole and index.column() == 2:
             return QtGui.QColor(QtCore.Qt.blue)
 
@@ -130,7 +130,7 @@ class WordDictModel(BaseSqlQueryModel):
         return len(self.fields)
 
 
-class PlayButtonWordDictDelegate(PlayButtonDelegate):
+class PlayButtonWordListDictDelegate(PlayButtonDelegate):
     def __init__(self, parentWindow, parent, model):
         PlayButtonDelegate.__init__(self, parentWindow, parent, model)
 
@@ -140,7 +140,7 @@ class PlayButtonWordDictDelegate(PlayButtonDelegate):
         self.commitData.emit(self.sender())
 
 
-class EditButtonWordDictDelegate(EditButtonDelegate):
+class EditButtonWordListDictDelegate(EditButtonDelegate):
     def __init__(self, parentWindow, parent, model):
         EditButtonDelegate.__init__(self, parentWindow, parent, model)
 
@@ -156,7 +156,7 @@ class EditButtonWordDictDelegate(EditButtonDelegate):
             self.model.srcLang,
             self.model.dstLang,
             WordEditMode.Edit,
-            wordDictModel=self.model
+            wordListDictModel=self.model
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 

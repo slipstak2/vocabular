@@ -27,7 +27,7 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordDictModel=None, *args, **kwargs):
+    def __init__(self, dictId, wordId, srcLang, dstLang, mode, wordListDictModel=None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
         self.srcLang = srcLang
         self.dstLang = dstLang
@@ -37,9 +37,9 @@ class WordEditWindow(BaseDialog):
         self.mode = mode
         self.wordId = wordId
 
-        self.wordDictModel = wordDictModel
-        self.wordModel = self.registerModel(WordModel(wordDictModel, wordId, srcLang, dstLang))
-        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordDictModel, wordId, srcLang, dstLang))
+        self.wordListDictModel = wordListDictModel
+        self.wordModel = self.registerModel(WordModel(wordListDictModel, wordId, srcLang, dstLang))
+        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordListDictModel, wordId, srcLang, dstLang))
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
@@ -77,7 +77,7 @@ class WordEditWindow(BaseDialog):
             self.wordModel.update(word, meaning)
 
         if self.mode == WordEditMode.AddNew:
-            self.wordDictModel.addWord(self.wordId)
+            self.wordListDictModel.addWord(self.wordId)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 
@@ -103,7 +103,7 @@ class WordEditWindow(BaseDialog):
             srcLang=self.dstLang,
             dstLang=self.srcLang,
             mode=WordEditMode.AddTranslate,
-            wordDictModel=self.wordDictModel #TODO: раньше не было
+            wordListDictModel=self.wordListDictModel #TODO: раньше не было
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()

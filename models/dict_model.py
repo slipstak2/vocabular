@@ -3,19 +3,6 @@
 from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh, need_parent_refresh
 
 
-class DictModelProxy(BaseSqlQueryModel):
-    def __init__(self, dictListModel):
-        super(DictModelProxy, self).__init__(parentModel=dictListModel)
-        self.dictListModel = dictListModel
-
-    @property
-    def dictId(self):
-        return self.dictListModel.currentDictId
-
-    def refresh(self):
-        pass
-
-
 class DictModel(BaseSqlQueryModel):
     fields = ['name', 'date_create', 'id']
     nameFieldName = fields.index('name')
@@ -51,6 +38,18 @@ class DictModel(BaseSqlQueryModel):
                 id=self.dictId
             )
         )
+
+
+class DictModelProxy(BaseSqlQueryModel):
+    def __init__(self, dictListModel):
+        super(DictModelProxy, self).__init__(parentModel=dictListModel)
+
+    @property
+    def dictId(self):
+        return self.parentModel.currentDictId
+
+    def refresh(self):
+        pass
 
 
 class DictModelUtils(BaseSqlQueryModel):

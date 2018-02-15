@@ -10,8 +10,8 @@ from ui.main_window_ui import Ui_VocabularMainWindow
 from dict_edit_window import DictEditWindow, DictEditMode
 from models.dict_list_model import DictListModel
 from models.dict_model import DictModel
-from models.word_dict_model import WordDictModel
-from models.word_dict_model import PlayButtonWordDictDelegate, EditButtonWordDictDelegate
+from models.word_dict_model import WordListDictModel
+from models.word_dict_model import PlayButtonWordListDictDelegate, EditButtonWordListDictDelegate
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
 from version import version
@@ -31,16 +31,16 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
         self.dictListModel = DictListModel()
-        self.wordEngDictModel = WordDictModel(self.dictListModel.dictModelProxy, self.srcLang, self.dstLang)
+        self.wordListDictModel = WordListDictModel(self.dictListModel.dictModelProxy, self.srcLang, self.dstLang)
         self.initUI()
 
     def _onAddWord(self):
-        wordId = self.wordEngDictModel.wordModel.addWord('', '')
-        addWordDialog = WordEditWindow(dictId=-1, wordId=wordId, srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew, wordDictModel=self.wordEngDictModel)
+        wordId = self.wordListDictModel.wordModel.addWord('', '')
+        addWordDialog = WordEditWindow(dictId=-1, wordId=wordId, srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew, wordListDictModel=self.wordListDictModel)
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()
         if addWordDialog.result() != 1:
-            self.wordEngDictModel.removeLinkWord(wordId, silent=True, removeWord=True)
+            self.wordListDictModel.removeLinkWord(wordId, silent=True, removeWord=True)
 
     def _onExit(self, *args, **kwargs):
         self.close()
@@ -80,12 +80,12 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onCbDictCurrentIndexChanged(self, index):
         self.dictListModel.currentDictIndex = index
-        self.ui.gbWords.setTitle(u'Слова ({})'.format(self.wordEngDictModel.rowCount()))
+        self.ui.gbWords.setTitle(u'Слова ({})'.format(self.wordListDictModel.rowCount()))
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):
-        for row in range(0, self.wordEngDictModel.rowCount()):
-            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, self.wordEngDictModel.playFieldNum))
-            self.ui.tvEngWords.openPersistentEditor(self.wordEngDictModel.index(row, self.wordEngDictModel.editFieldNum))
+        for row in range(0, self.wordListDictModel.rowCount()):
+            self.ui.tvEngWords.openPersistentEditor(self.wordListDictModel.index(row, self.wordListDictModel.playFieldNum))
+            self.ui.tvEngWords.openPersistentEditor(self.wordListDictModel.index(row, self.wordListDictModel.editFieldNum))
         self.ui.tvEngWords.resizeColumnsToContents()
 
     def initUI(self):
@@ -112,14 +112,14 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.ui.cbDicts.setModel(self.dictListModel)
         self.ui.cbDicts.setModelColumn(self.dictListModel.viewFieldIndex())
 
-        self.ui.tvEngWords.setModel(self.wordEngDictModel)
+        self.ui.tvEngWords.setModel(self.wordListDictModel)
         self.ui.tvEngWords.hideColumn(0)
         self.ui.tvEngWords.hideColumn(1)
         self.ui.tvEngWords.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.ui.tvEngWords.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 
-        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.playFieldNum, PlayButtonWordDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
-        self.ui.tvEngWords.setItemDelegateForColumn(self.wordEngDictModel.editFieldNum, EditButtonWordDictDelegate(self, self.ui.tvEngWords, self.wordEngDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordListDictModel.playFieldNum, PlayButtonWordListDictDelegate(self, self.ui.tvEngWords, self.wordListDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordListDictModel.editFieldNum, EditButtonWordListDictDelegate(self, self.ui.tvEngWords, self.wordListDictModel))
 
-        self.wordEngDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
-        self.wordEngDictModel.onRefresh()
+        self.wordListDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
+        self.wordListDictModel.onRefresh()
