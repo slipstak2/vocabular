@@ -35,7 +35,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.initUI()
 
     def _onAddWord(self):
-        wordId = self.wordListDictModel.wordModel.addWord('', '')
+        wordId = self.wordListDictModel.wordModelUtils.add('', '')
         addWordDialog = WordEditWindow(wordId=wordId, srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew, wordListDictModel=self.wordListDictModel)
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()

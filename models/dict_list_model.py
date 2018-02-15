@@ -44,6 +44,7 @@ class DictListModel(BaseSqlQueryModel):
             fields=', '.join(DictListModel.fields)
         ))
 
+    # TODO: так ли нужны высокоуровневые методы, а может некоторые просто убрать?
     def addDict(self, dictName):
         return self.dictModelUtils.add(dictName)
 

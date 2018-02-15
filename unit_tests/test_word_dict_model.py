@@ -4,7 +4,7 @@ from unit_tests.base.test_base import TestDBBaseClass
 from utils import Lang
 from models.dict_list_model import DictListModel
 from models.word_list_dict_model import WordListDictModel
-from models.word_model import WordModel
+from models.word_model import WordModel, WordModelUtils
 from PySide import QtCore
 
 
@@ -31,11 +31,11 @@ class TestDict(TestDBBaseClass):
         wordEngListDictModel = WordListDictModel(dictListModel.dictModelProxy, Lang.Eng, Lang.Rus)
         rowCount = wordEngListDictModel.rowCount()
 
-        wordModel = WordModel(None, None, Lang.Eng, Lang.Rus)
-        id = wordModel.addWord('new word', '')
+        wordEngModelUtils = WordModelUtils(None, Lang.Eng, Lang.Rus)
+        id = wordEngModelUtils.add('new word', '')
         self.assertNotEqual(False, id)
         #TODO: fix tests
-        wordEngListDictModel.addWord(id)
+        wordEngListDictModel.addWordLink(id)
         self.assertEqual(rowCount + 1, wordEngListDictModel.rowCount())
         wordEngListDictModel.removeLinkWord(id, True)
         self.assertEqual(rowCount, wordEngListDictModel.rowCount())
@@ -45,10 +45,10 @@ class TestDict(TestDBBaseClass):
         wordRusListDictModel = WordListDictModel(dictListModel.dictModelProxy, Lang.Rus, Lang.Eng)
         self.assertEqual(0, wordRusListDictModel.rowCount())
 
-        wordRusModel = WordModel(None, None, Lang.Rus, Lang.Eng)
-        id = wordRusModel.addWord(u'новое слово', '')
+        wordRusModelUtils= WordModelUtils(None, Lang.Rus, Lang.Eng)
+        id = wordRusModelUtils.add(u'новое слово', '')
         self.assertNotEqual(False, id)
-        wordRusListDictModel.addWord(id)
+        wordRusListDictModel.addWordLink(id)
         self.assertEqual(1, wordRusListDictModel.rowCount())
         wordRusListDictModel.removeLinkWord(id, True)
         self.assertEqual(0, wordRusListDictModel.rowCount())

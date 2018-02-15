@@ -7,7 +7,7 @@ from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate
 from models import models_utils
-from models.word_model import WordModel
+from models.word_model import WordModel, WordModelUtils
 from utils import Lang
 
 
@@ -17,6 +17,7 @@ class WordListDictModel(BaseSqlQueryModel):
         super(WordListDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)
         self.dictProxyModel = dictProxyModel
         self.wordModel = WordModel(parentModel=self, wordId=None, srcLang=srcLang, dstLang=dstLang)
+        self.wordModelUtils = WordModelUtils(parentModel=self, srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
         if srcLang == Lang.Eng:
@@ -67,7 +68,7 @@ class WordListDictModel(BaseSqlQueryModel):
         self.onRefresh()
 
     @need_refresh
-    def addWord(self, wordId):
+    def addWordLink(self, wordId):
         return SqlQuery(
             self,
             '''

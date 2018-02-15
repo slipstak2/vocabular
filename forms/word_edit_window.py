@@ -72,10 +72,10 @@ class WordEditWindow(BaseDialog):
         if self.mode in [WordEditMode.AddNew, WordEditMode.Edit]:
             word = self.ui.leWord.text()
             meaning = self.ui.teMeaning.toPlainText()
-            self.wordModel.update(word, meaning)
+            self.wordModel.edit(word, meaning)
 
         if self.mode == WordEditMode.AddNew:
-            self.wordListDictModel.addWord(self.wordId)
+            self.wordListDictModel.addWordLink(self.wordId)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 

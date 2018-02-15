@@ -2,7 +2,7 @@
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh, need_parent_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 
@@ -47,7 +47,14 @@ class WordModel(BaseSqlQueryModel):
 
         self.onRefresh()
 
-    def addWord(self, value, meaning):
+
+class WordModelUtils(BaseSqlQueryModel):
+    def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):
+        super(WordModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
+        self.initLang(srcLang, dstLang)
+
+    @need_parent_refresh
+    def add(self, value, meaning):
         return SqlQuery(
             self,
             'INSERT INTO word_[eng] (id, value, meaning) VALUES (NULL, :value, :meaning)',
@@ -57,24 +64,27 @@ class WordModel(BaseSqlQueryModel):
             }
         ).execute(True)
 
-    @need_refresh
-    def update(self, value, meaning):
+    @need_parent_refresh
+    def edit(self, wordId, value, meaning):
         return SqlQuery(
             self,
             'UPDATE word_[eng] SET value=:value, meaning=:meaning WHERE id=:id',
             {
+                ':id': wordId,
                 ':value': value,
-                ':meaning': meaning,
-                ':id': self.wordId
+                ':meaning': meaning
             }
         ).execute()
 
-    @need_refresh
-    def remove(self, id=None):
+    @need_parent_refresh
+    def remove(self, wordId):
         return SqlQuery(
             self,
             'DELETE FROM word_[eng] WHERE id=:id',
             {
-                ':id': id if id else self.wordId
+                ':id': wordId
             }
         ).execute()
+
+    def refresh(self):
+        pass
