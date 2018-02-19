@@ -12,6 +12,7 @@ from models.dict_list_model import DictListModel
 from models.dict_model import DictModel
 from models.word_list_dict_model import WordListDictModel
 from models.word_list_dict_model import PlayButtonWordListDictDelegate, EditButtonWordListDictDelegate
+from models.word_model import WordModelProxy
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
 from version import version
@@ -36,7 +37,15 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onAddWord(self):
         wordId = self.wordListDictModel.wordModelUtils.add('', '')
-        addWordDialog = WordEditWindow(wordId=wordId, srcLang=self.srcLang, dstLang=self.dstLang, mode=WordEditMode.AddNew, wordListDictModel=self.wordListDictModel)
+        wordProxyModel = WordModelProxy(self.wordListDictModel, wordId, self.srcLang, self.dstLang) #TODO: register model
+        addWordDialog = WordEditWindow(
+            wordModelProxy=wordProxyModel,
+            wordListDictModel=self.wordListDictModel,
+            wordId=wordId,
+            srcLang=self.srcLang,
+            dstLang=self.dstLang,
+            mode=WordEditMode.AddNew
+        )
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()
         if addWordDialog.result() != 1:

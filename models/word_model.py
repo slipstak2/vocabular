@@ -48,6 +48,16 @@ class WordModel(BaseSqlQueryModel):
         self.onRefresh()
 
 
+class WordModelProxy(BaseSqlQueryModel):
+    def __init__(self, parentModel, wordId, srcLang, dstLang):
+        super(WordModelProxy, self).__init__(parentModel=parentModel)
+        self.wordId = wordId
+        self.initLang(srcLang, dstLang)
+
+    def refresh(self):
+        pass
+
+
 class WordModelUtils(BaseSqlQueryModel):
     def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):
         super(WordModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)

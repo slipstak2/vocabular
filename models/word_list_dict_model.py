@@ -7,7 +7,7 @@ from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate
 from models import models_utils
-from models.word_model import WordModel, WordModelUtils
+from models.word_model import WordModel, WordModelUtils, WordModelProxy
 from utils import Lang
 
 
@@ -114,7 +114,7 @@ class WordListDictModel(BaseSqlQueryModel):
 
         if removeLink():
             if removeWord:
-                self.wordModel.remove(wordId)
+                self.wordModelUtils.remove(wordId)
 
     def data(self, index, role):
         value = super(WordListDictModel, self).data(index, role)
@@ -151,12 +151,14 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
+        wordModelProxy = WordModelProxy(self.model, self.model.wordId(recordIndex), srcLang=self.model.srcLang, dstLang=self.model.dstLang)
         wordEditDialog = WordEditWindow(
-            self.model.wordId(recordIndex),
-            self.model.srcLang,
-            self.model.dstLang,
-            WordEditMode.Edit,
-            wordListDictModel=self.model
+            wordModelProxy=wordModelProxy,
+            wordListDictModel=self.model,
+            wordId = self.model.wordId(recordIndex),
+            srcLang=self.model.srcLang,
+            dstLang=self.model.dstLang,
+            mode=WordEditMode.Edit,
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 

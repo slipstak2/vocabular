@@ -5,7 +5,7 @@ from PySide.QtGui import QDataWidgetMapper
 
 from forms.base_dialog import BaseDialog
 from ui.word_edit_ui import Ui_WordAddEdit
-from models.word_model import WordModel
+from models.word_model import WordModel, WordModelProxy
 from models.word_translate_model import WordTranslateModel
 from forms_utils import WordEditMode
 
@@ -27,13 +27,14 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordId, srcLang, dstLang, mode, wordListDictModel=None, *args, **kwargs):
+    def __init__(self, wordModelProxy, wordListDictModel, wordId, srcLang, dstLang, mode, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
         self.srcLang = srcLang
         self.dstLang = dstLang
 
         self.mode = mode
-        self.wordId = wordId
+
+        self.wordModelProxy = wordModelProxy
 
         self.wordListDictModel = wordListDictModel
         self.wordModel = self.registerModel(WordModel(wordListDictModel, wordId, srcLang, dstLang))
@@ -95,12 +96,14 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
+        wordModelProxy = self.registerModel(WordModelProxy(self.wordListDictModel, translateWordId, srcLang=self.dstLang, dstLang=self.srcLang))
         addTranslateDialog = WordEditWindow(
+            wordModelProxy=wordModelProxy,
+            wordListDictModel=self.wordListDictModel,
             wordId=translateWordId,
             srcLang=self.dstLang,
             dstLang=self.srcLang,
             mode=WordEditMode.AddTranslate,
-            wordListDictModel=self.wordListDictModel #TODO: раньше не было
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()
