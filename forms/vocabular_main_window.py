@@ -40,7 +40,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
         wordProxyModel = WordModelProxy(self.wordListDictModel, wordId, self.srcLang, self.dstLang) #TODO: register model
         addWordDialog = WordEditWindow(
             wordModelProxy=wordProxyModel,
-            wordListDictModel=self.wordListDictModel,
             mode=WordEditMode.AddNew
         )
         models_utils.setStartGeometry(self, addWordDialog)

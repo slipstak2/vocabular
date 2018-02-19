@@ -54,6 +54,17 @@ class WordModelProxy(BaseSqlQueryModel):
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
 
+    def addWordLink(self):
+        from models.word_list_dict_model import WordListDictModel
+        assert isinstance(self.parentModel, WordListDictModel)
+        return self.parentModel.addWordLink(self.wordId)
+
+    def edit(self, word, meaning):
+        from models.word_list_dict_model import WordListDictModel
+        assert isinstance(self.parentModel, WordListDictModel)
+        return self.parentModel.wordModelUtils.edit(self.wordId, word, meaning)
+
+
     def refresh(self):
         pass
 

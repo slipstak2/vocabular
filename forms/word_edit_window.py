@@ -27,16 +27,15 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelProxy, wordListDictModel, mode, *args, **kwargs):
+    def __init__(self, wordModelProxy, mode, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
         self.mode = mode
 
         self.wordModelProxy = wordModelProxy
 
-        self.wordListDictModel = wordListDictModel
-        self.wordModel = self.registerModel(WordModel(wordListDictModel, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
-        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordListDictModel, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
+        self.wordModel = self.registerModel(WordModel(wordModelProxy, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
+        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordModelProxy, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
@@ -71,10 +70,12 @@ class WordEditWindow(BaseDialog):
         if self.mode in [WordEditMode.AddNew, WordEditMode.Edit]:
             word = self.ui.leWord.text()
             meaning = self.ui.teMeaning.toPlainText()
-            self.wordModel.edit(word, meaning)
+            self.wordModelProxy.edit(word, meaning)
+            #self.wordModel.edit(word, meaning)
 
         if self.mode == WordEditMode.AddNew:
-            self.wordListDictModel.addWordLink(self.wordModelProxy.wordId)
+            self.wordModelProxy.addWordLink()
+            #self.wordListDictModel.addWordLink(self.wordModelProxy.wordId)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 
@@ -94,10 +95,9 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelProxy = self.registerModel(WordModelProxy(self.wordListDictModel, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
+        wordModelProxy = self.registerModel(WordModelProxy(self.wordModelProxy, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
         addTranslateDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
-            wordListDictModel=self.wordListDictModel,
             mode=WordEditMode.AddTranslate,
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
