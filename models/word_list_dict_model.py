@@ -155,7 +155,6 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         wordEditDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
             wordListDictModel=self.model,
-            wordId = self.model.wordId(recordIndex),
             srcLang=self.model.srcLang,
             dstLang=self.model.dstLang,
             mode=WordEditMode.Edit,
