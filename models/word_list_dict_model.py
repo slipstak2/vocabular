@@ -5,7 +5,7 @@ from PySide.QtCore import Slot as pyqtSlot
 
 from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
-from models.delegates import EditButtonDelegate, PlayButtonDelegate
+from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from models import models_utils
 from models.word_model import WordModel, WordModelUtils, WordModelProxy
 from utils import Lang
@@ -21,14 +21,15 @@ class WordListDictModel(BaseSqlQueryModel):
         self.initLang(srcLang, dstLang)
 
         if srcLang == Lang.Eng:
-            self.headerFields = ['',          '',      'eng',      u'рус',     '',     '']
-            self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit']
+            self.headerFields = ['',          '',      'eng',      u'рус',     '',     '',       '']
+            self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit', 'remove']
         else:
-            self.headerFields = ['',          '',      u'рус',      'eng',     '',     '']
-            self.fields =       ['d_id', 'wr_id', 'wr_value',  'we_value', 'play', 'edit']
+            self.headerFields = ['',          '',      u'рус',      'eng',     '',     '',       '']
+            self.fields =       ['d_id', 'wr_id', 'wr_value',  'we_value', 'play', 'edit', 'remove']
 
         self.playFieldNum = self.fields.index('play')
         self.editFieldNum = self.fields.index('edit')
+        self.removeFieldNum = self.fields.index('remove')
 
     def wordValue(self, recordIndex):
         return self.record(recordIndex).value(SqlQuery(self, 'w[e]_value').str())
@@ -122,7 +123,7 @@ class WordListDictModel(BaseSqlQueryModel):
             return QtGui.QColor(QtCore.Qt.blue)
 
         if role == QtCore.Qt.DisplayRole:
-            if index.column() in [self.playFieldNum, self.editFieldNum]:
+            if index.column() in [self.playFieldNum, self.editFieldNum, self.removeFieldNum]:
                 return ''
 
         return value
@@ -160,3 +161,13 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
 
         wordEditDialog.exec_()
         self.model.refresh()
+
+
+class RemoveButtonWordListDictDelegate(RemoveButtonDelegate):
+    def __init__(self, parentWindow, parent, model):
+        RemoveButtonDelegate.__init__(self,parentWindow, parent, model)
+
+    def onBtnClicked(self, recordIndex):
+        print u"remove '{}'".format(self.model.wordValue(recordIndex))
+        self.model.removeLinkWord(self.model.wordId(recordIndex))
+        self.commitData.emit(self.sender())

@@ -5,6 +5,9 @@ from PySide.QtCore import Slot as pyqtSlot
 from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
+from models.word_model import WordModelProxy
+from forms.forms_utils import WordEditMode
+import models_utils
 
 
 class WordTranslateModel(BaseSqlQueryModel):
@@ -176,7 +179,23 @@ class EditButtonWordTranslateDelegate(EditButtonDelegate):
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        print u"edit '{}'".format(self.model.wordTranslate(recordIndex))
+        from forms.word_edit_window import WordEditWindow
+
+        wordModelProxy = WordModelProxy(
+            self.model,
+            self.model.wordTranslateId(recordIndex),
+            srcLang=self.model.dstLang,
+            dstLang=self.model.srcLang
+        )
+
+        wordEditDialog = WordEditWindow(
+            wordModelProxy=wordModelProxy,
+            mode=WordEditMode.EditTranslate,
+        )
+        models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
+
+        wordEditDialog.exec_()
+        self.model.refresh()
         self.commitData.emit(self.sender())
 
 

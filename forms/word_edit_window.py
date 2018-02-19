@@ -17,12 +17,14 @@ translateTitleMap = {
     WordEditMode.AddNew: u'Добавление слова',
     WordEditMode.Edit: u'Редактирование слова',
     WordEditMode.AddTranslate: u'Добавление перевода',
+    WordEditMode.EditTranslate: u'Редактирование перевода'
 }
 
 iconTitleMap = {
     WordEditMode.AddNew:         QtGui.QIcon(":/res/images/add_word.png"),
     WordEditMode.Edit:           QtGui.QIcon(":/res/images/edit_word.png"),
-    WordEditMode.AddTranslate:   QtGui.QIcon(":/res/images/add_translate.png")
+    WordEditMode.AddTranslate:   QtGui.QIcon(":/res/images/add_translate.png"),
+    WordEditMode.EditTranslate:  QtGui.QIcon(":/res/images/edit_word.png"),
 }
 
 
@@ -34,8 +36,20 @@ class WordEditWindow(BaseDialog):
 
         self.wordModelProxy = wordModelProxy
 
-        self.wordModel = self.registerModel(WordModel(wordModelProxy, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
-        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordModelProxy, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
+        self.wordModel = self.registerModel(
+            WordModel(
+                wordModelProxy,
+                self.wordModelProxy.wordId,
+                wordModelProxy.srcLang,
+                wordModelProxy.dstLang)
+        )
+        self.wordTranslateModel = self.registerModel(
+            WordTranslateModel(
+                wordModelProxy,
+                self.wordModelProxy.wordId,
+                wordModelProxy.srcLang,
+                wordModelProxy.dstLang)
+        )
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
@@ -75,7 +89,6 @@ class WordEditWindow(BaseDialog):
 
         if self.mode == WordEditMode.AddNew:
             self.wordModelProxy.addWordLink()
-            #self.wordListDictModel.addWordLink(self.wordModelProxy.wordId)
         if self.mode == WordEditMode.AddTranslate:
             print 'add translate'
 

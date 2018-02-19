@@ -93,8 +93,10 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
         return ''
 
     def release(self):
-        assert len(self.childModels) == 0, "childModels wasn't release"
-        assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
+        #TODO: fix childsModels and parentModel.childsModels
+
+        #assert len(self.childModels) == 0, "childModels wasn't release"
+        #assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
         self.parentModel.childModels.pop()
 
     def childModelsRefresh(self):

@@ -11,7 +11,7 @@ from dict_edit_window import DictEditWindow, DictEditMode
 from models.dict_list_model import DictListModel
 from models.dict_model import DictModel
 from models.word_list_dict_model import WordListDictModel
-from models.word_list_dict_model import PlayButtonWordListDictDelegate, EditButtonWordListDictDelegate
+from models.word_list_dict_model import PlayButtonWordListDictDelegate, EditButtonWordListDictDelegate, RemoveButtonWordListDictDelegate
 from models.word_model import WordModelProxy
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
@@ -89,8 +89,8 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordListDictModel.rowCount()):
-            self.ui.tvEngWords.openPersistentEditor(self.wordListDictModel.index(row, self.wordListDictModel.playFieldNum))
-            self.ui.tvEngWords.openPersistentEditor(self.wordListDictModel.index(row, self.wordListDictModel.editFieldNum))
+            for col in [self.wordListDictModel.playFieldNum, self.wordListDictModel.editFieldNum, self.wordListDictModel.removeFieldNum]:
+                self.ui.tvEngWords.openPersistentEditor(self.wordListDictModel.index(row, col))
         self.ui.tvEngWords.resizeColumnsToContents()
 
     def initUI(self):
@@ -125,6 +125,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.ui.tvEngWords.setItemDelegateForColumn(self.wordListDictModel.playFieldNum, PlayButtonWordListDictDelegate(self, self.ui.tvEngWords, self.wordListDictModel))
         self.ui.tvEngWords.setItemDelegateForColumn(self.wordListDictModel.editFieldNum, EditButtonWordListDictDelegate(self, self.ui.tvEngWords, self.wordListDictModel))
+        self.ui.tvEngWords.setItemDelegateForColumn(self.wordListDictModel.removeFieldNum, RemoveButtonWordListDictDelegate(self, self.ui.tvEngWords, self.wordListDictModel))
 
         self.wordListDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
         self.wordListDictModel.onRefresh()

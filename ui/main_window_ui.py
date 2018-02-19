@@ -30,7 +30,7 @@ except AttributeError:
 class Ui_VocabularMainWindow(object):
     def setupUi(self, VocabularMainWindow):
         VocabularMainWindow.setObjectName(_fromUtf8("VocabularMainWindow"))
-        VocabularMainWindow.resize(349, 543)
+        VocabularMainWindow.resize(368, 543)
         VocabularMainWindow.setMouseTracking(True)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/res/images/dictionary.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -126,7 +126,7 @@ class Ui_VocabularMainWindow(object):
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         VocabularMainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.menuBar = QtGui.QMenuBar(VocabularMainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 349, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 368, 21))
         self.menuBar.setObjectName(_fromUtf8("menuBar"))
         self.menuHelp = QtGui.QMenu(self.menuBar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
