@@ -27,18 +27,16 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelProxy, wordListDictModel, srcLang, dstLang, mode, *args, **kwargs):
+    def __init__(self, wordModelProxy, wordListDictModel, mode, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
-        self.srcLang = srcLang
-        self.dstLang = dstLang
 
         self.mode = mode
 
         self.wordModelProxy = wordModelProxy
 
         self.wordListDictModel = wordListDictModel
-        self.wordModel = self.registerModel(WordModel(wordListDictModel, self.wordModelProxy.wordId, srcLang, dstLang))
-        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordListDictModel, self.wordModelProxy.wordId, srcLang, dstLang))
+        self.wordModel = self.registerModel(WordModel(wordListDictModel, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
+        self.wordTranslateModel = self.registerModel(WordTranslateModel(wordListDictModel, self.wordModelProxy.wordId, wordModelProxy.srcLang, wordModelProxy.dstLang))
 
         self.ui = Ui_WordAddEdit()
         self.ui.setupUi(self)
@@ -96,12 +94,10 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelProxy = self.registerModel(WordModelProxy(self.wordListDictModel, translateWordId, srcLang=self.dstLang, dstLang=self.srcLang))
+        wordModelProxy = self.registerModel(WordModelProxy(self.wordListDictModel, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
         addTranslateDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
             wordListDictModel=self.wordListDictModel,
-            srcLang=self.dstLang,
-            dstLang=self.srcLang,
             mode=WordEditMode.AddTranslate,
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
@@ -111,7 +107,7 @@ class WordEditWindow(BaseDialog):
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
-        self.ui.cbLang.setCurrentIndex(self.srcLang.value)
+        self.ui.cbLang.setCurrentIndex(self.wordModelProxy.srcLang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
 
         self.ui.leWord.setText(self.wordModel.wordValue)
