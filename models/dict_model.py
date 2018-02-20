@@ -54,7 +54,7 @@ class DictModelProxy(BaseSqlQueryModel):
 
 class DictModelUtils(BaseSqlQueryModel):
     def __init__(self, parentModel, *args, **kwargs):
-        super(DictModelUtils, self).__init__(parentModel=parentModel, referenceWithParent=False, *args, **kwargs)
+        super(DictModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
 
     @need_parent_refresh
     def add(self, dictName):
