@@ -9,29 +9,29 @@ class DictListModel(BaseSqlQueryModel):
     viewField = 'name'
 
     @need_refresh
-    def __init__(self, currentDictIndex=0, *args, **kwargs):
+    def __init__(self, dictIndex=0, *args, **kwargs):
         super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
-        self._currentDictIndex = currentDictIndex
+        self._dictIndex = dictIndex
         self.dictModelProxy = DictModelProxy(self)
 
         self.dictModelUtils = DictModelUtils(self)
 
     @property
-    def currentDictIndex(self):
-        return self._currentDictIndex
+    def dictIndex(self):
+        return self._dictIndex
 
-    @currentDictIndex.setter
-    def currentDictIndex(self, index):
-        self._currentDictIndex = index
+    @dictIndex.setter
+    def dictIndex(self, index):
+        self._dictIndex = index
         self.childModelsRefresh()
 
     @property
-    def currentDictId(self):
-        return self.record(self.currentDictIndex).value('id')
+    def dictId(self):
+        return self.record(self.dictIndex).value('id')
 
     @property
-    def currentDictName(self):
-        return self.record(self.currentDictIndex).value('name')
+    def dictName(self):
+        return self.record(self.dictIndex).value('name')
 
     def viewFieldIndex(self):
         return self.fieldIndex(DictListModel.viewField)
@@ -49,7 +49,7 @@ class DictListModel(BaseSqlQueryModel):
         return self.dictModelUtils.add(dictName)
 
     def editDict(self, dictName, dictId=None):
-        return self.dictModelUtils.edit(dictId if dictId else self.currentDictId, dictName)
+        return self.dictModelUtils.edit(dictId if dictId else self.dictId, dictName)
 
     def removeDict(self, dictId=None):
-        return self.dictModelUtils.remove(dictId if dictId else self.currentDictId)
+        return self.dictModelUtils.remove(dictId if dictId else self.dictId)

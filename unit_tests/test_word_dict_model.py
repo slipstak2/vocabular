@@ -16,7 +16,7 @@ class TestDict(TestDBBaseClass):
         pass
 
     def testEngWords(self):
-        dictListModel = DictListModel(currentDictIndex=0)
+        dictListModel = DictListModel(dictIndex=0)
         wordEngListDictModel = WordListDictModel(dictListModel.dictModelProxy, Lang.Eng, Lang.Rus)
         self.assertEqual(2, wordEngListDictModel.rowCount())
 
@@ -27,7 +27,7 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(u'поисковая система', wordEngListDictModel.translateValue(1))
 
     def testAddAndRemoveEngWords(self):
-        dictListModel = DictListModel(currentDictIndex=0)
+        dictListModel = DictListModel(dictIndex=0)
         wordEngListDictModel = WordListDictModel(dictListModel.dictModelProxy, Lang.Eng, Lang.Rus)
         rowCount = wordEngListDictModel.rowCount()
 

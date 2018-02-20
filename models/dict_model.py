@@ -46,7 +46,7 @@ class DictModelProxy(BaseSqlQueryModel):
 
     @property
     def dictId(self):
-        return self.parentModel.currentDictId
+        return self.parentModel.dictId
 
     def refresh(self):
         pass

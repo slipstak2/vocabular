@@ -64,7 +64,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
 
     def _onEditDict(self, *args, **kwargs):
-        dictModel = DictModel(self.dictListModel, self.dictListModel.currentDictId)
+        dictModel = DictModel(self.dictListModel, self.dictListModel.dictId)
         dictDialog = DictEditWindow(
             dictModel,
             self.dictListModel.dictModelUtils,
@@ -78,7 +78,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         result = QtGui.QMessageBox.question(
             self,
             u"Удаление словаря",
-            u'Вы действительно хотите удалить словарь: "{}"'.format(self.dictListModel.currentDictName),
+            u'Вы действительно хотите удалить словарь: "{}"'.format(self.dictListModel.dictName),
             QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel,
             QtGui.QMessageBox.Cancel
         )
@@ -86,7 +86,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
             self.dictListModel.removeDict()
 
     def _onCbDictCurrentIndexChanged(self, index):
-        self.dictListModel.currentDictIndex = index
+        self.dictListModel.dictIndex = index
         self.ui.gbWords.setTitle(u'Слова ({})'.format(self.wordListDictModel.rowCount()))
 
     def _onTvEngWordsDataChanged(self, *args, **kwargs):

@@ -13,21 +13,21 @@ class TestDict(TestDBBaseClass):
 
     def testDefaultDict(self):
         dictListModel = DictListModel()
-        self.assertEqual(1, dictListModel.currentDictId)
-        self.assertEqual(0, dictListModel.currentDictIndex)
-        self.assertEqual(u'SFML Game Development by example', dictListModel.currentDictName)
+        self.assertEqual(1, dictListModel.dictId)
+        self.assertEqual(0, dictListModel.dictIndex)
+        self.assertEqual(u'SFML Game Development by example', dictListModel.dictName)
 
     def testFirstDict(self):
         dictListModel = DictListModel(1)
-        self.assertEqual(2, dictListModel.currentDictId)
-        self.assertEqual(1, dictListModel.currentDictIndex)
-        self.assertEqual(u'Effective Modern C++, 2014', dictListModel.currentDictName)
+        self.assertEqual(2, dictListModel.dictId)
+        self.assertEqual(1, dictListModel.dictIndex)
+        self.assertEqual(u'Effective Modern C++, 2014', dictListModel.dictName)
 
     def testSwitchDict(self):
         dictListModel = DictListModel(0)
-        self.assertEqual(1, dictListModel.currentDictId)
-        dictListModel.currentDictIndex = 1
-        self.assertEqual(2, dictListModel.currentDictId)
+        self.assertEqual(1, dictListModel.dictId)
+        dictListModel.dictIndex = 1
+        self.assertEqual(2, dictListModel.dictId)
 
     def testViewField(self):
         self.assertEqual(0, self.dictListModel.viewFieldIndex())
@@ -45,11 +45,11 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(rowCount + 1, dictListModel.rowCount())
 
         # edit dict
-        dictListModel.currentDictIndex = dictListModel.rowCount() - 1
-        dictId = dictListModel.currentDictId
+        dictListModel.dictIndex = dictListModel.rowCount() - 1
+        dictId = dictListModel.dictId
         newDictName = dictName + ' update'
         self.assertTrue(dictListModel.dictModelUtils.edit(dictId, newDictName))
-        self.assertEqual(newDictName, dictListModel.currentDictName)
+        self.assertEqual(newDictName, dictListModel.dictName)
 
         # remove dict
         dictListModel.removeDict()
