@@ -37,12 +37,13 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.initUI()
 
     def _onAddWord(self):
-
         wordId = self.wordListDictModel.wordModelUtils.add('', '')
         wordProxyModel = WordModelProxy(self.wordListDictModel, wordId, self.srcLang, self.dstLang) #TODO: register model
         addWordDialog = WordEditWindow(
             wordModelProxy=wordProxyModel,
-            mode=WordEditMode.AddNew
+            wordModelUtils=self.wordListDictModel.wordModelUtils,
+            mode=WordEditMode.AddWord,
+            postEdit=lambda: self.wordListDictModel.addWordLink(wordId)
         )
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()

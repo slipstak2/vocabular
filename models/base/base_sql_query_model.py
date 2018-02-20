@@ -82,6 +82,9 @@ class BaseSqlQuery(object):
         self.db = getDb()
         self.parentModel = parentModel
 
+    def __str__(self):
+        return '{}->{}'.format(self.SRC_LANG_FULL, self.DST_LANG_FULL)
+
     def initLang(self, srcLang, dstLang):
         self.srcLang = srcLang
         self.dstLang = dstLang

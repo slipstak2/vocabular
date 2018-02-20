@@ -161,12 +161,13 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         )
         wordEditDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
-            mode=WordEditMode.Edit,
+            wordModelUtils=self.model.wordModelUtils,
+            mode=WordEditMode.EditWord,
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
         wordEditDialog.exec_()
-        self.model.refresh()
+        #self.model.refresh()
 
 
 class RemoveButtonWordListDictDelegate(RemoveButtonDelegate):

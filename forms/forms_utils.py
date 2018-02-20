@@ -9,8 +9,8 @@ class DictEditMode(Enum):
 
 
 class WordEditMode(Enum):
-    AddNew = 1
-    Edit = 2
+    AddWord = 1
+    EditWord = 2
     AddTranslate = 3
     EditTranslate = 4
 

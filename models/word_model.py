@@ -62,6 +62,9 @@ class WordModelProxy(SqlQueryModel):
         assert isinstance(self.parentModel, WordListDictModel)
         return self.parentModel.wordModelUtils.edit(self.wordId, word, meaning)
 
+    def refresh(self):
+        pass
+
 
 class WordModelUtils(BaseSqlQuery):
     def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):

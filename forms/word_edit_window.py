@@ -14,27 +14,28 @@ from models.word_translate_model import PlayButtonWordTranslateDelegate, EditBut
 from models import models_utils as models_utils
 
 translateTitleMap = {
-    WordEditMode.AddNew: u'Добавление слова',
-    WordEditMode.Edit: u'Редактирование слова',
+    WordEditMode.AddWord: u'Добавление слова',
+    WordEditMode.EditWord: u'Редактирование слова',
     WordEditMode.AddTranslate: u'Добавление перевода',
     WordEditMode.EditTranslate: u'Редактирование перевода'
 }
 
 iconTitleMap = {
-    WordEditMode.AddNew:         QtGui.QIcon(":/res/images/add_word.png"),
-    WordEditMode.Edit:           QtGui.QIcon(":/res/images/edit_word.png"),
+    WordEditMode.AddWord:         QtGui.QIcon(":/res/images/add_word.png"),
+    WordEditMode.EditWord:           QtGui.QIcon(":/res/images/edit_word.png"),
     WordEditMode.AddTranslate:   QtGui.QIcon(":/res/images/add_translate.png"),
     WordEditMode.EditTranslate:  QtGui.QIcon(":/res/images/edit_word.png"),
 }
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelProxy, mode, *args, **kwargs):
+    def __init__(self, wordModelProxy, wordModelUtils, mode, postEdit=lambda: None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
-        self.mode = mode
-
         self.wordModelProxy = wordModelProxy
+        self.wordModelUtils = wordModelUtils
+        self.mode = mode
+        self.postEdit = postEdit
 
         self.wordModel = self.registerModel(
             WordModel(
@@ -81,16 +82,10 @@ class WordEditWindow(BaseDialog):
         self.close()
 
     def _onOK(self, *args, **kwargs):
-        if self.mode in [WordEditMode.AddNew, WordEditMode.Edit]:
-            word = self.ui.leWord.text()
-            meaning = self.ui.teMeaning.toPlainText()
-            self.wordModelProxy.edit(word, meaning)
-            #self.wordModel.edit(word, meaning)
-
-        if self.mode == WordEditMode.AddNew:
-            self.wordModelProxy.addWordLink()
-        if self.mode == WordEditMode.AddTranslate:
-            print 'add translate'
+        word = self.ui.leWord.text()
+        meaning = self.ui.teMeaning.toPlainText()
+        self.wordModelUtils.edit(self.wordModelProxy.wordId, word, meaning)
+        self.postEdit()
 
         self.accept()
 
@@ -111,6 +106,7 @@ class WordEditWindow(BaseDialog):
         wordModelProxy = self.registerModel(WordModelProxy(self.wordModelProxy, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
         addTranslateDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
+            wordModelUtils=self.wordTranslateModel.wordModelUtils,
             mode=WordEditMode.AddTranslate,
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
