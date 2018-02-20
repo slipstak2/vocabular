@@ -28,14 +28,16 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         self.setWindowTitle("Vocabular v.{}".format(version))
+        self.models = []
 
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
-        self.dictListModel = DictListModel()
-        self.wordListDictModel = WordListDictModel(self.dictListModel.dictModelProxy, self.srcLang, self.dstLang)
+        self.dictListModel = self.registerModel(DictListModel())
+        self.wordListDictModel = self.registerModel(WordListDictModel(self.dictListModel.dictModelProxy, self.srcLang, self.dstLang))
         self.initUI()
 
     def _onAddWord(self):
+
         wordId = self.wordListDictModel.wordModelUtils.add('', '')
         wordProxyModel = WordModelProxy(self.wordListDictModel, wordId, self.srcLang, self.dstLang) #TODO: register model
         addWordDialog = WordEditWindow(
@@ -129,3 +131,14 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.wordListDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
         self.wordListDictModel.onRefresh()
+
+    def closeEvent(self, *args, **kwargs):
+        self.releaseModels()
+
+    def registerModel(self, model):
+        self.models.append(model)
+        return model
+
+    def releaseModels(self):
+        for model in reversed(self.models):
+            model.release()

@@ -181,11 +181,12 @@ class EditButtonWordTranslateDelegate(EditButtonDelegate):
     def onBtnClicked(self, recordIndex):
         from forms.word_edit_window import WordEditWindow
 
-        wordModelProxy = WordModelProxy(
-            self.model,
-            self.model.wordTranslateId(recordIndex),
-            srcLang=self.model.dstLang,
-            dstLang=self.model.srcLang
+        wordModelProxy = self.parentWindow.registerModel(
+            WordModelProxy(
+                self.model,
+                self.model.wordTranslateId(recordIndex),
+                srcLang=self.model.dstLang,
+                dstLang=self.model.srcLang)
         )
 
         wordEditDialog = WordEditWindow(

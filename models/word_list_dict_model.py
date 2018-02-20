@@ -16,7 +16,6 @@ class WordListDictModel(BaseSqlQueryModel):
     def __init__(self, dictProxyModel, srcLang, dstLang, *args, **kwargs):
         super(WordListDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)
         self.dictProxyModel = dictProxyModel
-        self.wordModel = WordModel(parentModel=self, wordId=None, srcLang=srcLang, dstLang=dstLang)
         self.wordModelUtils = WordModelUtils(parentModel=self, srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
@@ -152,7 +151,14 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        wordModelProxy = WordModelProxy(self.model, self.model.wordId(recordIndex), srcLang=self.model.srcLang, dstLang=self.model.dstLang)
+        wordModelProxy = self.parentWindow.registerModel(
+            WordModelProxy(
+                self.model,
+                self.model.wordId(recordIndex),
+                srcLang=self.model.srcLang,
+                dstLang=self.model.dstLang
+            )
+        )
         wordEditDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
             mode=WordEditMode.Edit,

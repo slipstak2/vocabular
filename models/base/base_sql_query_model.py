@@ -79,10 +79,11 @@ class SqlQuery(object):
 
 
 class BaseSqlQueryModel(QtSql.QSqlQueryModel):
-    def __init__(self, parentModel, *args, **kwargs):
+    def __init__(self, parentModel, referenceWithParent=True, *args, **kwargs):
         super(BaseSqlQueryModel, self).__init__(*args, **kwargs)
+        self.referenceWithParent=referenceWithParent
         self.parentModel = parentModel
-        if parentModel:
+        if parentModel and self.referenceWithParent:
             self.parentModel.childModels.append(self)
         self.childModels = []
 
@@ -97,7 +98,8 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
 
         #assert len(self.childModels) == 0, "childModels wasn't release"
         #assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
-        self.parentModel.childModels.pop()
+        if self.parentModel and self.referenceWithParent:
+            self.parentModel.childModels.pop()
 
     def childModelsRefresh(self):
         for childModel in self.childModels:

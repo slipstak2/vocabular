@@ -71,7 +71,7 @@ class WordModelProxy(BaseSqlQueryModel):
 
 class WordModelUtils(BaseSqlQueryModel):
     def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):
-        super(WordModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
+        super(WordModelUtils, self).__init__(parentModel=parentModel, referenceWithParent=False, *args, **kwargs)
         self.initLang(srcLang, dstLang)
 
     @need_parent_refresh
