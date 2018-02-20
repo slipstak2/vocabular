@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+from base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.dict_model import DictModelUtils, DictModelProxy
 
 
-class DictListModel(BaseSqlQueryModel):
+class DictListModel(SqlQueryModel):
     fields = ['name', 'date_create', 'id']
     viewField = 'name'
 

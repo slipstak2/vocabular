@@ -21,11 +21,10 @@ def need_parent_refresh(func):
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
-        parentModel = self
-        while parentModel.parentModel:
+        parentModel = self.parentModel
+        while parentModel:
             parentModel.refresh()
             parentModel = parentModel.parentModel
-        parentModel.refresh()
         return result
     return inner
 
@@ -78,32 +77,10 @@ class SqlQuery(object):
             return False
 
 
-class BaseSqlQueryModel(QtSql.QSqlQueryModel):
-    def __init__(self, parentModel, *args, **kwargs):
-        super(BaseSqlQueryModel, self).__init__(*args, **kwargs)
-        self.parentModel = parentModel
-        if parentModel:
-            self.parentModel.childModels.append(self)
-        self.childModels = []
-
+class BaseSqlQuery(object):
+    def __init__(self, parentModel):
         self.db = getDb()
-        self.onRefreshCallbacks = []
-
-    def __str__(self):
-        return ''
-
-    def release(self):
-        #TODO: fix childsModels and parentModel.childsModels
-
-        #assert len(self.childModels) == 0, "childModels wasn't release"
-        #assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
-        if self.parentModel:
-            self.parentModel.childModels.pop()
-
-    def childModelsRefresh(self):
-        for childModel in self.childModels:
-            childModel.refresh()
-            childModel.childModelsRefresh()
+        self.parentModel = parentModel
 
     def initLang(self, srcLang, dstLang):
         self.srcLang = srcLang
@@ -121,11 +98,34 @@ class BaseSqlQueryModel(QtSql.QSqlQueryModel):
             self.DST_LANG_FULL  = 'eng'
             self.DST_LANG_SHORT = 'e'
 
+
+class SqlQueryModel(BaseSqlQuery, QtSql.QSqlQueryModel):
+    def __init__(self, parentModel, *args, **kwargs):
+        BaseSqlQuery.__init__(self, parentModel)
+        QtSql.QSqlQueryModel.__init__(self, *args, **kwargs)
+
+        if self.parentModel:
+            self.parentModel.childModels.append(self)
+        self.childModels = []
+        self.onRefreshCallbacks = []
+
+    def __str__(self):
+        return ''
+
+    def release(self):
+        #assert len(self.childModels) == 0, "childModels wasn't release"
+        #assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
+        if self.parentModel:
+            self.parentModel.childModels.pop()
+
+    def childModelsRefresh(self):
+        for childModel in self.childModels:
+            childModel.refresh()
+            childModel.childModelsRefresh()
+
     def onRefresh(self):
         for callback in self.onRefreshCallbacks:
             callback()
 
     def refresh(self):
         raise NotImplementedError("pure virtual method 'refresh' must be implemented")
-
-

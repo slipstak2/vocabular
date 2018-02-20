@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from PySide import QtCore, QtGui
-from PySide.QtCore import Slot as pyqtSlot
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh, need_parent_refresh
-from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
-from utils import Lang
+from models.base.base_sql_query_model import \
+    BaseSqlQuery, SqlQueryModel, SqlQuery, \
+    need_refresh, need_parent_refresh
 
 
-class WordModel(BaseSqlQueryModel):
+class WordModel(SqlQueryModel):
     fields = ['value', 'meaning']
     valueFieldNum = fields.index('value')
     meaningFieldNum = fields.index('meaning')
@@ -48,7 +46,7 @@ class WordModel(BaseSqlQueryModel):
         self.onRefresh()
 
 
-class WordModelProxy(BaseSqlQueryModel):
+class WordModelProxy(SqlQueryModel):
     def __init__(self, parentModel, wordId, srcLang, dstLang):
         super(WordModelProxy, self).__init__(parentModel=parentModel)
         self.wordId = wordId
@@ -65,11 +63,7 @@ class WordModelProxy(BaseSqlQueryModel):
         return self.parentModel.wordModelUtils.edit(self.wordId, word, meaning)
 
 
-    def refresh(self):
-        pass
-
-
-class WordModelUtils(BaseSqlQueryModel):
+class WordModelUtils(BaseSqlQuery):
     def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):
         super(WordModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
         self.initLang(srcLang, dstLang)
@@ -106,6 +100,3 @@ class WordModelUtils(BaseSqlQueryModel):
                 ':id': wordId
             }
         ).execute()
-
-    def refresh(self):
-        pass

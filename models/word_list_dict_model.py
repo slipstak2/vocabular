@@ -4,14 +4,14 @@ from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
 
 from forms.forms_utils import WordEditMode
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from models import models_utils
 from models.word_model import WordModel, WordModelUtils, WordModelProxy
 from utils import Lang
 
 
-class WordListDictModel(BaseSqlQueryModel):
+class WordListDictModel(SqlQueryModel):
     @need_refresh
     def __init__(self, dictProxyModel, srcLang, dstLang, *args, **kwargs):
         super(WordListDictModel, self).__init__(parentModel=dictProxyModel, *args, **kwargs)

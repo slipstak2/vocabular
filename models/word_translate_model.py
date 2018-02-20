@@ -2,7 +2,7 @@
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from models.base.base_sql_query_model import BaseSqlQueryModel, SqlQuery, need_refresh
+from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 from models.word_model import WordModelProxy
@@ -10,7 +10,7 @@ from forms.forms_utils import WordEditMode
 import models_utils
 
 
-class WordTranslateModel(BaseSqlQueryModel):
+class WordTranslateModel(SqlQueryModel):
     @need_refresh
     def __init__(self, parentModel, wordId, srcLang, dstLang, *args, **kwargs):
         super(WordTranslateModel, self).__init__(parentModel=parentModel, *args, **kwargs)
