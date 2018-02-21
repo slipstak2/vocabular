@@ -2,7 +2,7 @@
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
+from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh, need_parent_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 from models.word_model import WordModelInfo, WordModelUtils
@@ -152,10 +152,12 @@ class WordTranslateModel(SqlQueryModel):
                 return ''
         return value
 
+    @need_parent_refresh
     @need_refresh
     def downOrder(self, row):
         self.changeOrder(row, row + 1)
 
+    @need_parent_refresh
     @need_refresh
     def upOrder(self, row):
         self.changeOrder(row, row - 1)
