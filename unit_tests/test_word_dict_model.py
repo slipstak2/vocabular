@@ -17,7 +17,12 @@ class TestDict(TestDBBaseClass):
 
     def testEngWords(self):
         dictListModel = DictListModel(dictIndex=0)
-        wordEngListDictModel = WordListDictModel(dictListModel.dictModelProxyViewer, Lang.Eng, Lang.Rus)
+        wordEngListDictModel = WordListDictModel(
+            dictListModel,
+            dictListModel.getDictId,
+            Lang.Eng,
+            Lang.Rus
+        )
         self.assertEqual(2, wordEngListDictModel.rowCount())
 
         self.assertEqual('exicting', wordEngListDictModel.wordValue(0))
@@ -28,7 +33,12 @@ class TestDict(TestDBBaseClass):
 
     def testAddAndRemoveEngWords(self):
         dictListModel = DictListModel(dictIndex=0)
-        wordEngListDictModel = WordListDictModel(dictListModel.dictModelProxyViewer, Lang.Eng, Lang.Rus)
+        wordEngListDictModel = WordListDictModel(
+            dictListModel,
+            dictListModel.getDictId,
+            Lang.Eng,
+            Lang.Rus
+        )
         rowCount = wordEngListDictModel.rowCount()
 
         wordEngModelUtils = WordModelUtils(None, Lang.Eng, Lang.Rus)
@@ -42,7 +52,12 @@ class TestDict(TestDBBaseClass):
 
     def testRusWords(self):
         dictListModel = DictListModel()
-        wordRusListDictModel = WordListDictModel(dictListModel.dictModelProxyViewer, Lang.Rus, Lang.Eng)
+        wordRusListDictModel = WordListDictModel(
+            dictListModel,
+            dictListModel.getDictId,
+            Lang.Rus,
+            Lang.Eng
+        )
         self.assertEqual(0, wordRusListDictModel.rowCount())
 
         wordRusModelUtils= WordModelUtils(None, Lang.Rus, Lang.Eng)

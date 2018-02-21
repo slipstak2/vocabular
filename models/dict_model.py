@@ -39,18 +39,6 @@ class DictModel(SqlQueryModel):
         )
 
 
-class DictModelProxyViewer(SqlQueryModel):
-    def __init__(self, dictListModel):
-        super(DictModelProxyViewer, self).__init__(parentModel=dictListModel)
-
-    @property
-    def dictId(self):
-        return self.parentModel.dictId
-
-    def refresh(self):
-        pass
-
-
 class DictModelUtils(BaseSqlQuery):
     def __init__(self, parentModel, *args, **kwargs):
         super(DictModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)

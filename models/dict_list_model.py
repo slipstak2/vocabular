@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base.base_sql_query_model import SqlQueryModel, need_refresh
-from models.dict_model import DictModelUtils, DictModelProxyViewer
+from models.dict_model import DictModelUtils
 
 
 class DictListModel(SqlQueryModel):
@@ -12,7 +12,7 @@ class DictListModel(SqlQueryModel):
         super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
         self._dictIndex = dictIndex
 
-        self.dictModelProxyViewer = DictModelProxyViewer(self)
+        self.getDictId = lambda: self.dictId
         self.dictModelUtils = DictModelUtils(self)
 
     @property

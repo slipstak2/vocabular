@@ -13,12 +13,12 @@ from utils import Lang
 
 class WordListDictModel(SqlQueryModel):
     @need_refresh
-    def __init__(self, dictModelProxyViewer, srcLang, dstLang, *args, **kwargs):
-        super(WordListDictModel, self).__init__(parentModel=dictModelProxyViewer, *args, **kwargs)
-        self.dictModelProxyViewer = dictModelProxyViewer
+    def __init__(self, parentModel, getDictId, srcLang, dstLang, *args, **kwargs):
+        super(WordListDictModel, self).__init__(parentModel=parentModel, *args, **kwargs)
         self.wordModelUtils = WordModelUtils(parentModel=self, srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
+        self.getDictId = getDictId
         if srcLang == Lang.Eng:
             self.headerFields = ['',          '',      'eng',      u'рус',     '',     '',       '']
             self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit', 'remove']
@@ -59,7 +59,7 @@ class WordListDictModel(SqlQueryModel):
                 ORDER BY rus_eng.[rus]_order
             ) as x
             GROUP BY d_id, w[e]_id
-            '''.format(dict_id=self.dictModelProxyViewer.dictId),
+            '''.format(dict_id=self.getDictId()),
         ).str()
         self.setQuery(query)
 
@@ -79,7 +79,7 @@ class WordListDictModel(SqlQueryModel):
               (:dict_id, :w[e]_id)
             ''',
             {
-                ':dict_id': self.dictModelProxyViewer.dictId,
+                ':dict_id': self.getDictId(),
                 ':w[e]_id': wordId,
             }
         ).execute()
@@ -97,7 +97,7 @@ class WordListDictModel(SqlQueryModel):
                 dict_id = :dict_id AND word_[eng]_id = :word_id
             ''',
             {
-                ':dict_id': self.dictModelProxyViewer.dictId,
+                ':dict_id': self.getDictId(),
                 ':word_id': wordId
             }
         ).execute()
