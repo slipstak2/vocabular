@@ -151,7 +151,7 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         print u"edit '{}'".format(self.model.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        wordModelProxy = self.parentWindow.registerModel(
+        wordModelProxyInfo = self.parentWindow.registerModel(
             WordModelInfo(
                 self.model,
                 self.model.wordId(recordIndex),
@@ -160,7 +160,7 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
             )
         )
         wordEditDialog = WordEditWindow(
-            wordModelProxy=wordModelProxy,
+            wordModelInfo=wordModelProxyInfo,
             wordModelUtils=self.model.wordModelUtils,
             mode=WordEditMode.EditWord,
         )

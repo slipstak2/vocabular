@@ -12,7 +12,7 @@ class DictListModel(SqlQueryModel):
     def __init__(self, dictIndex=0, *args, **kwargs):
         super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
         self._dictIndex = dictIndex
-        self.dictModelProxy = DictModelProxyViewer(self)
+        self.dictModelProxyViewer = DictModelProxyViewer(self)
 
         self.dictModelUtils = DictModelUtils(self)
 

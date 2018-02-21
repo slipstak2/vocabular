@@ -29,27 +29,27 @@ iconTitleMap = {
 
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelProxy, wordModelUtils, mode, postEdit=lambda: None, *args, **kwargs):
+    def __init__(self, wordModelInfo, wordModelUtils, mode, postEdit=lambda: None, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
-        self.wordModelProxy = wordModelProxy
+        self.wordModelInfo = wordModelInfo
         self.wordModelUtils = wordModelUtils
         self.mode = mode
         self.postEdit = postEdit
 
         self.wordModel = self.registerModel(
             WordModel(
-                wordModelProxy,
-                self.wordModelProxy.wordId,
-                wordModelProxy.srcLang,
-                wordModelProxy.dstLang)
+                wordModelInfo,
+                self.wordModelInfo.wordId,
+                wordModelInfo.srcLang,
+                wordModelInfo.dstLang)
         )
         self.wordTranslateModel = self.registerModel(
             WordTranslateModel(
-                wordModelProxy,
-                self.wordModelProxy.wordId,
-                wordModelProxy.srcLang,
-                wordModelProxy.dstLang)
+                wordModelInfo,
+                self.wordModelInfo.wordId,
+                wordModelInfo.srcLang,
+                wordModelInfo.dstLang)
         )
 
         self.ui = Ui_WordAddEdit()
@@ -84,7 +84,7 @@ class WordEditWindow(BaseDialog):
     def _onOK(self, *args, **kwargs):
         word = self.ui.leWord.text()
         meaning = self.ui.teMeaning.toPlainText()
-        self.wordModelUtils.edit(self.wordModelProxy.wordId, word, meaning)
+        self.wordModelUtils.edit(self.wordModelInfo.wordId, word, meaning)
         self.postEdit()
 
         self.accept()
@@ -103,9 +103,9 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelProxy = self.registerModel(WordModelInfo(self.wordModelProxy, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
+        wordModelInfo = self.registerModel(WordModelInfo(self.wordModelInfo, translateWordId, srcLang=self.wordModelInfo.dstLang, dstLang=self.wordModelInfo.srcLang))
         addTranslateDialog = WordEditWindow(
-            wordModelProxy=wordModelProxy,
+            wordModelInfo=wordModelInfo,
             wordModelUtils=self.wordTranslateModel.wordModelUtils,
             mode=WordEditMode.AddTranslate,
         )
@@ -116,7 +116,7 @@ class WordEditWindow(BaseDialog):
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
-        self.ui.cbLang.setCurrentIndex(self.wordModelProxy.srcLang.value)
+        self.ui.cbLang.setCurrentIndex(self.wordModelInfo.srcLang.value)
         self.ui.leWord.textChanged.connect(self._onWordChanged)
 
         self.ui.leWord.setText(self.wordModel.wordValue)
