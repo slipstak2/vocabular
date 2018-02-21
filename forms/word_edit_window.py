@@ -5,7 +5,7 @@ from PySide.QtGui import QDataWidgetMapper
 
 from forms.base_dialog import BaseDialog
 from ui.word_edit_ui import Ui_WordAddEdit
-from models.word_model import WordModel, WordModelProxy
+from models.word_model import WordModel, WordModelInfo
 from models.word_translate_model import WordTranslateModel
 from forms_utils import WordEditMode
 
@@ -103,7 +103,7 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelProxy = self.registerModel(WordModelProxy(self.wordModelProxy, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
+        wordModelProxy = self.registerModel(WordModelInfo(self.wordModelProxy, translateWordId, srcLang=self.wordModelProxy.dstLang, dstLang=self.wordModelProxy.srcLang))
         addTranslateDialog = WordEditWindow(
             wordModelProxy=wordModelProxy,
             wordModelUtils=self.wordTranslateModel.wordModelUtils,

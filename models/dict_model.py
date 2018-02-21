@@ -43,9 +43,9 @@ class DictModel(SqlQueryModel):
         )
 
 
-class DictModelProxy(SqlQueryModel):
+class DictModelProxyViewer(SqlQueryModel):
     def __init__(self, dictListModel):
-        super(DictModelProxy, self).__init__(parentModel=dictListModel)
+        super(DictModelProxyViewer, self).__init__(parentModel=dictListModel)
 
     @property
     def dictId(self):

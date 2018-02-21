@@ -7,7 +7,7 @@ from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from models import models_utils
-from models.word_model import WordModel, WordModelUtils, WordModelProxy
+from models.word_model import WordModel, WordModelUtils, WordModelInfo
 from utils import Lang
 
 
@@ -152,7 +152,7 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         self.commitData.emit(self.sender())
 
         wordModelProxy = self.parentWindow.registerModel(
-            WordModelProxy(
+            WordModelInfo(
                 self.model,
                 self.model.wordId(recordIndex),
                 srcLang=self.model.srcLang,
