@@ -62,7 +62,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def _onAddDict(self, *args, **kwargs):
         dictId = self.dictListModel.addDict('')
-        dictModel = DictModel(self.dictListModel, dictId)
+        dictModel = DictModel(self.dictListModel, lambda: dictId)
         dictDialog = DictEditWindow(dictModel, self.dictListModel.dictModelUtils, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
@@ -71,7 +71,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
             self.dictListModel.removeDict(dictId)
 
     def _onEditDict(self, *args, **kwargs):
-        dictModel = DictModel(self.dictListModel, self.dictListModel.dictId)
+        dictModel = DictModel(self.dictListModel, self.dictListModel.getDictId)
         dictDialog = DictEditWindow(
             dictModel,
             self.dictListModel.dictModelUtils,

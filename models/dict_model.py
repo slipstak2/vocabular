@@ -11,13 +11,13 @@ class DictModel(SqlQueryModel):
     nameFieldName = fields.index('name')
 
     @need_refresh
-    def __init__(self, parentModel, dictId):
+    def __init__(self, parentModel, getDictId):
         super(DictModel, self).__init__(parentModel=parentModel)
-        self.dictId = dictId
+        self.getDictId = getDictId
 
     @property
     def id(self):
-        return self.dictId
+        return self.getDictId()
 
     @property
     def name(self):
@@ -34,7 +34,7 @@ class DictModel(SqlQueryModel):
             WHERE
                 id = {id}'''.format(
                 fields=', '.join(self.fields),
-                id=self.dictId
+                id=self.getDictId()
             )
         )
 
