@@ -63,7 +63,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
         else:
             self.dictListModel.removeDict(dictId)
 
-
     def _onEditDict(self, *args, **kwargs):
         dictModel = DictModel(self.dictListModel, self.dictListModel.dictId)
         dictDialog = DictEditWindow(
@@ -118,7 +117,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
     def initModels(self):
         self.ui.cbDicts.setModel(self.dictListModel)
-        self.ui.cbDicts.setModelColumn(self.dictListModel.viewFieldIndex())
+        self.ui.cbDicts.setModelColumn(self.dictListModel.fieldIndex('name'))
 
         self.ui.tvEngWords.setModel(self.wordListDictModel)
         self.ui.tvEngWords.hideColumn(0)

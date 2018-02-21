@@ -7,26 +7,22 @@ from base.base_sql_query_model import \
 
 
 class DictModel(SqlQueryModel):
-    fields = ['name', 'date_create', 'id']
+    fields = ['name', 'date_create']
     nameFieldName = fields.index('name')
 
     @need_refresh
     def __init__(self, parentModel, dictId):
         super(DictModel, self).__init__(parentModel=parentModel)
-        self.parentModel = parentModel
         self.dictId = dictId
+
+    @property
+    def id(self):
+        return self.dictId
 
     @property
     def name(self):
         if self.rowCount() != 0:
             return self.record(0).value('name')
-        return None
-
-    @property
-    def id(self):
-        if self.rowCount() != 0:
-            return self.record(0).value('id')
-        return None
 
     def refresh(self):
         self.setQuery(

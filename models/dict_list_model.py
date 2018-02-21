@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
+from base.base_sql_query_model import SqlQueryModel, need_refresh
 from models.dict_model import DictModelUtils, DictModelProxyViewer
 
 
 class DictListModel(SqlQueryModel):
     fields = ['name', 'date_create', 'id']
-    viewField = 'name'
 
     @need_refresh
     def __init__(self, dictIndex=0, *args, **kwargs):
         super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
         self._dictIndex = dictIndex
-        self.dictModelProxyViewer = DictModelProxyViewer(self)
 
+        self.dictModelProxyViewer = DictModelProxyViewer(self)
         self.dictModelUtils = DictModelUtils(self)
 
     @property
@@ -33,9 +32,6 @@ class DictListModel(SqlQueryModel):
     def dictName(self):
         return self.record(self.dictIndex).value('name')
 
-    def viewFieldIndex(self):
-        return self.fieldIndex(DictListModel.viewField)
-
     def fieldIndex(self, fieldName):
         return DictListModel.fields.index(fieldName)
 
@@ -44,12 +40,11 @@ class DictListModel(SqlQueryModel):
             fields=', '.join(DictListModel.fields)
         ))
 
-    # TODO: так ли нужны высокоуровневые методы, а может некоторые просто убрать?
     def addDict(self, dictName):
         return self.dictModelUtils.add(dictName)
 
-    def editDict(self, dictName, dictId=None):
-        return self.dictModelUtils.edit(dictId if dictId else self.dictId, dictName)
+    def editDict(self, dictName):
+        return self.dictModelUtils.edit(self.dictId, dictName)
 
-    def removeDict(self, dictId=None):
-        return self.dictModelUtils.remove(dictId if dictId else self.dictId)
+    def removeDict(self):
+        return self.dictModelUtils.remove(self.dictId)
