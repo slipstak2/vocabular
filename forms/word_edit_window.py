@@ -5,7 +5,7 @@ from PySide.QtGui import QDataWidgetMapper
 
 from forms.base_dialog import BaseDialog
 from ui.word_edit_ui import Ui_WordAddEdit
-from models.word_model import WordModel, WordModelInfo
+from models.word_model import WordModel, WordModelInfo, WordModelUtils
 from models.word_translate_model import WordTranslateModel
 from forms_utils import WordEditMode
 
@@ -28,14 +28,33 @@ iconTitleMap = {
 }
 
 
+class WordEditContext(object):
+    def __init__(self):
+        self.wordIds = []
+
+    def addWordId(self, wordId, srcLang):
+        item = (wordId, srcLang)
+        self.wordIds.append(item)
+
+    def removeWordId(self, wordId, srcLang):
+        item = (wordId, srcLang)
+        assert item == self.wordIds[-1]
+        self.wordIds.pop()
+
+    def inContext(self, wordId, srcLang):
+        item = (wordId, srcLang)
+        return item in self.wordIds
+
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelInfo, wordModelUtils, mode, postEdit=lambda: None, *args, **kwargs):
+    def __init__(self, wordModelInfo, mode, wordEditContext, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
         self.wordModelInfo = wordModelInfo
-        self.wordModelUtils = wordModelUtils
+        self.wordModelUtils = wordModelInfo.utils
         self.mode = mode
-        self.postEdit = postEdit
+
+        self.wordEditContext = wordEditContext
+        self.wordEditContext.addWordId(self.wordModelInfo.wordId, self.wordModelInfo.srcLang)
 
         self.wordModel = WordModel(
             self.wordModelInfo.wordId,
@@ -54,6 +73,12 @@ class WordEditWindow(BaseDialog):
         self.initUI()
         self.setWindowIcon(iconTitleMap[mode])
         self.mapWordModelFields()
+
+    def onCloseDialog(self):
+        self.wordEditContext.removeWordId(
+            self.wordModelInfo.wordId,
+            self.wordModelInfo.srcLang
+        )
 
     def mapWordModelFields(self):
         mapper = QDataWidgetMapper()
@@ -82,7 +107,6 @@ class WordEditWindow(BaseDialog):
         word = self.ui.leWord.text()
         meaning = self.ui.teMeaning.toPlainText()
         self.wordModelUtils.edit(self.wordModelInfo.wordId, word, meaning)
-        self.postEdit()
 
         self.accept()
 
@@ -103,8 +127,8 @@ class WordEditWindow(BaseDialog):
         wordModelInfo = WordModelInfo(translateWordId, srcLang=self.wordModelInfo.dstLang, dstLang=self.wordModelInfo.srcLang)
         addTranslateDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.wordTranslateModel.wordModelUtils,
             mode=WordEditMode.AddTranslate,
+            wordEditContext=self.wordEditContext
         )
         models_utils.setStartGeometry(self, addTranslateDialog)
         addTranslateDialog.exec_()
@@ -129,8 +153,12 @@ class WordEditWindow(BaseDialog):
     def _onTvTranslateDataChanged(self, *args, **kwargs):
         for row in range(0, self.wordTranslateModel.rowCount()):
             self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.playFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.editFieldNum))
-            self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.removeFieldNum))
+            if not self.wordEditContext.inContext(
+                    self.wordTranslateModel.wordTranslateId(row),
+                    self.wordModel.dstLang
+            ):
+                self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.editFieldNum))
+                self.ui.tvTranslate.openPersistentEditor(self.wordTranslateModel.index(row, self.wordTranslateModel.removeFieldNum))
 
         self.ui.tvTranslate.resizeColumnsToContents()
 

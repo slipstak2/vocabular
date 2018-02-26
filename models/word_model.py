@@ -50,6 +50,7 @@ class WordModelInfo(SqlQueryModel):
     def __init__(self, wordId, srcLang, dstLang):
         super(WordModelInfo, self).__init__()
         self.wordId = wordId
+        self.utils = WordModelUtils(srcLang, dstLang)
         self.initLang(srcLang, dstLang)
 
     def refresh(self):

@@ -11,6 +11,7 @@ class DictModel(SqlQueryModel):
     def __init__(self, dictId):
         super(DictModel, self).__init__()
         self.dictId = dictId
+        self.utils = DictModelUtils()
 
     @property
     def name(self):

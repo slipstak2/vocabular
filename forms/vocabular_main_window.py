@@ -16,7 +16,7 @@ from models.word_model import WordModelInfo
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
 from version import version
-from forms.word_edit_window import WordEditWindow
+from forms.word_edit_window import WordEditWindow, WordEditContext
 from models import models_utils
 
 
@@ -47,13 +47,14 @@ class VocabularMainWindow(QtGui.QMainWindow):
         wordModelInfo = WordModelInfo(wordId, self.srcLang, self.dstLang)
         addWordDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.wordListDictModel.wordModelUtils,
             mode=WordEditMode.AddWord,
-            postEdit=lambda: self.wordListDictModel.addWordLink(wordId)
+            wordEditContext=WordEditContext()
         )
         models_utils.setStartGeometry(self, addWordDialog)
         addWordDialog.exec_()
-        if addWordDialog.result() != 1:
+        if addWordDialog.result() == 1:
+            self.wordListDictModel.addWordLink(wordId)
+        else:
             self.wordListDictModel.removeLinkWord(wordId, silent=True, removeWord=True)
 
     def _onExit(self, *args, **kwargs):

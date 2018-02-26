@@ -24,7 +24,7 @@ class DictEditWindow(BaseDialog):
     def __init__(self, dictModel, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
-        self.dictModelUtils = DictModelUtils()
+        self.dictModelUtils = dictModel.utils
         self.mode = mode
 
         self.ui = Ui_DictAddEdit()

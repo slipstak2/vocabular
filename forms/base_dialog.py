@@ -8,10 +8,13 @@ class BaseDialog(QtGui.QDialog):
         super(BaseDialog, self).__init__(*args, **kwargs)
         self.models = []
 
+    def onCloseDialog(self):
+        pass
+
     def reject(self, *args, **kwargs):
-        print 'reject'
         super(BaseDialog, self).reject(*args, **kwargs)
+        self.onCloseDialog()
 
     def accept(self, *args, **kwargs):
-        print 'accept'
         super(BaseDialog, self).accept(*args, **kwargs)
+        self.onCloseDialog()

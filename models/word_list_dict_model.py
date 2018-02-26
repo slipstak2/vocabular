@@ -114,6 +114,9 @@ class WordListDictModel(SqlQueryModel):
 
         if removeLink():
             if removeWord:
+                # TODO: Если слово входит хотя бы в один словарь, то удалять только link
+                # TODO: если слово не входит ни в один словарь: спросить - удалить ли слово совсем?
+                # TODO: что делать с переводами на это слово?
                 self.wordModelUtils.remove(wordId)
 
     def data(self, index, role):
@@ -150,7 +153,7 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        from forms.word_edit_window import WordEditWindow
+        from forms.word_edit_window import WordEditWindow, WordEditContext
         print u"edit '{}'".format(self.wordListDictModel.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
@@ -162,8 +165,8 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
 
         wordEditDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.wordListDictModel.wordModelUtils,
             mode=WordEditMode.EditWord,
+            wordEditContext=WordEditContext()
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
@@ -178,6 +181,9 @@ class RemoveButtonWordListDictDelegate(RemoveButtonDelegate):
 
     def onBtnClicked(self, recordIndex):
         print u"remove '{}'".format(self.wordListDictModel.wordValue(recordIndex))
-        self.wordListDictModel.removeLinkWord(self.wordListDictModel.wordId(recordIndex))
+        self.wordListDictModel.removeLinkWord(
+            wordId=self.wordListDictModel.wordId(recordIndex),
+            removeWord=True
+        )
         self.wordListDictModel.refresh()
         self.commitData.emit(self.sender())

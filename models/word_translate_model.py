@@ -192,8 +192,8 @@ class EditButtonWordTranslateDelegate(EditButtonDelegate):
 
         wordEditDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.wordTranslateModel.wordModelUtils,
             mode=WordEditMode.EditTranslate,
+            wordEditContext=self.parentWindow.wordEditContext
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
