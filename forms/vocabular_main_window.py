@@ -62,7 +62,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
     def _onAddDict(self, *args, **kwargs):
         dictId = self.dictListModel.dictModelUtils.addEmpty()
         dictModel = DictModel(dictId)
-        dictDialog = DictEditWindow(dictModel, self.dictListModel.dictModelUtils, DictEditMode.Add)
+        dictDialog = DictEditWindow(dictModel, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
             self.dictListModel.refresh()
@@ -74,7 +74,6 @@ class VocabularMainWindow(QtGui.QMainWindow):
         dictModel = DictModel(self.dictListModel.dictId)
         dictDialog = DictEditWindow(
             dictModel,
-            self.dictListModel.dictModelUtils,
             DictEditMode.Edit,
         )
         currentIndex = self.ui.cbDicts.currentIndex()
