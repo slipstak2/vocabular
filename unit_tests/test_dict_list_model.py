@@ -38,13 +38,16 @@ class TestDictListModel(TestDBBaseClass):
 
         # add dict
         dictName = 'new dict'
-        self.assertTrue(dictListModel.addDict(dictName))
+        dictId = dictListModel.dictModelUtils.add(dictName)
+        self.assertNotEqual(False, dictId)
+        dictListModel.refresh()
         self.assertEqual(rowCount + 1, dictListModel.rowCount())
 
         # edit dict
         dictListModel.dictIndex = dictListModel.rowCount() - 1
         newDictName = dictName + ' update'
-        self.assertTrue(dictListModel.editDict(newDictName))
+        self.assertTrue(dictListModel.dictModelUtils.edit(dictId, newDictName))
+        dictListModel.refresh()
         self.assertEqual(newDictName, dictListModel.dictName)
 
         # remove dict

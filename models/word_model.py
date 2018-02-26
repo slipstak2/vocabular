@@ -2,7 +2,7 @@
 
 from models.base.base_sql_query_model import \
     BaseSqlQuery, SqlQueryModel, SqlQuery, \
-    need_refresh, need_parent_refresh
+    need_refresh
 
 
 class WordModel(SqlQueryModel):
@@ -11,8 +11,8 @@ class WordModel(SqlQueryModel):
     meaningFieldNum = fields.index('meaning')
 
     @need_refresh
-    def __init__(self, parentModel, wordId, srcLang, dstLang, *args, **kwargs):
-        super(WordModel, self).__init__(parentModel=parentModel, *args, **kwargs)
+    def __init__(self, wordId, srcLang, dstLang, *args, **kwargs):
+        super(WordModel, self).__init__(*args, **kwargs)
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
 
@@ -47,8 +47,8 @@ class WordModel(SqlQueryModel):
 
 
 class WordModelInfo(SqlQueryModel):
-    def __init__(self, parentModel, wordId, srcLang, dstLang):
-        super(WordModelInfo, self).__init__(parentModel=parentModel)
+    def __init__(self, wordId, srcLang, dstLang):
+        super(WordModelInfo, self).__init__()
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
 
@@ -57,11 +57,13 @@ class WordModelInfo(SqlQueryModel):
 
 
 class WordModelUtils(BaseSqlQuery):
-    def __init__(self, parentModel, srcLang, dstLang, *args, **kwargs):
-        super(WordModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
+    def __init__(self, srcLang, dstLang, *args, **kwargs):
+        super(WordModelUtils, self).__init__(*args, **kwargs)
         self.initLang(srcLang, dstLang)
 
-    @need_parent_refresh
+    def addEmpty(self):
+        return self.add('', '')
+
     def add(self, value, meaning):
         return SqlQuery(
             self,
@@ -72,7 +74,6 @@ class WordModelUtils(BaseSqlQuery):
             }
         ).execute(True)
 
-    @need_parent_refresh
     def edit(self, wordId, value, meaning):
         return SqlQuery(
             self,
@@ -84,7 +85,6 @@ class WordModelUtils(BaseSqlQuery):
             }
         ).execute()
 
-    @need_parent_refresh
     def remove(self, wordId):
         return SqlQuery(
             self,

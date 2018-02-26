@@ -23,7 +23,7 @@ class DictEditWindow(BaseDialog):
     def __init__(self, dictModel, dictModelUtils, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
-        self.dictModelsUtils = dictModelUtils
+        self.dictModelUtils = dictModelUtils
         self.mode = mode
 
         self.ui = Ui_DictAddEdit()
@@ -43,8 +43,8 @@ class DictEditWindow(BaseDialog):
         self.close()
 
     def _onSave(self, *args, **kwargs):
-        self.dictModelsUtils.edit(
-            self.dictModel.id,
+        self.dictModelUtils.edit(
+            self.dictModel.dictId,
             self.ui.leDictName.text()
         )
         self.accept()

@@ -19,7 +19,6 @@ class TestDict(TestDBBaseClass):
         dictListModel = DictListModel(dictIndex=0)
         wordEngListDictModel = WordListDictModel(
             dictListModel,
-            dictListModel.getDictId,
             Lang.Eng,
             Lang.Rus
         )
@@ -35,13 +34,12 @@ class TestDict(TestDBBaseClass):
         dictListModel = DictListModel(dictIndex=0)
         wordEngListDictModel = WordListDictModel(
             dictListModel,
-            dictListModel.getDictId,
             Lang.Eng,
             Lang.Rus
         )
         rowCount = wordEngListDictModel.rowCount()
 
-        wordEngModelUtils = WordModelUtils(None, Lang.Eng, Lang.Rus)
+        wordEngModelUtils = WordModelUtils(Lang.Eng, Lang.Rus)
         id = wordEngModelUtils.add('new word', '')
         self.assertNotEqual(False, id)
         #TODO: fix tests
@@ -54,13 +52,12 @@ class TestDict(TestDBBaseClass):
         dictListModel = DictListModel()
         wordRusListDictModel = WordListDictModel(
             dictListModel,
-            dictListModel.getDictId,
             Lang.Rus,
             Lang.Eng
         )
         self.assertEqual(0, wordRusListDictModel.rowCount())
 
-        wordRusModelUtils= WordModelUtils(None, Lang.Rus, Lang.Eng)
+        wordRusModelUtils= WordModelUtils(Lang.Rus, Lang.Eng)
         id = wordRusModelUtils.add(u'новое слово', '')
         self.assertNotEqual(False, id)
         wordRusListDictModel.addWordLink(id)

@@ -32,20 +32,19 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
-        self.dictListModel = self.registerModel(DictListModel())
-        self.wordListDictModel = self.registerModel(
-            WordListDictModel(
-                self.dictListModel,
-                self.dictListModel.getDictId,
-                self.srcLang,
-                self.dstLang
-            )
+        self.dictListModel = DictListModel()
+        self.wordListDictModel = WordListDictModel(
+            self.dictListModel,
+            self.srcLang,
+            self.dstLang
         )
+        self.dictListModel.addChildModel(self.wordListDictModel)
+
         self.initUI()
 
     def _onAddWord(self):
-        wordId = self.wordListDictModel.wordModelUtils.add('', '')
-        wordModelInfo = WordModelInfo(self.wordListDictModel, wordId, self.srcLang, self.dstLang) #TODO: register model
+        wordId = self.wordListDictModel.wordModelUtils.addEmpty()
+        wordModelInfo = WordModelInfo(wordId, self.srcLang, self.dstLang)
         addWordDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
             wordModelUtils=self.wordListDictModel.wordModelUtils,
@@ -61,17 +60,18 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.close()
 
     def _onAddDict(self, *args, **kwargs):
-        dictId = self.dictListModel.addDict('')
-        dictModel = DictModel(self.dictListModel, lambda: dictId)
+        dictId = self.dictListModel.dictModelUtils.addEmpty()
+        dictModel = DictModel(dictId)
         dictDialog = DictEditWindow(dictModel, self.dictListModel.dictModelUtils, DictEditMode.Add)
         dictDialog.exec_()
         if dictDialog.result() == 1:
+            self.dictListModel.refresh()
             self.ui.cbDicts.setCurrentIndex(self.dictListModel.rowCount() - 1)
         else:
-            self.dictListModel.removeDict(dictId)
+            self.dictListModel.dictModelUtils.remove(dictId)
 
     def _onEditDict(self, *args, **kwargs):
-        dictModel = DictModel(self.dictListModel, self.dictListModel.getDictId)
+        dictModel = DictModel(self.dictListModel.dictId)
         dictDialog = DictEditWindow(
             dictModel,
             self.dictListModel.dictModelUtils,
@@ -79,7 +79,9 @@ class VocabularMainWindow(QtGui.QMainWindow):
         )
         currentIndex = self.ui.cbDicts.currentIndex()
         dictDialog.exec_()
-        self.ui.cbDicts.setCurrentIndex(currentIndex)
+        if dictDialog.result() == 1:
+            self.dictListModel.refresh()
+            self.ui.cbDicts.setCurrentIndex(currentIndex)
 
     def _onRemoveDict(self, *args, **kwargs):
         result = QtGui.QMessageBox.question(
@@ -138,14 +140,3 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.wordListDictModel.onRefreshCallbacks.append(self._onTvEngWordsDataChanged)
         self.wordListDictModel.onRefresh()
-
-    def closeEvent(self, *args, **kwargs):
-        self.releaseModels()
-
-    def registerModel(self, model):
-        self.models.append(model)
-        return model
-
-    def releaseModels(self):
-        for model in reversed(self.models):
-            model.release()

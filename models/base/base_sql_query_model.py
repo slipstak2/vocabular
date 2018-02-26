@@ -17,18 +17,6 @@ def need_refresh(func):
     return inner
 
 
-def need_parent_refresh(func):
-    @functools.wraps(func)
-    def inner(self, *args, **kwargs):
-        result = func(self, *args, **kwargs)
-        parentModel = self.parentModel
-        while parentModel:
-            parentModel.refresh()
-            parentModel = parentModel.parentModel
-        return result
-    return inner
-
-
 class SqlQuery(object):
     def __init__(self, model, strQuery, params={}):
         self._model = model
@@ -78,9 +66,8 @@ class SqlQuery(object):
 
 
 class BaseSqlQuery(object):
-    def __init__(self, parentModel):
+    def __init__(self):
         self.db = getDb()
-        self.parentModel = parentModel
 
     def __str__(self):
         return '{}->{}'.format(self.SRC_LANG_FULL, self.DST_LANG_FULL)
@@ -103,20 +90,15 @@ class BaseSqlQuery(object):
 
 
 class SqlQueryModel(BaseSqlQuery, QtSql.QSqlQueryModel):
-    def __init__(self, parentModel, *args, **kwargs):
-        BaseSqlQuery.__init__(self, parentModel)
+    def __init__(self, *args, **kwargs):
+        BaseSqlQuery.__init__(self)
         QtSql.QSqlQueryModel.__init__(self, *args, **kwargs)
 
-        if self.parentModel:
-            self.parentModel.childModels.append(self)
         self.childModels = []
         self.onRefreshCallbacks = []
 
-    def release(self):
-        #assert len(self.childModels) == 0, "childModels wasn't release"
-        #assert self.parentModel.childModels[-1] == self, "bad order in parent model on release"
-        if self.parentModel:
-            self.parentModel.childModels.pop()
+    def addChildModel(self, childModel):
+        self.childModels.append(childModel)
 
     def childModelsRefresh(self):
         for childModel in self.childModels:

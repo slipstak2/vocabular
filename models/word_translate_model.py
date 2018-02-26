@@ -2,7 +2,7 @@
 
 from PySide import QtCore, QtGui
 from PySide.QtCore import Slot as pyqtSlot
-from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh, need_parent_refresh
+from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
 from models.word_model import WordModelInfo, WordModelUtils
@@ -12,11 +12,11 @@ import models_utils
 
 class WordTranslateModel(SqlQueryModel):
     @need_refresh
-    def __init__(self, parentModel, wordId, srcLang, dstLang, *args, **kwargs):
-        super(WordTranslateModel, self).__init__(parentModel=parentModel, *args, **kwargs)
+    def __init__(self, wordId, srcLang, dstLang, *args, **kwargs):
+        super(WordTranslateModel, self).__init__(*args, **kwargs)
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
-        self.wordModelUtils = WordModelUtils(self, self.dstLang, self.srcLang) # именно так
+        self.wordModelUtils = WordModelUtils(self.dstLang, self.srcLang) # именно так
 
         if srcLang == Lang.Eng:
             self.headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
@@ -152,12 +152,10 @@ class WordTranslateModel(SqlQueryModel):
                 return ''
         return value
 
-    @need_parent_refresh
     @need_refresh
     def downOrder(self, row):
         self.changeOrder(row, row + 1)
 
-    @need_parent_refresh
     @need_refresh
     def upOrder(self, row):
         self.changeOrder(row, row - 1)
@@ -167,49 +165,51 @@ class WordTranslateModel(SqlQueryModel):
 
 
 class PlayButtonWordTranslateDelegate(PlayButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        PlayButtonDelegate.__init__(self, parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordTranslateModel):
+        PlayButtonDelegate.__init__(self, parentWindow, parent)
+        self.wordTranslateModel = wordTranslateModel
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        print u"play '{}'".format(self.model.wordTranslate(recordIndex))
+        print u"play '{}'".format(self.wordTranslateModel.wordTranslate(recordIndex))
         self.commitData.emit(self.sender())
 
 
 class EditButtonWordTranslateDelegate(EditButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        EditButtonDelegate.__init__(self, parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordTranslateModel):
+        EditButtonDelegate.__init__(self, parentWindow, parent)
+        self.wordTranslateModel = wordTranslateModel
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
         from forms.word_edit_window import WordEditWindow
 
-        wordModelInfo = self.parentWindow.registerModel(
-            WordModelInfo(
-                self.model,
-                self.model.wordTranslateId(recordIndex),
-                srcLang=self.model.dstLang,
-                dstLang=self.model.srcLang)
+        wordModelInfo = WordModelInfo(
+            self.wordTranslateModel.wordTranslateId(recordIndex),
+            srcLang=self.wordTranslateModel.dstLang,
+            dstLang=self.wordTranslateModel.srcLang
         )
 
         wordEditDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.model.wordModelUtils,
+            wordModelUtils=self.wordTranslateModel.wordModelUtils,
             mode=WordEditMode.EditTranslate,
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
         wordEditDialog.exec_()
-        #self.model.refresh()
+        self.wordTranslateModel.refresh()
         self.commitData.emit(self.sender())
 
 
 class RemoveButtonWordTranslateDelegate(RemoveButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        RemoveButtonDelegate.__init__(self, parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordTranslateModel):
+        RemoveButtonDelegate.__init__(self, parentWindow, parent)
+        self.wordTranslateModel = wordTranslateModel
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        print u"remove '{}'".format(self.model.wordTranslate(recordIndex))
-        self.model.removeTranslate(self.model.wordTranslateId(recordIndex))
+        print u"remove '{}'".format(self.wordTranslateModel.wordTranslate(recordIndex))
+        self.wordTranslateModel.removeTranslate(self.wordTranslateModel.wordTranslateId(recordIndex))
+        self.wordTranslateModel.refresh()
         self.commitData.emit(self.sender())

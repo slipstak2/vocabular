@@ -37,19 +37,16 @@ class WordEditWindow(BaseDialog):
         self.mode = mode
         self.postEdit = postEdit
 
-        self.wordModel = self.registerModel(
-            WordModel(
-                wordModelInfo,
-                self.wordModelInfo.wordId,
-                wordModelInfo.srcLang,
-                wordModelInfo.dstLang)
+        self.wordModel = WordModel(
+            self.wordModelInfo.wordId,
+            wordModelInfo.srcLang,
+            wordModelInfo.dstLang
         )
-        self.wordTranslateModel = self.registerModel(
-            WordTranslateModel(
-                wordModelInfo,
-                self.wordModelInfo.wordId,
-                wordModelInfo.srcLang,
-                wordModelInfo.dstLang)
+
+        self.wordTranslateModel = WordTranslateModel(
+            self.wordModelInfo.wordId,
+            wordModelInfo.srcLang,
+            wordModelInfo.dstLang
         )
 
         self.ui = Ui_WordAddEdit()
@@ -103,7 +100,7 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelInfo = self.registerModel(WordModelInfo(self.wordModelInfo, translateWordId, srcLang=self.wordModelInfo.dstLang, dstLang=self.wordModelInfo.srcLang))
+        wordModelInfo = WordModelInfo(translateWordId, srcLang=self.wordModelInfo.dstLang, dstLang=self.wordModelInfo.srcLang)
         addTranslateDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
             wordModelUtils=self.wordTranslateModel.wordModelUtils,
@@ -113,6 +110,7 @@ class WordEditWindow(BaseDialog):
         addTranslateDialog.exec_()
         if addTranslateDialog.result() != 1:
             self.wordTranslateModel.removeTranslate(translateWordId, silent=True)
+        self.wordTranslateModel.refresh()
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])

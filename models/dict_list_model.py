@@ -9,11 +9,10 @@ class DictListModel(SqlQueryModel):
 
     @need_refresh
     def __init__(self, dictIndex=0, *args, **kwargs):
-        super(DictListModel, self).__init__(parentModel=None, *args, **kwargs)
+        super(DictListModel, self).__init__(*args, **kwargs)
         self._dictIndex = dictIndex
 
-        self.getDictId = lambda: self.dictId
-        self.dictModelUtils = DictModelUtils(self)
+        self.dictModelUtils = DictModelUtils()
 
     @property
     def dictIndex(self):
@@ -40,11 +39,6 @@ class DictListModel(SqlQueryModel):
             fields=', '.join(DictListModel.fields)
         ))
 
-    def addDict(self, dictName):
-        return self.dictModelUtils.add(dictName)
-
-    def editDict(self, dictName):
-        return self.dictModelUtils.edit(self.dictId, dictName)
-
+    @need_refresh
     def removeDict(self):
         return self.dictModelUtils.remove(self.dictId)

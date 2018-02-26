@@ -7,8 +7,8 @@ from models.word_model import WordModel, WordModelUtils
 
 class TestWord(TestDBBaseClass):
     def setUp(self):
-        self.wordEngModel = WordModel(None, 1, Lang.Eng, Lang.Rus) # 'exciting'
-        self.wordEngModelUtils = WordModelUtils(self.wordEngModel, Lang.Eng, Lang.Rus)
+        self.wordEngModel = WordModel(1, Lang.Eng, Lang.Rus) # 'exciting'
+        self.wordEngModelUtils = WordModelUtils(Lang.Eng, Lang.Rus)
 
     def tearDown(self):
         pass
@@ -19,7 +19,7 @@ class TestWord(TestDBBaseClass):
         id = self.wordEngModelUtils.add(value, meaning)
         self.assertNotEqual(False, id)
 
-        wordModel = WordModel(None, id, self.wordEngModel.srcLang, self.wordEngModel.dstLang);
+        wordModel = WordModel(id, self.wordEngModel.srcLang, self.wordEngModel.dstLang);
         self.assertEqual(value, wordModel.wordValue)
         self.assertEqual(meaning, wordModel.wordMeaning)
 
@@ -34,6 +34,8 @@ class TestWord(TestDBBaseClass):
         check(*init)
         upd = ('new exicting', 'new meaning')
         self.wordEngModelUtils.edit(wordId=1, value=upd[0], meaning=upd[1])
+        self.wordEngModel.refresh()
         check(*upd)
         self.wordEngModelUtils.edit(wordId=1, value=init[0], meaning=init[1])
+        self.wordEngModel.refresh()
         check(*init)

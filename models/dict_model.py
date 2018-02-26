@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from base.base_sql_query_model import \
-    BaseSqlQuery, SqlQueryModel, SqlQuery, \
-    need_refresh, \
-    need_parent_refresh
+from base.base_sql_query_model import BaseSqlQuery, SqlQueryModel, SqlQuery, need_refresh
 
 
 class DictModel(SqlQueryModel):
@@ -11,13 +8,9 @@ class DictModel(SqlQueryModel):
     nameFieldName = fields.index('name')
 
     @need_refresh
-    def __init__(self, parentModel, getDictId):
-        super(DictModel, self).__init__(parentModel=parentModel)
-        self.getDictId = getDictId
-
-    @property
-    def id(self):
-        return self.getDictId()
+    def __init__(self, dictId):
+        super(DictModel, self).__init__()
+        self.dictId = dictId
 
     @property
     def name(self):
@@ -34,16 +27,18 @@ class DictModel(SqlQueryModel):
             WHERE
                 id = {id}'''.format(
                 fields=', '.join(self.fields),
-                id=self.getDictId()
+                id=self.dictId
             )
         )
 
 
 class DictModelUtils(BaseSqlQuery):
-    def __init__(self, parentModel, *args, **kwargs):
-        super(DictModelUtils, self).__init__(parentModel=parentModel, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(DictModelUtils, self).__init__(*args, **kwargs)
 
-    @need_parent_refresh
+    def addEmpty(self):
+        return self.add('')
+
     def add(self, dictName):
         return SqlQuery(
             self,
@@ -53,7 +48,7 @@ class DictModelUtils(BaseSqlQuery):
             }
         ).execute(True)
 
-    @need_parent_refresh
+
     def edit(self, dictId, dictName):
         return SqlQuery(
             self,
@@ -64,7 +59,7 @@ class DictModelUtils(BaseSqlQuery):
             }
         ).execute()
 
-    @need_parent_refresh
+
     def remove(self, dictId):
         return SqlQuery(
             self,

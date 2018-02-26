@@ -13,12 +13,12 @@ from utils import Lang
 
 class WordListDictModel(SqlQueryModel):
     @need_refresh
-    def __init__(self, parentModel, getDictId, srcLang, dstLang, *args, **kwargs):
-        super(WordListDictModel, self).__init__(parentModel=parentModel, *args, **kwargs)
-        self.wordModelUtils = WordModelUtils(parentModel=self, srcLang=srcLang, dstLang=dstLang)
+    def __init__(self, dictListModel, srcLang, dstLang, *args, **kwargs):
+        super(WordListDictModel, self).__init__(*args, **kwargs)
+        self.wordModelUtils = WordModelUtils(srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
-        self.getDictId = getDictId
+        self.dictListModel = dictListModel
         if srcLang == Lang.Eng:
             self.headerFields = ['',          '',      'eng',      u'рус',     '',     '',       '']
             self.fields =       ['d_id', 'we_id', 'we_value',  'wr_value', 'play', 'edit', 'remove']
@@ -59,7 +59,7 @@ class WordListDictModel(SqlQueryModel):
                 ORDER BY rus_eng.[rus]_order
             ) as x
             GROUP BY d_id, w[e]_id
-            '''.format(dict_id=self.getDictId()),
+            '''.format(dict_id=self.dictListModel.dictId),
         ).str()
         self.setQuery(query)
 
@@ -79,7 +79,7 @@ class WordListDictModel(SqlQueryModel):
               (:dict_id, :w[e]_id)
             ''',
             {
-                ':dict_id': self.getDictId(),
+                ':dict_id': self.dictListModel.dictId,
                 ':w[e]_id': wordId,
             }
         ).execute()
@@ -97,7 +97,7 @@ class WordListDictModel(SqlQueryModel):
                 dict_id = :dict_id AND word_[eng]_id = :word_id
             ''',
             {
-                ':dict_id': self.getDictId(),
+                ':dict_id': self.dictListModel.dictId,
                 ':word_id': wordId
             }
         ).execute()
@@ -132,49 +132,52 @@ class WordListDictModel(SqlQueryModel):
 
 
 class PlayButtonWordListDictDelegate(PlayButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        PlayButtonDelegate.__init__(self, parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordListDictModel):
+        PlayButtonDelegate.__init__(self, parentWindow, parent)
+        self.wordListDictModel = wordListDictModel
+
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
-        print u"play '{}'".format(self.model.wordValue(recordIndex))
+        print u"play '{}'".format(self.wordListDictModel.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
 
 class EditButtonWordListDictDelegate(EditButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        EditButtonDelegate.__init__(self, parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordListDictModel):
+        EditButtonDelegate.__init__(self, parentWindow, parent)
+        self.wordListDictModel = wordListDictModel
 
     @pyqtSlot()
     def onBtnClicked(self, recordIndex):
         from forms.word_edit_window import WordEditWindow
-        print u"edit '{}'".format(self.model.wordValue(recordIndex))
+        print u"edit '{}'".format(self.wordListDictModel.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        wordModelInfo = self.parentWindow.registerModel(
-            WordModelInfo(
-                self.model,
-                self.model.wordId(recordIndex),
-                srcLang=self.model.srcLang,
-                dstLang=self.model.dstLang
-            )
+        wordModelInfo = WordModelInfo(
+            self.wordListDictModel.wordId(recordIndex),
+            srcLang=self.wordListDictModel.srcLang,
+            dstLang=self.wordListDictModel.dstLang
         )
+
         wordEditDialog = WordEditWindow(
             wordModelInfo=wordModelInfo,
-            wordModelUtils=self.model.wordModelUtils,
+            wordModelUtils=self.wordListDictModel.wordModelUtils,
             mode=WordEditMode.EditWord,
         )
         models_utils.setStartGeometry(self.parentWindow, wordEditDialog)
 
         wordEditDialog.exec_()
-        #self.model.refresh()
+        self.wordListDictModel.refresh()
 
 
 class RemoveButtonWordListDictDelegate(RemoveButtonDelegate):
-    def __init__(self, parentWindow, parent, model):
-        RemoveButtonDelegate.__init__(self,parentWindow, parent, model)
+    def __init__(self, parentWindow, parent, wordListDictModel):
+        RemoveButtonDelegate.__init__(self,parentWindow, parent)
+        self.wordListDictModel = wordListDictModel
 
     def onBtnClicked(self, recordIndex):
-        print u"remove '{}'".format(self.model.wordValue(recordIndex))
-        self.model.removeLinkWord(self.model.wordId(recordIndex))
+        print u"remove '{}'".format(self.wordListDictModel.wordValue(recordIndex))
+        self.wordListDictModel.removeLinkWord(self.wordListDictModel.wordId(recordIndex))
+        self.wordListDictModel.refresh()
         self.commitData.emit(self.sender())
