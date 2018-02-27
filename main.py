@@ -16,7 +16,6 @@ def run():
     wnd.show()
     app.exec_()
 
-
 if __name__ == '__main__':
     AppSettings(AppMode.DEVELOP)
     run()
