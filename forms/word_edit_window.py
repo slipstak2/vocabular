@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from PySide import QtGui
-from PySide.QtGui import QDataWidgetMapper
+from PySide.QtGui import QDataWidgetMapper, QRegExpValidator
+from PySide.QtCore import QRegExp
 
+import utils
 from forms.base_dialog import BaseDialog
-from ui.word_edit_ui import Ui_WordAddEdit
+from forms_utils import WordEditMode
 from models.word_model import WordModel, WordModelInfo, WordModelUtils
 from models.word_translate_model import WordTranslateModel
-from forms_utils import WordEditMode
+from ui.word_edit_ui import Ui_WordAddEdit
 
 from models.word_translate_model import PlayButtonWordTranslateDelegate, EditButtonWordTranslateDelegate, RemoveButtonWordTranslateDelegate
 
@@ -87,10 +89,6 @@ class WordEditWindow(BaseDialog):
         mapper.addMapping(self.ui.teMeaning, self.wordModel.meaningFieldNum)
         mapper.toFirst()
 
-    def _onWordChanged(self, word, *args, **kwargs):
-        #  TODO: валидация введенных символов
-        pass
-
     def _onTranslateChanged(self, selected, deselected):
         row = self.ui.tvTranslate.currentIndex().row()
         self.ui.actDownOrder.setEnabled(row != self.wordTranslateModel.rowCount() - 1)
@@ -139,7 +137,10 @@ class WordEditWindow(BaseDialog):
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
         self.ui.cbLang.setCurrentIndex(self.wordModelInfo.srcLang.value)
-        self.ui.leWord.textChanged.connect(self._onWordChanged)
+        if self.wordModel.srcLang == utils.Lang.Eng:
+            self.ui.leWord.setValidator(QRegExpValidator(QRegExp(utils.rxEng), self))
+        if self.wordModel.srcLang == utils.Lang.Rus:
+            self.ui.leWord.setValidator(QRegExpValidator(QRegExp(utils.rxRus), self))
 
         self.ui.leWord.setText(self.wordModel.wordValue)
         self.ui.teMeaning.setText(self.wordModel.wordMeaning)
