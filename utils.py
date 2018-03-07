@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from enum import IntEnum
 
 class Singleton(type):
@@ -15,5 +16,14 @@ class Lang(IntEnum):
     Eng = 1
     Unknown = 2
 
+    def toShortStr(self):
+        return str(self).replace('Lang.', '')
+
 rxEng = u"[a-zA-Z0-9_- ]+"
 rxRus = u"[а-яА-Я0-9_- ]+"
+
+
+def createFullPath(localPath):
+    dirPath = os.path.dirname(localPath)
+    if not os.path.exists(dirPath):
+        os.makedirs(dirPath)

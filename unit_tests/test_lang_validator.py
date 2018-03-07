@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from unit_tests.base.test_base import TestDBBaseClass
+from unit_tests.base.test_base import TestBaseClass
 from PySide.QtGui import QRegExpValidator, QValidator
 from PySide.QtCore import QRegExp
 import utils
 
 
-class TestEngLangValidator(TestDBBaseClass):
+class TestEngLangValidator(TestBaseClass):
     def setUp(self):
         self.validator = QRegExpValidator(QRegExp(utils.rxEng), None)
 
@@ -23,7 +23,7 @@ class TestEngLangValidator(TestDBBaseClass):
             self._check(word, QValidator.State.Invalid)
 
 
-class TestRusLangValidator(TestDBBaseClass):
+class TestRusLangValidator(TestBaseClass):
     def setUp(self):
         self.validator = QRegExpValidator(QRegExp(utils.rxRus), None)
 

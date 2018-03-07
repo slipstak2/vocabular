@@ -3,3 +3,9 @@ db:
   user: root
   passwd: passwd
   db: voc-app-db
+mp3:
+  eng:
+  - path: third_party/eng_to_mp3/ultimate.json
+    type: MULTI
+cache:
+  path: cache-dev

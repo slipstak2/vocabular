@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 import unittest
+import shutil
+
 from models.base.db import getDb
 from app_settings import AppSettings
 from unit_tests.unit_tests_utils import applySQLcommands
@@ -48,3 +51,13 @@ class TestDBBaseClass(TestBaseClass):
     @classmethod
     def tearDownClass(cls):
         pass
+
+
+class TestMp3BaseClass(TestBaseClass):
+    def __init__(self, *args, **kwargs):
+        TestBaseClass.__init__(self, *args, **kwargs)
+
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(AppSettings()._cacheRoot):
+            shutil.rmtree(AppSettings()._cacheRoot)

@@ -3,7 +3,8 @@
 import os
 import yaml
 from enum import Enum
-from utils import Singleton
+from utils import Singleton, Lang
+from classes.mp3.m3_online_getter import Mp3OnlineGetter
 
 
 class AppMode(Enum):
@@ -29,10 +30,19 @@ class AppSettings:
 
         self._mode = mode
         self._startPath = os.path.dirname(__file__)
-        self._configPath = os.path.join(self._startPath, _CONFIG_PATH, configMap[mode])
 
+        self._configPath = os.path.join(self._startPath, _CONFIG_PATH, configMap[mode])
         with open(self._configPath, "r") as configStream:
             self._config = yaml.load(configStream)
+
+        self._cacheRoot = os.path.join(self._startPath, self._config['cache']['path'])
+
+        self.mp3Eng = Mp3OnlineGetter(
+            Lang.Eng,
+            self._startPath,
+            self._config['mp3']['eng'],
+            self._cacheRoot
+        )
 
     def dbParams(self):
         return self._config['db']

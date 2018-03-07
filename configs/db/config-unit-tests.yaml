@@ -3,3 +3,11 @@ db:
   user: root
   passwd: passwd
   db: voc-app-db-test
+mp3:
+  eng:
+  - path: third_party/eng_to_mp3/ultimate.json
+    type: MULTI
+  - path: third_party/eng_to_mp3/data.json
+    type: SINGLE
+cache:
+  path: cache-unit-tests
