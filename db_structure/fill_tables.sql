@@ -31,9 +31,9 @@ INSERT INTO `rus_eng`(`word_rus_id`,`word_eng_id`,`rus_order`,`eng_order`) VALUE
 
 
 -- Dump data of "word_eng" ---------------------------------
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '1', 'exicting', NULL, NULL );
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '2', 'retrieval system', NULL, NULL );
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '3', 'deduced type', NULL, NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '1', 'exicting', NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '2', 'retrieval system', NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '3', 'deduced type', NULL );
 -- ---------------------------------------------------------
 
 
@@ -45,11 +45,11 @@ INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '2',
 
 
 -- Dump data of "word_rus" ---------------------------------
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '2', 'восхитительный', 'эмоция', NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '3', 'захватывающий', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '4', 'еще одно слово', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '5', 'поисковая система', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '6', 'выводимый тип', NULL, NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '2', 'восхитительный', 'эмоция' );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '3', 'захватывающий', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '4', 'еще одно слово', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '5', 'поисковая система', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '6', 'выводимый тип', NULL );
 -- ---------------------------------------------------------
 
 

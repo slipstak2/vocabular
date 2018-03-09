@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `word_eng_sound` CASCADE;
+DROP TABLE IF EXISTS `word_rus_sound` CASCADE;
 DROP TABLE IF EXISTS `word_eng_dict` CASCADE;
 DROP TABLE IF EXISTS `word_rus_dict` CASCADE;
 DROP TABLE IF EXISTS `rus_eng` CASCADE;
@@ -17,7 +19,6 @@ CREATE TABLE `dictionary` (
 CREATE TABLE `sound` (
 	`id` int(11) AUTO_INCREMENT NOT NULL,
 	`online_path` varchar(1024) NULL,
-	`local_path` varchar(1024) NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
@@ -26,9 +27,7 @@ CREATE TABLE `word_rus` (
 	`id` int(11) AUTO_INCREMENT NOT NULL,
 	`value` varchar(255) NOT NULL DEFAULT '<EMPTY>',
 	`meaning` text NULL,
-	`sound_id` int(11) NULL,
-	PRIMARY KEY (`id`),
-	FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE ON UPDATE CASCADE
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
@@ -36,9 +35,7 @@ CREATE TABLE `word_eng` (
 	`id` int(11) AUTO_INCREMENT NOT NULL,
 	`value` varchar(255) NOT NULL DEFAULT '<EMPTY>',
 	`meaning` text NULL,
-	`sound_id` int(11) NULL,
-	PRIMARY KEY (`id`),
-	FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE ON UPDATE CASCADE
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
@@ -50,14 +47,15 @@ CREATE TABLE `rus_eng` (
 	CONSTRAINT UNIQUE( `word_rus_id`, `word_eng_id` ),
 	INDEX (`word_rus_id`),
 	INDEX (`word_eng_id`),
-	FOREIGN KEY (word_rus_id) REFERENCES word_rus(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (word_eng_id) REFERENCES word_eng(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (word_rus_id) REFERENCES word_rus(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (word_eng_id) REFERENCES word_eng(id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `word_rus_dict` (
 	`dict_id` int(11) NOT NULL,
 	`word_rus_id` int(11) NOT NULL,
+	`word_rus_order` int(11) NOT NULL DEFAULT -1,
 	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT UNIQUE( `dict_id`, `word_rus_id` ),
 	FOREIGN KEY (dict_id) REFERENCES dictionary(id) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -68,10 +66,33 @@ CREATE TABLE `word_rus_dict` (
 CREATE TABLE `word_eng_dict` (
 	`dict_id` int(11) NOT NULL,
 	`word_eng_id` int(11) NOT NULL,
+	`word_eng_order` int(11) NOT NULL DEFAULT -1,
 	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT UNIQUE( `dict_id`, `word_eng_id` ),
 	FOREIGN KEY (dict_id) REFERENCES dictionary(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (word_eng_id) REFERENCES word_eng(id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `word_rus_sound` (
+	`word_rus_id` int(11) NOT NULL,
+	`sound_id`    int(11) NULL,
+	`sound_order` int(11) NOT NULL DEFAULT -1,
+	CONSTRAINT UNIQUE( `word_rus_id`, `sound_id` ),
+	INDEX (`word_rus_id`),
+	FOREIGN KEY (word_rus_id) REFERENCES word_rus(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `word_eng_sound` (
+	`word_eng_id` int(11) NOT NULL,
+	`sound_id`    int(11) NULL,
+	`sound_order` int(11) NOT NULL DEFAULT -1,
+	CONSTRAINT UNIQUE( `word_eng_id`, `sound_id` ),
+	INDEX (`word_eng_id`),
+	FOREIGN KEY (word_eng_id) REFERENCES word_eng(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (sound_id) REFERENCES sound(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Valentina Studio --
@@ -107,9 +128,9 @@ INSERT INTO `rus_eng`(`word_rus_id`,`word_eng_id`,`rus_order`,`eng_order`) VALUE
 
 
 -- Dump data of "word_eng" ---------------------------------
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '1', 'exicting', NULL, NULL );
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '2', 'retrieval system', NULL, NULL );
-INSERT INTO `word_eng`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '3', 'deduced type', NULL, NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '1', 'exicting', NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '2', 'retrieval system', NULL );
+INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '3', 'deduced type', NULL );
 -- ---------------------------------------------------------
 
 
@@ -121,11 +142,11 @@ INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '2',
 
 
 -- Dump data of "word_rus" ---------------------------------
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '2', 'восхитительный', 'эмоция', NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '3', 'захватывающий', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '4', 'еще одно слово', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '5', 'поисковая система', NULL, NULL );
-INSERT INTO `word_rus`(`id`,`value`,`meaning`,`sound_id`) VALUES ( '6', 'выводимый тип', NULL, NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '2', 'восхитительный', 'эмоция' );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '3', 'захватывающий', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '4', 'еще одно слово', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '5', 'поисковая система', NULL );
+INSERT INTO `word_rus`(`id`,`value`,`meaning`) VALUES ( '6', 'выводимый тип', NULL );
 -- ---------------------------------------------------------
 
 
