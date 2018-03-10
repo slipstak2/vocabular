@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from app_settings import AppSettings
-from unit_tests.base.test_base import TestMp3BaseClass
+from unit_tests.base.test_base import TestSoundBaseClass
 
 
-class TestMp3OnlinePathGetter(TestMp3BaseClass):
+class TestSoundOnlinePathGetter(TestSoundBaseClass):
     def setUp(self):
-        self.mp3Eng = AppSettings().mp3Eng
+        self.soundsEng = AppSettings().soundsEng
 
     def tearDown(self):
         pass
 
     def testTown(self):
-        expectedPaths = self.mp3Eng.onlineMp3Paths('town')
+        expectedPaths = self.soundsEng.onlineSoundPaths('town')
         self.assertEqual(10, len(expectedPaths))
         targetPaths = [
             u'http://dictionary.cambridge.org/us/media/english/uk_pron/u/ukt/uktou/uktouch030.mp3',
@@ -30,11 +30,11 @@ class TestMp3OnlinePathGetter(TestMp3BaseClass):
             self.assertEqual(targetPath, expectedPath)
 
     def testHrundik(self):
-        expectedPaths = self.mp3Eng.onlineMp3Paths('hrundik')
+        expectedPaths = self.soundsEng.onlineSoundPaths('hrundik')
         self.assertEqual(0, len(expectedPaths))
 
     def testUPPER_CASE(self):
-        expectedPaths = self.mp3Eng.onlineMp3Paths('AQUEDUCT')
+        expectedPaths = self.soundsEng.onlineSoundPaths('AQUEDUCT')
         self.assertEqual(10, len(expectedPaths))
         targetPaths = [
             u'http://dictionary.cambridge.org/us/media/english/uk_pron/u/uka/ukaqu/ukaquat003.mp3',

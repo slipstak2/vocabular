@@ -3,7 +3,7 @@ db:
   user: root
   passwd: passwd
   db: voc-app-db
-mp3:
+sound:
   eng:
   - path: third_party/eng_to_mp3/ultimate.json
     type: MULTI

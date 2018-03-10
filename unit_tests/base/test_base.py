@@ -53,7 +53,7 @@ class TestDBBaseClass(TestBaseClass):
         pass
 
 
-class TestMp3BaseClass(TestBaseClass):
+class TestSoundBaseClass(TestBaseClass):
     def __init__(self, *args, **kwargs):
         TestBaseClass.__init__(self, *args, **kwargs)
 

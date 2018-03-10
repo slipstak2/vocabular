@@ -4,7 +4,7 @@ import os
 import yaml
 from enum import Enum
 from utils import Singleton, Lang
-from classes.mp3.m3_online_getter import Mp3OnlineGetter
+from classes.sound.sound_files_manager import SoundFilesManager
 
 
 class AppMode(Enum):
@@ -37,10 +37,10 @@ class AppSettings:
 
         self._cacheRoot = os.path.join(self._startPath, self._config['cache']['path'])
 
-        self.mp3Eng = Mp3OnlineGetter(
+        self.soundsEng = SoundFilesManager(
             Lang.Eng,
             self._startPath,
-            self._config['mp3']['eng'],
+            self._config['sound']['eng'],
             self._cacheRoot
         )
 
