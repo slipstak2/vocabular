@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from app_settings import AppSettings
+from classes.sound.sound_files_manager import SoundEng
 from unit_tests.base.test_base import TestSoundBaseClass
 
 
-class TestSoundOnlinePathGetter(TestSoundBaseClass):
+class TestSoundFilesManager(TestSoundBaseClass):
     def setUp(self):
-        self.soundsEng = AppSettings().soundsEng
+        self.soundsEng = SoundEng
 
     def tearDown(self):
         pass

@@ -4,7 +4,10 @@ import os
 import json
 import urllib2
 from enum import Enum
-from utils import createFullPath
+from utils import createFullPath, Lang
+from app_settings import AppSettings
+from classes.ftp.ftp_manager import FtpManager
+
 
 
 class SOUND_DICT_TYPE(Enum):
@@ -70,3 +73,23 @@ class SoundFilesManager(object):
             return True
         except:
             return False
+
+    def uploadToFtp(self, url):
+        if not self.checkCacheExist(url):
+            self.saveInLocalCache(url)
+            assert self.checkCacheExist(url), "save in local cache error"
+
+        localPath = self.cachePath(url)
+        # TODO: context manager
+        #manager = FtpManager()
+        #manager.upload(localPath)
+
+
+
+
+SoundEng = SoundFilesManager(
+    Lang.Eng,
+    AppSettings().startPath,
+    AppSettings().config['sound']['eng'],
+    AppSettings().cacheRoot
+)

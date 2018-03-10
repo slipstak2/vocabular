@@ -4,7 +4,6 @@ import os
 import yaml
 from enum import Enum
 from utils import Singleton, Lang
-from classes.sound.sound_files_manager import SoundFilesManager
 
 
 class AppMode(Enum):
@@ -37,15 +36,24 @@ class AppSettings:
 
         self._cacheRoot = os.path.join(self._startPath, self._config['cache']['path'])
 
-        self.soundsEng = SoundFilesManager(
-            Lang.Eng,
-            self._startPath,
-            self._config['sound']['eng'],
-            self._cacheRoot
-        )
+    @property
+    def startPath(self):
+        return self._startPath
+
+    @property
+    def config(self):
+        return self._config
+
+    @property
+    def cacheRoot(self):
+        return self._cacheRoot
 
     def dbParams(self):
         return self._config['db']
+
+    @property
+    def ftpParams(self):
+        return self._config['ftp']
 
     @property
     def createSQLTablePath(self):

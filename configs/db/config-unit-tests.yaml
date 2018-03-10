@@ -11,3 +11,8 @@ sound:
     type: SINGLE
 cache:
   path: cache-unit-tests
+ftp:
+  host: 95.213.194.109
+  user: voc-app-user
+  passwd: voc-app-user-pass
+  root-dir: files
