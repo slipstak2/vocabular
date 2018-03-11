@@ -4,11 +4,12 @@ import os
 import sys
 import unittest
 import shutil
+from PySide import QtGui
 
+from classes.ftp.ftp_manager import FtpManager
 from models.base.db import getDb
 from app_settings import AppSettings
 from unit_tests.unit_tests_utils import applySQLcommands
-from PySide import QtGui
 
 
 class TestBaseClass(unittest.TestCase):
@@ -61,3 +62,13 @@ class TestSoundBaseClass(TestBaseClass):
     def setUpClass(cls):
         if os.path.exists(AppSettings()._cacheRoot):
             shutil.rmtree(AppSettings()._cacheRoot)
+
+
+class TestFtpBaseClass(TestBaseClass):
+    def __init__(self, *args, **kwargs):
+        TestBaseClass.__init__(self, *args, **kwargs)
+
+    @classmethod
+    def setUpClass(cls):
+        with FtpManager() as ftpManager:
+            ftpManager.clearDirectoryContent(ftpManager.rootDir)
