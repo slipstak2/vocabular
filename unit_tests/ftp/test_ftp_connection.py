@@ -9,6 +9,6 @@ class TestFtpConnection(TestFtpBaseClass):
     def tearDown(self):
         pass
 
-    def testConnection(self):
+    def testLogin(self):
         with FtpManager() as ftpManager:
-            self.assertTrue(ftpManager.isConnect)
+            self.assertTrue(ftpManager.isLogin)

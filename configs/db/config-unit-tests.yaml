@@ -13,6 +13,6 @@ cache:
   path: cache-unit-tests
 ftp:
   host: 95.213.194.109
-  user: voc-app-user
-  passwd: voc-app-user-pass
+  user: voc-app-ftp-unit-tests-user
+  passwd: voc-app-ftp-unit-tests-user-pass
   root-dir: files

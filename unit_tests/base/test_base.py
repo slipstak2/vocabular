@@ -6,7 +6,7 @@ import unittest
 import shutil
 from PySide import QtGui
 
-from classes.ftp.ftp_manager import FtpManager
+from classes.ftp.ftp_manager import FtpManager, FtpAudioManager
 from models.base.db import getDb
 from app_settings import AppSettings
 from unit_tests.unit_tests_utils import applySQLcommands
@@ -70,5 +70,5 @@ class TestFtpBaseClass(TestBaseClass):
 
     @classmethod
     def setUpClass(cls):
-        with FtpManager() as ftpManager:
+        with FtpAudioManager() as ftpManager:
             ftpManager.clearDirectoryContent(ftpManager.rootDir)

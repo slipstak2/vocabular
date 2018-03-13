@@ -3,8 +3,35 @@
 # https://python-scripts.com/ftplib
 
 import os
-from ftplib import FTP
+from ftplib import FTP, all_errors
 from app_settings import AppSettings, AppMode
+
+
+'''
+with FtpCwd(self.ftp, ftpPath) as ftp:
+    for something in ftp.nlst():
+        try:
+            ftp.delete(something)
+        except Exception:
+            ftp.rmd(something)'''
+
+class FtpCwd(object):
+    def __init__(self, ftp, newCwd):
+        self.ftp = ftp
+        self.pwd = self.ftp.pwd()
+        self.ftp.cwd(newCwd)
+
+    def __enter__(self):
+        return self.ftp
+
+    def __exit__(self, *args):
+        self.ftp.cwd(self.pwd)
+
+
+def ftpJoin(root, dir):
+    result = '/{}/{}'.format(root, dir)
+    result = result.replace('//', '/')
+    return result
 
 
 class FtpManager(object):
@@ -12,14 +39,8 @@ class FtpManager(object):
         self._subdir = subdir
         self.ftpParams = AppSettings().ftpParams
         self.ftp = FTP(self.ftpParams['host'])
-        self.connect()
+        self.login()
         self.garanteeExistPath(self.rootDir)
-
-        print(self.ftp.retrlines('LIST'))
-        self.ftp.cwd(self.ftpParams['root-dir'])
-        print(self.ftp.retrlines('LIST'))
-
-        print(self.ftp.nlst())
 
     def __enter__(self):
         return self
@@ -27,20 +48,33 @@ class FtpManager(object):
     def __exit__(self, *args):
         self.ftp.close()
 
-    def clearDirectoryContent(self, ftpPath):
-        pass
+    def clearDirectoryContent(self, ftpPath, deep=0):
+        wd = self.ftp.pwd()
+        names = self.ftp.nlst(ftpPath)
+        for name in names:
+            if os.path.split(name)[1] in ('.', '..'):
+                continue
+            try:
+                self.ftp.cwd(name)
+                self.ftp.cwd(wd)
+                self.clearDirectoryContent(name, deep + 1)
+            except all_errors:
+                self.ftp.delete(name)
 
-    def connect(self):
+        if deep != 0:
+            self.ftp.rmd(ftpPath)
+
+    def login(self):
         self._loginInfo = self.ftp.login(self.ftpParams['user'], self.ftpParams['passwd'])
         self._isLogin = self._loginInfo == '230 Login successful.'
 
     @property
-    def isConnect(self):
+    def isLogin(self):
         return self._isLogin
 
     @property
     def rootDir(self):
-        return os.path.join(self.ftpParams['root-dir'], self._subdir)
+        return ftpJoin(self.ftpParams['root-dir'], self._subdir)
 
     def garanteeExistPath(self, ftpPath):
         print ftpPath
@@ -58,11 +92,11 @@ class FtpManager(object):
                 self.ftp.storbinary('STOR ' + localPath, f, 1024)
 
 
-class FtfAudioManager(FtpManager):
+class FtpAudioManager(FtpManager):
     def __init__(self):
         FtpManager.__init__(self, 'audio')
 
 if __name__ == '__main__':
     AppSettings(AppMode.DEVELOP)
-    manager = FtfAudioManager()
+    manager = FtpAudioManager()
     manager.upload(r'C:\1.txt')
