@@ -70,5 +70,5 @@ class TestFtpBaseClass(TestBaseClass):
 
     @classmethod
     def setUpClass(cls):
-        with FtpAudioManager() as ftpManager:
+        with FtpManager() as ftpManager:
             ftpManager.clearDirectoryContent(ftpManager.rootDir)

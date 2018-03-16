@@ -2,9 +2,7 @@
 
 from unit_tests.base.test_base import TestSoundBaseClass
 import os
-from app_settings import AppSettings
 from classes.sound.sound_files_manager import SoundEng
-
 
 
 class TestSoundOnlinePathGetter(TestSoundBaseClass):

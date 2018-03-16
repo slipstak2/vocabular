@@ -7,15 +7,7 @@ from ftplib import FTP, all_errors
 from app_settings import AppSettings, AppMode
 
 
-'''
-with FtpCwd(self.ftp, ftpPath) as ftp:
-    for something in ftp.nlst():
-        try:
-            ftp.delete(something)
-        except Exception:
-            ftp.rmd(something)'''
-
-class FtpCwd(object):
+class FtpSaveCwd_WithNewCwd(object):
     def __init__(self, ftp, newCwd):
         self.ftp = ftp
         self.pwd = self.ftp.pwd()
@@ -28,10 +20,37 @@ class FtpCwd(object):
         self.ftp.cwd(self.pwd)
 
 
+class FtpSaveCwd(object):
+    def __init__(self, ftp):
+        self.ftp = ftp
+        self.pwd = self.ftp.pwd()
+
+    def __enter__(self):
+        return self.ftp
+
+    def __exit__(self, *args):
+        self.ftp.cwd(self.pwd)
+
+
+def ftpPathNorm(ftpPath):
+    if not ftpPath:
+        return '/'
+    if ftpPath == '/':
+        return ftpPath
+
+    if ftpPath[0] != '/':
+        ftpPath = '/{}'.format(ftpPath)
+
+    ftpPath = ftpPath.replace('//', '/')
+
+    if ftpPath[-1] == '/':
+        ftpPath = ftpPath[:-1]
+
+    return ftpPath
+
 def ftpJoin(root, dir):
-    result = '/{}/{}'.format(root, dir)
-    result = result.replace('//', '/')
-    return result
+    result = '/{}/{}'.format(ftpPathNorm(root), dir)
+    return ftpPathNorm(result)
 
 
 class FtpManager(object):
@@ -73,11 +92,29 @@ class FtpManager(object):
         return self._isLogin
 
     @property
+    def ftpRoot(self):
+        return ftpPathNorm(self.ftpParams['root-dir'])
+
+    @property
     def rootDir(self):
-        return ftpJoin(self.ftpParams['root-dir'], self._subdir)
+        return ftpJoin(self.ftpRoot, self._subdir)
 
     def garanteeExistPath(self, ftpPath):
-        print ftpPath
+        self.ftp.cwd('/')
+        curPath = ''
+        for part in ftpPath.split('/'):
+            if curPath == '/':
+                curPath += part
+            else:
+                curPath += '/' + part
+            if curPath == '/':
+                self.ftp.cwd(curPath)
+            else:
+                files = self.ftp.nlst()
+                if part in files:
+                    self.ftp.cwd(curPath)
+                else:
+                    self.ftp.mkd(curPath)
 
     def checkExist(self, ftpPath):
         pass
