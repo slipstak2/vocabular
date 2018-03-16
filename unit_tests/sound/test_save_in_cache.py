@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from unit_tests.base.test_base import TestSoundBaseClass
 import os
 from app_settings import AppSettings
 from classes.sound.sound_files_manager import SoundEng
-from unit_tests.base.test_base import TestSoundBaseClass
+
 
 
 class TestSoundOnlinePathGetter(TestSoundBaseClass):
@@ -24,6 +25,7 @@ class TestSoundOnlinePathGetter(TestSoundBaseClass):
         self.assertFalse(self.soundsEng.checkOnlineExist('http://dictionary.cambridge.org/us/media/english/us_pron/t/tow/town_/town.mp9'))
 
     def testSaveUrlInCache(self):
-        url = 'http://www.yourdictionary.com/audio/t/to/town.mp3'
+        url = 'http://s3.amazonaws.com/audio.vocabulary.com/1.0/us/A/1WLMHFJWU12UX.mp3'
+        self.assertTrue(self.soundsEng.checkOnlineExist(url))
         self.assertTrue(self.soundsEng.saveInLocalCache(url))
         self.assertTrue(self.soundsEng.checkCacheExist(url))
