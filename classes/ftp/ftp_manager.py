@@ -48,14 +48,15 @@ def ftpPathNorm(ftpPath):
 
     return ftpPath
 
+
 def ftpJoin(root, dir):
     result = '/{}/{}'.format(ftpPathNorm(root), dir)
     return ftpPathNorm(result)
 
 
 class FtpManager(object):
-    def __init__(self, subdir=''):
-        self._subdir = subdir
+    def __init__(self, category=''):
+        self._category = category
         self.ftpParams = AppSettings().ftpParams
         self.ftp = FTP(self.ftpParams['host'])
         self.login()
@@ -66,6 +67,10 @@ class FtpManager(object):
 
     def __exit__(self, *args):
         self.ftp.close()
+
+    def login(self):
+        self._loginInfo = self.ftp.login(self.ftpParams['user'], self.ftpParams['passwd'])
+        self._isLogin = self._loginInfo == '230 Login successful.'
 
     def clearDirectoryContent(self, ftpPath, deep=0):
         wd = self.ftp.pwd()
@@ -82,22 +87,6 @@ class FtpManager(object):
 
         if deep != 0:
             self.ftp.rmd(ftpPath)
-
-    def login(self):
-        self._loginInfo = self.ftp.login(self.ftpParams['user'], self.ftpParams['passwd'])
-        self._isLogin = self._loginInfo == '230 Login successful.'
-
-    @property
-    def isLogin(self):
-        return self._isLogin
-
-    @property
-    def ftpRoot(self):
-        return ftpPathNorm(self.ftpParams['root-dir'])
-
-    @property
-    def rootDir(self):
-        return ftpJoin(self.ftpRoot, self._subdir)
 
     def garanteeExistPath(self, ftpPath):
         self.ftp.cwd('/')
@@ -116,9 +105,20 @@ class FtpManager(object):
                 else:
                     self.ftp.mkd(curPath)
 
+    @property
+    def isLogin(self):
+        return self._isLogin
+
+    @property
+    def ftpRoot(self):
+        return ftpPathNorm(self.ftpParams['root-dir'])
+
+    @property
+    def rootDir(self):
+        return ftpJoin(self.ftpRoot, self._category)
+
     def checkExist(self, ftpPath):
         pass
-
 
     def upload(self, localPath, ftype='TXT'):
         if ftype == 'TXT':
