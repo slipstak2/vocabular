@@ -46,15 +46,12 @@ class WordModel(SqlQueryModel):
         self.onRefresh()
 
 
-class WordModelInfo(SqlQueryModel):
+class WordModelInfo(BaseSqlQuery):
     def __init__(self, wordId, srcLang, dstLang):
         super(WordModelInfo, self).__init__()
         self.wordId = wordId
         self.utils = WordModelUtils(srcLang, dstLang)
         self.initLang(srcLang, dstLang)
-
-    def refresh(self):
-        pass
 
 
 class WordModelUtils(BaseSqlQuery):

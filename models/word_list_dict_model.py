@@ -48,14 +48,14 @@ class WordListDictModel(SqlQueryModel):
             u'''
             SELECT d_id, w[e]_id, w[e]_value, w[r]_value  FROM (
                 SELECT
-                    DISTINCT word_[eng].id as w[e]_id, dictionary.id as d_id, word_[eng].value as w[e]_value, word_[rus].value as w[r]_value
+                    DISTINCT word_[eng].id as w[e]_id, dict_[eng].id as d_id, word_[eng].value as w[e]_value, word_[rus].value as w[r]_value
                 from
-                    dictionary
-                JOIN word_[eng]_dict ON word_[eng]_dict.dict_id = dictionary.id
+                    dict_[eng]
+                JOIN word_[eng]_dict ON word_[eng]_dict.dict_[eng]_id = dict_[eng].id
                 JOIN word_[eng] ON word_[eng].id = word_[eng]_dict.word_[eng]_id
                 LEFT JOIN rus_eng ON rus_eng.word_[eng]_id = word_[eng].id
                 LEFT JOIN word_[rus] ON word_[rus].id = rus_eng.word_[rus]_id
-                WHERE dictionary.id = {dict_id}
+                WHERE dict_[eng].id = {dict_id}
                 ORDER BY rus_eng.[rus]_order
             ) as x
             GROUP BY d_id, w[e]_id
@@ -74,7 +74,7 @@ class WordListDictModel(SqlQueryModel):
             '''
             INSERT INTO
               word_[eng]_dict
-            (dict_id, word_[eng]_id)
+            (dict_[eng]_id, word_[eng]_id)
             VALUES
               (:dict_id, :w[e]_id)
             ''',
@@ -94,7 +94,7 @@ class WordListDictModel(SqlQueryModel):
             DELETE FROM
                 word_[eng]_dict
             WHERE
-                dict_id = :dict_id AND word_[eng]_id = :word_id
+                dict_[eng]_id = :dict_id AND word_[eng]_id = :word_id
             ''',
             {
                 ':dict_id': self.dictListModel.dictId,

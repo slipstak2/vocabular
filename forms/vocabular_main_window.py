@@ -20,7 +20,6 @@ from forms.word_edit_window import WordEditWindow, WordEditContext
 from models import models_utils
 
 
-#TODO: добавить удаление слова из словаря
 class VocabularMainWindow(QtGui.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(VocabularMainWindow, self).__init__(*args, **kwargs)
@@ -32,7 +31,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
 
         self.srcLang = Lang.Eng
         self.dstLang = Lang.Rus
-        self.dictListModel = DictListModel()
+        self.dictListModel = DictListModel(self.srcLang)
         self.wordListDictModel = WordListDictModel(
             self.dictListModel,
             self.srcLang,

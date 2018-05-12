@@ -5,18 +5,17 @@ from utils import Lang
 from models.dict_list_model import DictListModel
 from models.word_list_dict_model import WordListDictModel
 from models.word_model import WordModel, WordModelUtils
-from PySide import QtCore
 
 
 class TestDict(TestDBBaseClass):
     def setUp(self):
-        self.dictListModel = DictListModel()
+        self.dictListModel = DictListModel(Lang.Eng)
 
     def tearDown(self):
         pass
 
     def testEngWords(self):
-        dictListModel = DictListModel(dictIndex=0)
+        dictListModel = DictListModel(Lang.Eng, dictIndex=0)
         wordEngListDictModel = WordListDictModel(
             dictListModel,
             Lang.Eng,
@@ -31,7 +30,7 @@ class TestDict(TestDBBaseClass):
         self.assertEqual(u'поисковая система', wordEngListDictModel.translateValue(1))
 
     def testAddAndRemoveEngWords(self):
-        dictListModel = DictListModel(dictIndex=0)
+        dictListModel = DictListModel(Lang.Eng, dictIndex=0)
         wordEngListDictModel = WordListDictModel(
             dictListModel,
             Lang.Eng,
@@ -43,13 +42,13 @@ class TestDict(TestDBBaseClass):
         id = wordEngModelUtils.add('new word', '')
         self.assertNotEqual(False, id)
         #TODO: fix tests
-        wordEngListDictModel.addWordLink(id)
+        addResult = wordEngListDictModel.addWordLink(id)
         self.assertEqual(rowCount + 1, wordEngListDictModel.rowCount())
         wordEngListDictModel.removeLinkWord(id, True)
         self.assertEqual(rowCount, wordEngListDictModel.rowCount())
 
     def testRusWords(self):
-        dictListModel = DictListModel()
+        dictListModel = DictListModel(Lang.Rus)
         wordRusListDictModel = WordListDictModel(
             dictListModel,
             Lang.Rus,

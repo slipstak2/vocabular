@@ -8,10 +8,11 @@ class DictModel(SqlQueryModel):
     nameFieldName = fields.index('name')
 
     @need_refresh
-    def __init__(self, dictId):
+    def __init__(self, srcLang, dictId):
         super(DictModel, self).__init__()
+        self.initLang(srcLang)
         self.dictId = dictId
-        self.utils = DictModelUtils()
+        self.utils = DictModelUtils(srcLang)
 
     @property
     def name(self):
@@ -19,23 +20,27 @@ class DictModel(SqlQueryModel):
             return self.record(0).value('name')
 
     def refresh(self):
-        self.setQuery(
+        query = SqlQuery(
+            self,
             '''
             SELECT
                 {fields}
             FROM
-                dictionary
+                dict_[eng]
             WHERE
-                id = {id}'''.format(
+                id = {id}
+            '''.format(
                 fields=', '.join(self.fields),
                 id=self.dictId
             )
-        )
+        ).str()
 
+        self.setQuery(query)
 
 class DictModelUtils(BaseSqlQuery):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, srcLang, *args, **kwargs):
         super(DictModelUtils, self).__init__(*args, **kwargs)
+        self.initLang(srcLang)
 
     def addEmpty(self):
         return self.add('')
@@ -43,7 +48,7 @@ class DictModelUtils(BaseSqlQuery):
     def add(self, dictName):
         return SqlQuery(
             self,
-            u'INSERT INTO dictionary (name) VALUES (:name)',
+            u'INSERT INTO dict_[eng] (name) VALUES (:name)',
             {
                 ':name': dictName
             }
@@ -53,7 +58,7 @@ class DictModelUtils(BaseSqlQuery):
     def edit(self, dictId, dictName):
         return SqlQuery(
             self,
-            u'UPDATE dictionary SET name=:name WHERE id=:id',
+            u'UPDATE dict_[eng] SET name=:name WHERE id=:id',
             {
                 u":id": dictId,
                 u":name": dictName
@@ -64,7 +69,7 @@ class DictModelUtils(BaseSqlQuery):
     def remove(self, dictId):
         return SqlQuery(
             self,
-            u'DELETE from dictionary WHERE id=:id',
+            u'DELETE from dict_[eng] WHERE id=:id',
             {
                 u':id': dictId
             }

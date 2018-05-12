@@ -6,9 +6,17 @@ DROP TABLE IF EXISTS `rus_eng` CASCADE;
 DROP TABLE IF EXISTS `word_eng` CASCADE;
 DROP TABLE IF EXISTS `word_rus` CASCADE;
 DROP TABLE IF EXISTS `sound` CASCADE;
-DROP TABLE IF EXISTS `dictionary` CASCADE;
+DROP TABLE IF EXISTS `dict_eng` CASCADE;
+DROP TABLE IF EXISTS `dict_rus` CASCADE;
 
-CREATE TABLE `dictionary` (
+CREATE TABLE `dict_rus` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`name` varchar(255) NOT NULL DEFAULT '<EMPTY>',
+	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+CREATE TABLE `dict_eng` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`name` varchar(255) NOT NULL DEFAULT '<EMPTY>',
 	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,23 +61,23 @@ CREATE TABLE `rus_eng` (
 
 
 CREATE TABLE `word_rus_dict` (
-	`dict_id` int(11) NOT NULL,
+	`dict_rus_id` int(11) NOT NULL,
 	`word_rus_id` int(11) NOT NULL,
-	`word_rus_order` int(11) NOT NULL DEFAULT -1,
+	`word_order` int(11) NOT NULL DEFAULT -1,
 	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT UNIQUE( `dict_id`, `word_rus_id` ),
-	FOREIGN KEY (dict_id) REFERENCES dictionary(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT UNIQUE( `dict_rus_id`, `word_rus_id` ),
+	FOREIGN KEY (dict_rus_id) REFERENCES dict_rus(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (word_rus_id) REFERENCES word_rus(id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `word_eng_dict` (
-	`dict_id` int(11) NOT NULL,
+	`dict_eng_id` int(11) NOT NULL,
 	`word_eng_id` int(11) NOT NULL,
-	`word_eng_order` int(11) NOT NULL DEFAULT -1,
+	`word_order` int(11) NOT NULL DEFAULT -1,
 	`date_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT UNIQUE( `dict_id`, `word_eng_id` ),
-	FOREIGN KEY (dict_id) REFERENCES dictionary(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+	CONSTRAINT UNIQUE( `dict_eng_id`, `word_eng_id` ),
+	FOREIGN KEY (dict_eng_id) REFERENCES dict_eng(id) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (word_eng_id) REFERENCES word_eng(id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -109,8 +117,9 @@ CREATE TABLE `word_eng_sound` (
 
 
 -- Dump data of "dictionary" -------------------------------
-INSERT INTO `dictionary`(`id`,`name`,`date_create`) VALUES ( '1', 'SFML Game Development by example', '2018-01-07 17:20:44' );
-INSERT INTO `dictionary`(`id`,`name`,`date_create`) VALUES ( '2', 'Effective Modern C++, 2014', '2018-01-09 10:57:44' );
+INSERT INTO `dict_eng`(`id`,`name`,`date_create`) VALUES ( '1', 'SFML Game Development by example', '2018-01-07 17:20:44' );
+INSERT INTO `dict_eng`(`id`,`name`,`date_create`) VALUES ( '2', 'Effective Modern C++, 2014', '2018-01-09 10:57:44' );
+INSERT INTO `dict_rus`(`id`,`name`,`date_create`) VALUES ( '1', 'Словарь для изучения русского языка', '2018-05-12 11:11:28' );
 -- ---------------------------------------------------------
 
 
@@ -135,9 +144,9 @@ INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '3', 'deduced type', NUL
 
 
 -- Dump data of "word_eng_dict" ----------------------------
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '1', '1', '2018-01-07 17:28:43' );
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '1', '2', '2018-01-07 19:28:43' );
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '2', '3', '2018-01-09 11:02:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '1', '1', '2018-01-07 17:28:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '1', '2', '2018-01-07 19:28:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '2', '3', '2018-01-09 11:02:43' );
 -- ---------------------------------------------------------
 
 

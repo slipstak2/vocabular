@@ -12,8 +12,9 @@
 
 
 -- Dump data of "dictionary" -------------------------------
-INSERT INTO `dictionary`(`id`,`name`,`date_create`) VALUES ( '1', 'SFML Game Development by example', '2018-01-07 17:20:44' );
-INSERT INTO `dictionary`(`id`,`name`,`date_create`) VALUES ( '2', 'Effective Modern C++, 2014', '2018-01-09 10:57:44' );
+INSERT INTO `dict_eng`(`id`,`name`,`date_create`) VALUES ( '1', 'SFML Game Development by example', '2018-01-07 17:20:44' );
+INSERT INTO `dict_eng`(`id`,`name`,`date_create`) VALUES ( '2', 'Effective Modern C++, 2014', '2018-01-09 10:57:44' );
+INSERT INTO `dict_rus`(`id`,`name`,`date_create`) VALUES ( '1', 'Словарь для изучения русского языка', '2018-05-12 11:11:28' );
 -- ---------------------------------------------------------
 
 
@@ -38,9 +39,9 @@ INSERT INTO `word_eng`(`id`,`value`,`meaning`) VALUES ( '3', 'deduced type', NUL
 
 
 -- Dump data of "word_eng_dict" ----------------------------
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '1', '1', '2018-01-07 17:28:43' );
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '1', '2', '2018-01-07 19:28:43' );
-INSERT INTO `word_eng_dict`(`dict_id`,`word_eng_id`,`date_create`) VALUES ( '2', '3', '2018-01-09 11:02:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '1', '1', '2018-01-07 17:28:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '1', '2', '2018-01-07 19:28:43' );
+INSERT INTO `word_eng_dict`(`dict_eng_id`,`word_eng_id`,`date_create`) VALUES ( '2', '3', '2018-01-09 11:02:43' );
 -- ---------------------------------------------------------
 
 

@@ -40,18 +40,15 @@ class SqlQuery(object):
             self._query.bindValue(self._normalize(name), value)
 
     def _normalize(self, s):
-        try:
-            replaceLangMap = {
-                '[eng]': self._model.SRC_LANG_FULL,
-                '[e]': self._model.SRC_LANG_SHORT,
-                '[rus]': self._model.DST_LANG_FULL,
-                '[r]': self._model.DST_LANG_SHORT,
-            }
-
-            for key, value in replaceLangMap.items():
-                s = s.replace(key, value)
-        except BaseException:
-            pass
+        replaceLangMap = {
+            '[eng]': 'SRC_LANG_FULL',
+            '[e]': 'SRC_LANG_SHORT',
+            '[rus]': 'DST_LANG_FULL',
+            '[r]': 'DST_LANG_SHORT',
+        }
+        for key, value in replaceLangMap.items():
+            if hasattr(self._model, value):
+                s = s.replace(key, getattr(self._model, value))
         return s
 
     def execute(self, returnLastInsertId=False):
@@ -72,21 +69,22 @@ class BaseSqlQuery(object):
     def __str__(self):
         return '{}->{}'.format(self.SRC_LANG_FULL, self.DST_LANG_FULL)
 
-    def initLang(self, srcLang, dstLang):
+    def initLang(self, srcLang, dstLang=Lang.Unknown):
         self.srcLang = srcLang
-        self.dstLang = dstLang
+        if dstLang != Lang.Unknown:
+            self.dstLang = dstLang
         if srcLang == Lang.Eng:
-            assert dstLang == Lang.Rus, "Currently supported only eng-rus translation"
             self.SRC_LANG_FULL  = 'eng'
             self.SRC_LANG_SHORT = 'e'
-            self.DST_LANG_FULL  = 'rus'
-            self.DST_LANG_SHORT = 'r'
-        else:
-            assert dstLang == Lang.Eng, "Currently supported only eng-rus translation"
+            if dstLang != Lang.Unknown:
+                self.DST_LANG_FULL  = 'rus'
+                self.DST_LANG_SHORT = 'r'
+        elif srcLang == Lang.Rus:
             self.SRC_LANG_FULL  = 'rus'
             self.SRC_LANG_SHORT = 'r'
-            self.DST_LANG_FULL  = 'eng'
-            self.DST_LANG_SHORT = 'e'
+            if dstLang != Lang.Unknown:
+                self.DST_LANG_FULL  = 'eng'
+                self.DST_LANG_SHORT = 'e'
 
 
 class SqlQueryModel(BaseSqlQuery, QtSql.QSqlQueryModel):
