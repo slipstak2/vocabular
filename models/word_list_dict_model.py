@@ -7,7 +7,7 @@ from forms.forms_utils import WordEditMode
 from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from models import models_utils
-from models.word_model import WordModel, WordModelUtils, WordModelInfo
+from models.word_model import WordModel, WordUtils, WordInfo
 from utils import Lang
 
 
@@ -15,7 +15,7 @@ class WordListDictModel(SqlQueryModel):
     @need_refresh
     def __init__(self, dictListModel, srcLang, dstLang, *args, **kwargs):
         super(WordListDictModel, self).__init__(*args, **kwargs)
-        self.wordModelUtils = WordModelUtils(srcLang=srcLang, dstLang=dstLang)
+        self.wordUtils = WordUtils(srcLang=srcLang, dstLang=dstLang)
         self.initLang(srcLang, dstLang)
 
         self.dictListModel = dictListModel
@@ -117,7 +117,7 @@ class WordListDictModel(SqlQueryModel):
                 # TODO: Если слово входит хотя бы в один словарь, то удалять только link
                 # TODO: если слово не входит ни в один словарь: спросить - удалить ли слово совсем?
                 # TODO: что делать с переводами на это слово?
-                self.wordModelUtils.remove(wordId)
+                self.wordUtils.remove(wordId)
 
     def data(self, index, role):
         value = super(WordListDictModel, self).data(index, role)
@@ -157,14 +157,14 @@ class EditButtonWordListDictDelegate(EditButtonDelegate):
         print u"edit '{}'".format(self.wordListDictModel.wordValue(recordIndex))
         self.commitData.emit(self.sender())
 
-        wordModelInfo = WordModelInfo(
+        wordInfo = WordInfo(
             self.wordListDictModel.wordId(recordIndex),
             srcLang=self.wordListDictModel.srcLang,
             dstLang=self.wordListDictModel.dstLang
         )
 
         wordEditDialog = WordEditWindow(
-            wordModelInfo=wordModelInfo,
+            wordInfo=wordInfo,
             mode=WordEditMode.EditWord,
             wordEditContext=WordEditContext()
         )

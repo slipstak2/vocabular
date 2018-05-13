@@ -6,7 +6,6 @@ from PySide.QtGui import QDataWidgetMapper
 from forms.base_dialog import BaseDialog
 from ui.dict_edit_ui import Ui_DictAddEdit
 from forms_utils import DictEditMode
-from models.dict_model import DictModelUtils
 
 
 translateTitleMap = {
@@ -24,7 +23,6 @@ class DictEditWindow(BaseDialog):
     def __init__(self, dictModel, mode, *args, **kwargs):
         super(DictEditWindow, self).__init__(*args, **kwargs)
         self.dictModel = dictModel
-        self.dictModelUtils = dictModel.utils
         self.mode = mode
 
         self.ui = Ui_DictAddEdit()
@@ -44,7 +42,7 @@ class DictEditWindow(BaseDialog):
         self.close()
 
     def _onSave(self, *args, **kwargs):
-        self.dictModelUtils.edit(
+        self.dictModel.utils.edit(
             self.dictModel.dictId,
             self.ui.leDictName.text()
         )

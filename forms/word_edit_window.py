@@ -7,7 +7,7 @@ from PySide.QtCore import QRegExp
 import utils
 from forms.base_dialog import BaseDialog
 from forms_utils import WordEditMode
-from models.word_model import WordModel, WordModelInfo, WordModelUtils
+from models.word_model import WordModel, WordInfo, WordUtils
 from models.word_translate_model import WordTranslateModel
 from ui.word_edit_ui import Ui_WordAddEdit
 
@@ -48,26 +48,25 @@ class WordEditContext(object):
         return item in self.wordIds
 
 class WordEditWindow(BaseDialog):
-    def __init__(self, wordModelInfo, mode, wordEditContext, *args, **kwargs):
+    def __init__(self, wordInfo, mode, wordEditContext, *args, **kwargs):
         super(WordEditWindow, self).__init__(*args, **kwargs)
 
-        self.wordModelInfo = wordModelInfo
-        self.wordModelUtils = wordModelInfo.utils
+        self.wordInfo = wordInfo
         self.mode = mode
 
         self.wordEditContext = wordEditContext
-        self.wordEditContext.addWordId(self.wordModelInfo.wordId, self.wordModelInfo.srcLang)
+        self.wordEditContext.addWordId(self.wordInfo.wordId, self.wordInfo.srcLang)
 
         self.wordModel = WordModel(
-            self.wordModelInfo.wordId,
-            wordModelInfo.srcLang,
-            wordModelInfo.dstLang
+            self.wordInfo.wordId,
+            wordInfo.srcLang,
+            wordInfo.dstLang
         )
 
         self.wordTranslateModel = WordTranslateModel(
-            self.wordModelInfo.wordId,
-            wordModelInfo.srcLang,
-            wordModelInfo.dstLang
+            self.wordInfo.wordId,
+            wordInfo.srcLang,
+            wordInfo.dstLang
         )
 
         self.ui = Ui_WordAddEdit()
@@ -78,8 +77,8 @@ class WordEditWindow(BaseDialog):
 
     def onCloseDialog(self):
         self.wordEditContext.removeWordId(
-            self.wordModelInfo.wordId,
-            self.wordModelInfo.srcLang
+            self.wordInfo.wordId,
+            self.wordInfo.srcLang
         )
 
     def mapWordModelFields(self):
@@ -104,7 +103,7 @@ class WordEditWindow(BaseDialog):
     def _onOK(self, *args, **kwargs):
         word = self.ui.leWord.text()
         meaning = self.ui.teMeaning.toPlainText()
-        self.wordModelUtils.edit(self.wordModelInfo.wordId, word, meaning)
+        self.wordInfo.utils.edit(self.wordInfo.wordId, word, meaning)
 
         self.accept()
 
@@ -122,9 +121,9 @@ class WordEditWindow(BaseDialog):
         translateWordId = self.wordTranslateModel.addEmptyTranslate()
         assert isinstance(translateWordId, long)
 
-        wordModelInfo = WordModelInfo(translateWordId, srcLang=self.wordModelInfo.dstLang, dstLang=self.wordModelInfo.srcLang)
+        wordInfo = WordInfo(translateWordId, srcLang=self.wordInfo.dstLang, dstLang=self.wordInfo.srcLang)
         addTranslateDialog = WordEditWindow(
-            wordModelInfo=wordModelInfo,
+            wordInfo=wordInfo,
             mode=WordEditMode.AddTranslate,
             wordEditContext=self.wordEditContext
         )
@@ -136,7 +135,7 @@ class WordEditWindow(BaseDialog):
 
     def initHandlers(self):
         self.setWindowTitle(translateTitleMap[self.mode])
-        self.ui.cbLang.setCurrentIndex(self.wordModelInfo.srcLang.value)
+        self.ui.cbLang.setCurrentIndex(self.wordInfo.srcLang.value)
         if self.wordModel.srcLang == utils.Lang.Eng:
             self.ui.leWord.setValidator(QRegExpValidator(QRegExp(utils.rxEng), self))
         if self.wordModel.srcLang == utils.Lang.Rus:

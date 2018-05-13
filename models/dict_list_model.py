@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base.base_sql_query_model import SqlQueryModel, need_refresh, SqlQuery
-from models.dict_model import DictModelUtils
-from utils import Lang
+from models.dict_model import DictUtils
 
 
 class DictListModel(SqlQueryModel):
@@ -14,7 +13,7 @@ class DictListModel(SqlQueryModel):
         self.initLang(srcLang)
         self._dictIndex = dictIndex
 
-        self.dictModelUtils = DictModelUtils(srcLang)
+        self.dictUtils = DictUtils(srcLang)
 
     @property
     def dictIndex(self):
@@ -48,4 +47,4 @@ class DictListModel(SqlQueryModel):
 
     @need_refresh
     def removeDict(self):
-        return self.dictModelUtils.remove(self.dictId)
+        return self.dictUtils.remove(self.dictId)

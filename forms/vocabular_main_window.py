@@ -12,7 +12,7 @@ from models.dict_list_model import DictListModel
 from models.dict_model import DictModel
 from models.word_list_dict_model import WordListDictModel
 from models.word_list_dict_model import PlayButtonWordListDictDelegate, EditButtonWordListDictDelegate, RemoveButtonWordListDictDelegate
-from models.word_model import WordModelInfo
+from models.word_model import WordInfo
 from forms_utils import onBtnEnter, onBtnLeave, WordEditMode
 from utils import Lang
 from version import version
@@ -42,10 +42,10 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.initUI()
 
     def _onAddWord(self):
-        wordId = self.wordListDictModel.wordModelUtils.addEmpty()
-        wordModelInfo = WordModelInfo(wordId, self.srcLang, self.dstLang)
+        wordId = self.wordListDictModel.wordUtils.addEmpty()
+        wordInfo = WordInfo(wordId, self.srcLang, self.dstLang)
         addWordDialog = WordEditWindow(
-            wordModelInfo=wordModelInfo,
+            wordInfo=wordInfo,
             mode=WordEditMode.AddWord,
             wordEditContext=WordEditContext()
         )
@@ -60,7 +60,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
         self.close()
 
     def _onAddDict(self, *args, **kwargs):
-        dictId = self.dictListModel.dictModelUtils.addEmpty()
+        dictId = self.dictListModel.dictUtils.addEmpty()
         dictModel = DictModel(dictId)
         dictDialog = DictEditWindow(dictModel, DictEditMode.Add)
         dictDialog.exec_()
@@ -68,7 +68,7 @@ class VocabularMainWindow(QtGui.QMainWindow):
             self.dictListModel.refresh()
             self.ui.cbDicts.setCurrentIndex(self.dictListModel.rowCount() - 1)
         else:
-            self.dictListModel.dictModelUtils.remove(dictId)
+            self.dictListModel.dictUtils.remove(dictId)
 
     def _onEditDict(self, *args, **kwargs):
         dictModel = DictModel(self.dictListModel.dictId)

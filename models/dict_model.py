@@ -12,7 +12,7 @@ class DictModel(SqlQueryModel):
         super(DictModel, self).__init__()
         self.initLang(srcLang)
         self.dictId = dictId
-        self.utils = DictModelUtils(srcLang)
+        self.utils = DictUtils(srcLang)
 
     @property
     def name(self):
@@ -37,9 +37,10 @@ class DictModel(SqlQueryModel):
 
         self.setQuery(query)
 
-class DictModelUtils(BaseSqlQuery):
+
+class DictUtils(BaseSqlQuery):
     def __init__(self, srcLang, *args, **kwargs):
-        super(DictModelUtils, self).__init__(*args, **kwargs)
+        super(DictUtils, self).__init__(*args, **kwargs)
         self.initLang(srcLang)
 
     def addEmpty(self):

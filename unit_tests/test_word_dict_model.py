@@ -4,7 +4,7 @@ from unit_tests.base.test_base import TestDBBaseClass
 from utils import Lang
 from models.dict_list_model import DictListModel
 from models.word_list_dict_model import WordListDictModel
-from models.word_model import WordModel, WordModelUtils
+from models.word_model import WordModel, WordUtils
 
 
 class TestDict(TestDBBaseClass):
@@ -38,8 +38,8 @@ class TestDict(TestDBBaseClass):
         )
         rowCount = wordEngListDictModel.rowCount()
 
-        wordEngModelUtils = WordModelUtils(Lang.Eng, Lang.Rus)
-        id = wordEngModelUtils.add('new word', '')
+        wordEngUtils = WordUtils(Lang.Eng, Lang.Rus)
+        id = wordEngUtils.add('new word', '')
         self.assertNotEqual(False, id)
         #TODO: fix tests
         addResult = wordEngListDictModel.addWordLink(id)
@@ -56,7 +56,7 @@ class TestDict(TestDBBaseClass):
         )
         self.assertEqual(0, wordRusListDictModel.rowCount())
 
-        wordRusModelUtils= WordModelUtils(Lang.Rus, Lang.Eng)
+        wordRusModelUtils= WordUtils(Lang.Rus, Lang.Eng)
         id = wordRusModelUtils.add(u'новое слово', '')
         self.assertNotEqual(False, id)
         wordRusListDictModel.addWordLink(id)

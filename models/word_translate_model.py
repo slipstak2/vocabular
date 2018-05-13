@@ -5,7 +5,7 @@ from PySide.QtCore import Slot as pyqtSlot
 from models.base.base_sql_query_model import SqlQueryModel, SqlQuery, need_refresh
 from models.delegates import EditButtonDelegate, PlayButtonDelegate, RemoveButtonDelegate
 from utils import Lang
-from models.word_model import WordModelInfo, WordModelUtils
+from models.word_model import WordInfo, WordUtils
 from forms.forms_utils import WordEditMode
 import models_utils
 
@@ -16,7 +16,7 @@ class WordTranslateModel(SqlQueryModel):
         super(WordTranslateModel, self).__init__(*args, **kwargs)
         self.wordId = wordId
         self.initLang(srcLang, dstLang)
-        self.wordModelUtils = WordModelUtils(self.dstLang, self.srcLang) # именно так
+        self.wordUtils = WordUtils(self.dstLang, self.srcLang) # именно так
 
         if srcLang == Lang.Eng:
             self.headerFields = [     '', u'перевод',             '',   u'значение',     '',     '',       '']
@@ -184,14 +184,14 @@ class EditButtonWordTranslateDelegate(EditButtonDelegate):
     def onBtnClicked(self, recordIndex):
         from forms.word_edit_window import WordEditWindow
 
-        wordModelInfo = WordModelInfo(
+        wordInfo = WordInfo(
             self.wordTranslateModel.wordTranslateId(recordIndex),
             srcLang=self.wordTranslateModel.dstLang,
             dstLang=self.wordTranslateModel.srcLang
         )
 
         wordEditDialog = WordEditWindow(
-            wordModelInfo=wordModelInfo,
+            wordInfo=wordInfo,
             mode=WordEditMode.EditTranslate,
             wordEditContext=self.parentWindow.wordEditContext
         )

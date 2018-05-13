@@ -39,7 +39,7 @@ class TestDictListModel(TestDBBaseClass):
 
         # add dict
         dictName = 'new dict'
-        dictId = dictListModel.dictModelUtils.add(dictName)
+        dictId = dictListModel.dictUtils.add(dictName)
         self.assertNotEqual(False, dictId)
         dictListModel.refresh()
         self.assertEqual(rowCount + 1, dictListModel.rowCount())
@@ -47,7 +47,7 @@ class TestDictListModel(TestDBBaseClass):
         # edit dict
         dictListModel.dictIndex = dictListModel.rowCount() - 1
         newDictName = dictName + ' update'
-        self.assertTrue(dictListModel.dictModelUtils.edit(dictId, newDictName))
+        self.assertTrue(dictListModel.dictUtils.edit(dictId, newDictName))
         dictListModel.refresh()
         self.assertEqual(newDictName, dictListModel.dictName)
 
